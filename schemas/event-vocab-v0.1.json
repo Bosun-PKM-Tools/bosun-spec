@@ -1,0 +1,680 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/event-vocab-v0.1.json",
+  "title": "Bosun Event Vocabulary Contract v0.1",
+  "description": "Machine-readable event vocabulary and payload specifications for Bosun PKM converters and engines.",
+  "version": "0.1.0",
+  "severities": [
+    "fatal",
+    "error",
+    "warn",
+    "info"
+  ],
+  "events": {
+    "ERR_INVALID_FILE": {
+      "event": "err.file.not_found",
+      "severity": "fatal",
+      "description": "Source file not found at specified path.",
+      "payload_fields": [
+        "path",
+        "message"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "path",
+          "message"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ERR_PARSING_FAILED": {
+      "event": "err.parse.failed",
+      "severity": "fatal",
+      "description": "Container XML/ENEX parsing failed fatally.",
+      "payload_fields": [
+        "path",
+        "message"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "path",
+          "message"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ERR_INVALID_VAULT": {
+      "event": "err.vault.invalid",
+      "severity": "fatal",
+      "description": "Destination vault path is invalid or uninitializable.",
+      "payload_fields": [
+        "vault_path",
+        "message"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "vault_path",
+          "message"
+        ],
+        "properties": {
+          "vault_path": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ERR_DB_OPERATION": {
+      "event": "err.db.operation",
+      "severity": "error",
+      "description": "Database operation failed for a specific note.",
+      "payload_fields": [
+        "id",
+        "title",
+        "message"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "message"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ERR_WRITE_FAILED": {
+      "event": "err.write.failed",
+      "severity": "error",
+      "description": "Note file write failed after retries exhausted.",
+      "payload_fields": [
+        "id",
+        "title",
+        "message"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "message"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "WARN_UNPARSEABLE_TIMESTAMP": {
+      "event": "warn.timestamp.unparseable",
+      "severity": "warn",
+      "description": "Timestamp could not be parsed into UTC; raw wire value preserved.",
+      "payload_fields": [
+        "title",
+        "field",
+        "raw_value"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "title",
+          "field",
+          "raw_value"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string",
+            "enum": [
+              "created",
+              "updated"
+            ]
+          },
+          "raw_value": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "WARN_INCOMPLETE_MEDIA": {
+      "event": "warn.media.incomplete",
+      "severity": "warn",
+      "description": "Incomplete <en-media> tag missing hash or type; placeholder emitted.",
+      "payload_fields": [
+        "title",
+        "index",
+        "warning"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "title",
+          "index",
+          "warning"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer"
+          },
+          "warning": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "WARN_UNRESOLVED_MEDIA": {
+      "event": "warn.media.unresolved",
+      "severity": "warn",
+      "description": "Provisional: inline media hash could not be resolved to asset.",
+      "payload_fields": [
+        "id",
+        "hash",
+        "mime"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "id",
+          "hash",
+          "mime"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "mime": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "WARN_UNRESOLVED_MEDIA_HASH": {
+      "event": "warn.media.unresolved_hash",
+      "severity": "warn",
+      "description": "An [EN_MEDIA] hash did not join to known resource/attachment metadata.",
+      "payload_fields": [
+        "note",
+        "hash",
+        "index"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "note",
+          "hash",
+          "index"
+        ],
+        "properties": {
+          "note": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "index": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "WARN_NONDETERMINISTIC_MARKDOWN": {
+      "event": "warn.markdown.nondeterministic",
+      "severity": "warn",
+      "description": "Markdown emphasis could not be reconstructed deterministically and was left as text.",
+      "payload_fields": [
+        "note"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "note"
+        ],
+        "properties": {
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "INFO_NOTE_SKIPPED": {
+      "event": "info.note.skipped",
+      "severity": "info",
+      "description": "Note import skipped because content sha matches existing record.",
+      "payload_fields": [
+        "id",
+        "title",
+        "reason"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "reason"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "INFO_ENGINE_RUN_STARTED": {
+      "event": "info.engine.run_started",
+      "severity": "info",
+      "description": "Engine execution pipeline started.",
+      "payload_fields": [
+        "run_id",
+        "source",
+        "vault",
+        "target"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "run_id"
+        ],
+        "properties": {
+          "run_id": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "vault": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "INFO_ENGINE_RUN_COMPLETED": {
+      "event": "info.engine.run_completed",
+      "severity": "info",
+      "description": "Engine execution pipeline completed successfully.",
+      "payload_fields": [
+        "run_id",
+        "imported_count",
+        "skipped_count",
+        "failed_count"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "run_id",
+          "imported_count"
+        ],
+        "properties": {
+          "run_id": {
+            "type": "string"
+          },
+          "imported_count": {
+            "type": "integer"
+          },
+          "skipped_count": {
+            "type": "integer"
+          },
+          "failed_count": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "ERR_ENGINE_RUN_FAILED": {
+      "event": "err.engine.run_failed",
+      "severity": "error",
+      "description": "Engine execution pipeline failed fatally.",
+      "payload_fields": [
+        "run_id",
+        "stage",
+        "code",
+        "message"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "run_id",
+          "code",
+          "message"
+        ],
+        "properties": {
+          "run_id": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "INFO_STAGE_STARTED": {
+      "event": "info.stage.started",
+      "severity": "info",
+      "description": "Pipeline stage processing started.",
+      "payload_fields": [
+        "run_id",
+        "stage"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "run_id",
+          "stage"
+        ],
+        "properties": {
+          "run_id": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "INFO_STAGE_COMPLETED": {
+      "event": "info.stage.completed",
+      "severity": "info",
+      "description": "Pipeline stage processing completed successfully.",
+      "payload_fields": [
+        "run_id",
+        "stage"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "run_id",
+          "stage"
+        ],
+        "properties": {
+          "run_id": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ERR_STAGE_FAILED": {
+      "event": "err.stage.failed",
+      "severity": "error",
+      "description": "Pipeline stage processing failed.",
+      "payload_fields": [
+        "run_id",
+        "stage",
+        "code",
+        "message"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "run_id",
+          "stage",
+          "code",
+          "message"
+        ],
+        "properties": {
+          "run_id": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "INFO_NOTE_IMPORTED": {
+      "event": "info.note.imported",
+      "severity": "info",
+      "description": "Note successfully imported into canonical representation.",
+      "payload_fields": [
+        "id",
+        "title",
+        "vault_path"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "vault_path"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "vault_path": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ERR_VALIDATION_FAILED": {
+      "event": "err.validation.failed",
+      "severity": "error",
+      "description": "Note canonical validation failed against schema invariants.",
+      "payload_fields": [
+        "path",
+        "message"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "path",
+          "message"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "INFO_PROTOCOL_HANDSHAKE": {
+      "event": "info.protocol.handshake",
+      "severity": "info",
+      "description": "Protocol handshake approved and session token issued. Reserved for future approved Protocol v1 implementation.",
+      "payload_fields": [
+        "client_id",
+        "module_public_key",
+        "capabilities_granted",
+        "locker_id"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "client_id",
+          "module_public_key",
+          "capabilities_granted",
+          "locker_id"
+        ],
+        "properties": {
+          "client_id": {
+            "type": "string"
+          },
+          "module_public_key": {
+            "type": "string"
+          },
+          "capabilities_granted": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "locker_id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "WARN_UNAUTHORIZED_ACCESS": {
+      "event": "warn.protocol.unauthorized",
+      "severity": "warn",
+      "description": "Request rejected due to invalid, missing, or expired token. Reserved for future approved Protocol v1 implementation.",
+      "payload_fields": [
+        "path",
+        "reason"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "path",
+          "reason"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "WARN_FORBIDDEN_HOST": {
+      "event": "warn.protocol.forbidden_host",
+      "severity": "warn",
+      "description": "Request rejected due to non-loopback or non-literal Host header. Reserved for future approved Protocol v1 implementation.",
+      "payload_fields": [
+        "host_header"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "host_header"
+        ],
+        "properties": {
+          "host_header": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "WARN_CAPABILITY_DENIED": {
+      "event": "warn.protocol.capability_denied",
+      "severity": "warn",
+      "description": "Request rejected due to missing capability grant. Reserved for future approved Protocol v1 implementation.",
+      "payload_fields": [
+        "client_id",
+        "required_capability",
+        "granted_capabilities"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "client_id",
+          "required_capability",
+          "granted_capabilities"
+        ],
+        "properties": {
+          "client_id": {
+            "type": "string"
+          },
+          "required_capability": {
+            "type": "string"
+          },
+          "granted_capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "WARN_STREAM_CLIENT_LAG": {
+      "event": "warn.protocol.stream_lag",
+      "severity": "warn",
+      "description": "SSE client dropped due to ring buffer overflow. Reserved for future approved Protocol v1 implementation.",
+      "payload_fields": [
+        "client_id",
+        "dropped_count"
+      ],
+      "payload_schema": {
+        "type": "object",
+        "required": [
+          "client_id",
+          "dropped_count"
+        ],
+        "properties": {
+          "client_id": {
+            "type": "string"
+          },
+          "dropped_count": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}

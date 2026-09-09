@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/canonical-note-contract-v0.1.json",
+  "title": "Bosun Canonical Note Contract v0.1",
+  "description": "Machine-readable schema contract for Bosun PKM canonical note YAML frontmatter.",
+  "type": "object",
+  "version": "0.1.0",
+  "required": [
+    "schema_version",
+    "type",
+    "title",
+    "status",
+    "source",
+    "source_id",
+    "created_at",
+    "updated_at",
+    "tags",
+    "canonical_format",
+    "content_format",
+    "target_app"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Canonical contract major version."
+    },
+    "type": {
+      "type": "string",
+      "const": "note",
+      "description": "Entity classification."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable note title."
+    },
+    "status": {
+      "type": "string",
+      "const": "active",
+      "description": "Operational lifecycle status."
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Originating tool or importer identifier."
+    },
+    "source_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable upstream identifier or GUID."
+    },
+    "created_at": {
+      "type": "string",
+      "pattern": "^$|^\\d{14}$|^[\\S\\s]+$",
+      "description": "14-digit continuous UTC timestamp YYYYMMDDHHMMSS, or preserved raw wire string if unparseable."
+    },
+    "updated_at": {
+      "type": "string",
+      "pattern": "^$|^\\d{14}$|^[\\S\\s]+$",
+      "description": "14-digit continuous UTC timestamp YYYYMMDDHHMMSS, or preserved raw wire string if unparseable."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User tags associated with the note."
+    },
+    "canonical_format": {
+      "type": "string",
+      "const": "markdown-yaml",
+      "description": "Canonical file format standard."
+    },
+    "content_format": {
+      "type": "string",
+      "enum": [
+        "html",
+        "markdown"
+      ],
+      "description": "Highest-fidelity body source representation."
+    },
+    "target_app": {
+      "type": "string",
+      "enum": [
+        "any",
+        "obsidian",
+        "logseq"
+      ],
+      "description": "Downstream target application."
+    },
+    "source_note": {
+      "type": "string",
+      "description": "Source container file name or path."
+    },
+    "source_url": {
+      "type": "string",
+      "description": "Originating note URL."
+    },
+    "source_html": {
+      "type": "string",
+      "description": "Lossless wire HTML/ENML copy extracted from source note."
+    },
+    "author": {
+      "type": "string",
+      "description": "Note author identifier or name."
+    },
+    "en_media": {
+      "type": "string",
+      "description": "Serialized JSON string containing ordered provenance records for inline media placeholders."
+    },
+    "source_path": {
+      "type": "string",
+      "description": "Original filesystem path or relative path of the source document before ingestion."
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "target",
+          "type"
+        ],
+        "properties": {
+          "target": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Target note identifier, file path, or URI."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "links_to",
+              "parent_of",
+              "child_of",
+              "related",
+              "cites",
+              "derived_from",
+              "mentions"
+            ],
+            "description": "Semantic nature of the relationship."
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "outbound",
+              "inbound",
+              "bidirectional"
+            ],
+            "default": "outbound",
+            "description": "Navigational directionality."
+          },
+          "title": {
+            "type": "string",
+            "description": "Human-readable label or target note title."
+          },
+          "properties": {
+            "type": "object",
+            "description": "Optional arbitrary metadata attributes associated with the relationship."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Structured graph relationships connecting this note to other entities."
+    },
+    "related_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of related note identifiers or titles (lightweight relation list)."
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "original_system": {
+          "type": "string",
+          "description": "Upstream system or repository of origin."
+        },
+        "imported_at": {
+          "type": "string",
+          "description": "Timestamp when this record was extracted or ingested."
+        },
+        "converter_version": {
+          "type": "string",
+          "description": "Version string of the conversion pipeline or adapter."
+        },
+        "source_metadata": {
+          "type": "object",
+          "description": "Preserved upstream properties from the source system."
+        }
+      },
+      "additionalProperties": true,
+      "description": "Detailed origin and lineage metadata for auditability."
+    },
+    "lineage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "step"
+        ],
+        "properties": {
+          "step": {
+            "type": "string",
+            "description": "Transformation or processing stage name."
+          },
+          "tool": {
+            "type": "string",
+            "description": "Tool or pipeline module performing the step."
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Timestamp when the lineage step occurred."
+          },
+          "details": {
+            "type": "object",
+            "description": "Parameters or operational metrics for the step."
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Ordered transformation sequence recording note evolution across tools and pipelines."
+    },
+    "fidelity_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Observations regarding format translation fidelity, soft degradation, or lossy conversions."
+    },
+    "source_checksum": {
+      "type": "string",
+      "description": "Cryptographic hash (e.g. SHA-256 or MD5) of the source note content."
+    }
+  },
+  "additionalProperties": false
+}
