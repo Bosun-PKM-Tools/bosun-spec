@@ -1,0 +1,46 @@
+# .github/workflows/validate-schemas.yml
+#
+# CI: Bosun PKM Open Specification -- Schema Validation
+# -------------------------------------------------------
+# Validates all JSON schemas in schemas/ against the JSON Schema
+# Draft 2020-12 meta-schema and runs the full test suite across
+# Python 3.10, 3.11, and 3.12.
+#
+# All test execution is self-contained and offline.
+
+name: Validate Schemas
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: "Schema validation (Python ${{ matrix.python-version }})"
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dev dependencies
+        run: pip install ".[dev]"
+
+      - name: Run schema validation tests (pytest)
+        run: pytest tests/ -v --tb=short
+
+      - name: Run schema validation tests (standalone)
+        run: python tests/test_schemas.py

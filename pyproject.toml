@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bosun-spec"
+version = "0.1.0"
+description = "Bosun PKM Open Specification - canonical note contract, event vocabulary, and Harbormaster Protocol RFC schemas and validation tooling."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+keywords = ["pkm", "knowledge-management", "schema", "specification", "local-first"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Text Processing :: Markup",
+]
+
+[project.optional-dependencies]
+dev = [
+    "jsonschema>=4.20.0",
+    "pytest>=8.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = []
+
+[tool.setuptools.package-data]
+"*" = ["schemas/*.json", "docs/*.md"]
