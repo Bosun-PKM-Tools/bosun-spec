@@ -1,0 +1,5 @@
+# Ingestion codec fixtures must keep exact on-disk bytes.
+# RFC 2426 / RFC 5545 require CRLF; Kindle My Clippings.txt ships a UTF-8 BOM.
+fixtures/codecs/vcard/*.vcf -text
+fixtures/codecs/ical/*.ics -text
+fixtures/codecs/media/kindle-clippings.txt -text

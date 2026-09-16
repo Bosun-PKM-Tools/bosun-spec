@@ -1,12 +1,14 @@
 """
 tests/test_schemas.py
 ─────────────────────
-Validates that every JSON schema file in bosun-spec/schemas/ is:
+Validates that every JSON schema file in bosun-spec/schemas/ (recursively) is:
 
   1. Parseable as valid JSON (no syntax errors, no trailing commas, etc.)
   2. Declares a recognised ``$schema`` URI (meta-schema present).
   3. Internally well-formed per ``jsonschema.check_schema()`` — i.e. the
      schema itself satisfies the JSON Schema Draft 2020-12 meta-schema.
+  4. Nested ``*.schema.json`` files under ``schemas/v1/`` are discovered
+     recursively and must declare Draft 2020-12.
 
 Dependencies
   pip install jsonschema          # jsonschema >= 4.0
@@ -32,24 +34,57 @@ except ImportError:
 _REPO_ROOT = pathlib.Path(__file__).parent.parent
 _SCHEMAS_DIR = _REPO_ROOT / "schemas"
 
+_DRAFT_2020_12 = "https://json-schema.org/draft/2020-12/schema"
+_CANONICAL_ID_PREFIX = "https://bosunpkm.com/schemas/"
+
 # Known JSON Schema draft URIs we accept
 _KNOWN_DRAFTS = {
-    "https://json-schema.org/draft/2020-12/schema",
+    _DRAFT_2020_12,
     "https://json-schema.org/draft/2019-09/schema",
     "http://json-schema.org/draft-07/schema#",
     "http://json-schema.org/draft-06/schema#",
     "http://json-schema.org/draft-04/schema#",
 }
 
+# Realm v1 contracts that must exist as nested Draft 2020-12 schema files.
+_REQUIRED_V1_SCHEMAS = (
+    "v1/trice/task.schema.json",
+    "v1/trice/project.schema.json",
+    "v1/logbook/journal.schema.json",
+    "v1/logbook/event.schema.json",
+    "v1/yeoman/contact.schema.json",
+    "v1/yeoman/interaction.schema.json",
+    "v1/commonplace/work.schema.json",
+)
+
+
+def _relative_schema_name(path):
+    """Return a stable POSIX-relative path from schemas/ for test names."""
+    return path.relative_to(_SCHEMAS_DIR).as_posix()
+
 
 def _collect_schemas():
-    """Return a list of (name, path) tuples for all .json files in schemas/."""
+    """Return a list of (relative_name, path) tuples for all .json files under schemas/.
+
+    Recurses into realm subdirectories so ``*.schema.json`` files nested under
+    ``schemas/v1/<realm>/`` are discovered alongside the top-level v0.1 contracts.
+    """
     if not _SCHEMAS_DIR.exists():
         return []
     return sorted(
-        (p.name, p)
-        for p in _SCHEMAS_DIR.glob("*.json")
+        (_relative_schema_name(p), p)
+        for p in _SCHEMAS_DIR.rglob("*.json")
+        if p.is_file()
     )
+
+
+def _collect_schema_json():
+    """Return (relative_name, path) tuples for nested ``*.schema.json`` files."""
+    return [
+        (name, path)
+        for name, path in _collect_schemas()
+        if name.endswith(".schema.json")
+    ]
 
 
 class TestSchemaFiles(unittest.TestCase):
@@ -86,7 +121,7 @@ class TestSchemaFiles(unittest.TestCase):
                 return json.load(fh)
         except json.JSONDecodeError as exc:
             self.fail(
-                f"{path.name} contains invalid JSON: {exc}"
+                f"{path.relative_to(_SCHEMAS_DIR).as_posix()} contains invalid JSON: {exc}"
             )
 
     def test_all_schemas_are_valid_json(self):
@@ -158,12 +193,78 @@ class TestSchemaFiles(unittest.TestCase):
                     Draft202012Validator.check_schema(obj)
                 except jsonschema.SchemaError as exc:
                     self.fail(
-                        f"{name}: failed meta-schema validation: {exc.message}"
+                        f"{name}: failed Draft 2020-12 meta-schema validation: {exc.message}"
                     )
                 except Exception as exc:  # noqa: BLE001
                     self.fail(
                         f"{name}: unexpected error during check_schema: {exc}"
                     )
+
+    def test_schema_json_files_are_discovered_recursively(self):
+        """Nested ``*.schema.json`` files under schemas/v1/ must be collected."""
+        discovered = {name for name, _path in _collect_schema_json()}
+        missing = [name for name in _REQUIRED_V1_SCHEMAS if name not in discovered]
+        self.assertEqual(
+            missing,
+            [],
+            "Required v1 *.schema.json files were not discovered recursively: "
+            f"{missing}"
+        )
+        for name in discovered:
+            with self.subTest(schema=name):
+                self.assertIn(
+                    "/",
+                    name,
+                    f"{name}: expected a nested path under schemas/v1/<realm>/"
+                )
+
+    def test_v1_schema_json_files_declare_draft_2020_12(self):
+        """Every nested ``*.schema.json`` must pin JSON Schema Draft 2020-12."""
+        schema_json = _collect_schema_json()
+        self.assertGreater(
+            len(schema_json),
+            0,
+            "No *.schema.json files found under schemas/; "
+            "v1 realm contracts are missing"
+        )
+        for name, path in schema_json:
+            with self.subTest(schema=name):
+                obj = self._load_json(path)
+                self.assertEqual(
+                    obj.get("$schema"),
+                    _DRAFT_2020_12,
+                    f"{name}: $schema must be {_DRAFT_2020_12!r}, "
+                    f"got {obj.get('$schema')!r}"
+                )
+
+    def test_all_schema_ids_are_unique(self):
+        """Canonical $id URIs must be unique across the schemas/ tree."""
+        seen = {}
+        for name, path in self.schemas:
+            obj = self._load_json(path)
+            schema_id = obj.get("$id")
+            if not schema_id:
+                continue
+            with self.subTest(schema=name):
+                self.assertNotIn(
+                    schema_id,
+                    seen,
+                    f"{name}: duplicate $id {schema_id!r} "
+                    f"(already used by {seen.get(schema_id)})"
+                )
+            seen[schema_id] = name
+
+    def test_schema_ids_match_canonical_path(self):
+        """$id URIs follow https://bosunpkm.com/schemas/<relative-path>."""
+        for name, path in self.schemas:
+            with self.subTest(schema=name):
+                obj = self._load_json(path)
+                expected = _CANONICAL_ID_PREFIX + name
+                self.assertEqual(
+                    obj.get("$id"),
+                    expected,
+                    f"{name}: $id must be {expected!r}, got {obj.get('$id')!r}"
+                )
 
     @unittest.skipUnless(_HAS_JSONSCHEMA, "jsonschema package not installed")
     def test_canonical_note_contract_required_fields(self):

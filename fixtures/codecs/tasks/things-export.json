@@ -1,0 +1,157 @@
+{
+  "source": "Things 3",
+  "format": "things-json-v1",
+  "exported_at": "2026-09-16T20:45:00-05:00",
+  "areas": [
+    {
+      "uuid": "2F6C8E10-4B3A-4E91-9C2D-7A1B5E8F0123",
+      "title": "Bosun PKM"
+    }
+  ],
+  "projects": [
+    {
+      "uuid": "9A4B21C0-88D1-4F6A-B3E2-0C17D9A44B10",
+      "title": "Harbor Protocol v1",
+      "area_uuid": "2F6C8E10-4B3A-4E91-9C2D-7A1B5E8F0123",
+      "status": "open",
+      "deadline": "2026-10-01",
+      "notes": "Implementation cannot begin until the RFC draft, merged schema PR, and benchmark decisions are resolved.",
+      "index": 0
+    },
+    {
+      "uuid": "C0FFEE00-1111-4AAA-BBBB-000000000001",
+      "title": "Yeoman Contact Import",
+      "area_uuid": "2F6C8E10-4B3A-4E91-9C2D-7A1B5E8F0123",
+      "status": "open",
+      "deadline": "2026-09-28",
+      "notes": "Ingest Apple Address Book custom labels from contacts-v3.vcf.",
+      "index": 1
+    }
+  ],
+  "headings": [
+    {
+      "uuid": "B7E2D901-0C44-4A18-9F55-12D3A8C90E21",
+      "title": "Implementation Gate",
+      "project_uuid": "9A4B21C0-88D1-4F6A-B3E2-0C17D9A44B10",
+      "index": 0
+    },
+    {
+      "uuid": "D1A55E00-2222-4BBB-CCCC-000000000002",
+      "title": "After merge",
+      "project_uuid": "9A4B21C0-88D1-4F6A-B3E2-0C17D9A44B10",
+      "index": 1
+    },
+    {
+      "uuid": "E2B66F11-3333-4CCC-DDDD-000000000003",
+      "title": "Address Book quirks",
+      "project_uuid": "C0FFEE00-1111-4AAA-BBBB-000000000001",
+      "index": 0
+    }
+  ],
+  "todos": [
+    {
+      "uuid": "01K5SAMPLETASK000000000000",
+      "title": "Port Trice task-line markers",
+      "status": "open",
+      "project_uuid": "9A4B21C0-88D1-4F6A-B3E2-0C17D9A44B10",
+      "heading_uuid": "B7E2D901-0C44-4A18-9F55-12D3A8C90E21",
+      "deadline": "2026-09-30",
+      "when": "2026-09-16",
+      "tag_titles": [
+        "trice",
+        "spec"
+      ],
+      "notes": "Five strict bracket markers: pending, active, done, dropped, blocked.",
+      "checklist": [
+        {
+          "uuid": "CHK-001-MARKER-TO-STATE",
+          "title": "Inspect harbormaster MARKER_TO_STATE",
+          "completed": true,
+          "index": 0
+        },
+        {
+          "uuid": "CHK-002-FIXTURE-NOTES",
+          "title": "Write the remaining fixture notes",
+          "completed": false,
+          "index": 1
+        },
+        {
+          "uuid": "CHK-003-CHARTHOUSE",
+          "title": "Waiting on Charthouse render review",
+          "completed": false,
+          "index": 2
+        }
+      ],
+      "index": 0
+    },
+    {
+      "uuid": "F3C77A22-4444-4DDD-EEEE-000000000004",
+      "title": "Resolve Harbormaster benchmark decisions",
+      "status": "open",
+      "project_uuid": "9A4B21C0-88D1-4F6A-B3E2-0C17D9A44B10",
+      "heading_uuid": "B7E2D901-0C44-4A18-9F55-12D3A8C90E21",
+      "deadline": "2026-09-22",
+      "when": null,
+      "tag_titles": [
+        "spec"
+      ],
+      "notes": "",
+      "checklist": [
+        {
+          "uuid": "CHK-004-LOOPBACK",
+          "title": "Confirm loopback bind is 127.0.0.1 only",
+          "completed": true,
+          "index": 0
+        },
+        {
+          "uuid": "CHK-005-CAPABILITY",
+          "title": "Publish capability grant matrix",
+          "completed": false,
+          "index": 1
+        }
+      ],
+      "index": 1
+    },
+    {
+      "uuid": "A4D88B33-5555-4EEE-FFFF-000000000005",
+      "title": "Draft post-merge changelog",
+      "status": "open",
+      "project_uuid": "9A4B21C0-88D1-4F6A-B3E2-0C17D9A44B10",
+      "heading_uuid": "D1A55E00-2222-4BBB-CCCC-000000000002",
+      "deadline": null,
+      "when": null,
+      "tag_titles": [],
+      "notes": "Heading-only grouping: this todo has no deadline.",
+      "checklist": [],
+      "index": 0
+    },
+    {
+      "uuid": "B5E99C44-6666-4FFF-AAAA-000000000006",
+      "title": "Map item1.X-ABLabel CustomPhone to Yeoman channels",
+      "status": "open",
+      "project_uuid": "C0FFEE00-1111-4AAA-BBBB-000000000001",
+      "heading_uuid": "E2B66F11-3333-4CCC-DDDD-000000000003",
+      "deadline": "2026-09-28",
+      "when": "2026-09-17",
+      "tag_titles": [
+        "yeoman"
+      ],
+      "notes": "Apple stores grouped TEL properties beside X-ABLabel.",
+      "checklist": [
+        {
+          "uuid": "CHK-006-CUSTOM-LABEL",
+          "title": "Preserve CustomPhone label verbatim",
+          "completed": false,
+          "index": 0
+        },
+        {
+          "uuid": "CHK-007-HOMEPAGE-TOKEN",
+          "title": "Translate _$!<HomePage>!$_ to url channel",
+          "completed": false,
+          "index": 1
+        }
+      ],
+      "index": 0
+    }
+  ]
+}

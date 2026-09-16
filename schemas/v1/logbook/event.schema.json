@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/logbook/event.schema.json",
+  "title": "Bosun Logbook Event Contract v1",
+  "description": "Machine-readable schema contract for a Logbook (Realm 3: Calendar & Logs) synced calendar event record. Event records normally live in the disposable calendar cache/SQLite projection, never in git-tracked note history; this contract also governs the frontmatter of a manually authored event note when one is created directly in a Locker.",
+  "type": "object",
+  "version": "1.0.0",
+  "required": [
+    "schema",
+    "id",
+    "title",
+    "start",
+    "all_day",
+    "calendar_source",
+    "synced_at"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "$logbook:event/v1",
+      "description": "Frontmatter/record type tag identifying this entity as a Logbook event, schema version 1."
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable event identifier, typically the upstream calendar provider's event UID."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable event title/summary."
+    },
+    "start": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})?)?$",
+      "description": "Event start, ISO 8601 date or date-time."
+    },
+    "end": {
+      "type": "string",
+      "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}(:\\d{2})?(Z|[+-]\\d{2}:\\d{2})?)?$",
+      "description": "Event end, ISO 8601 date or date-time."
+    },
+    "all_day": {
+      "type": "boolean",
+      "description": "True when the event has no time-of-day component."
+    },
+    "calendar_source": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Origin of the sync, e.g. 'google', 'caldav', 'ics', 'local'."
+    },
+    "location": {
+      "type": "string",
+      "description": "Free-text event location."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Free-text event description/notes."
+    },
+    "journal_ref": {
+      "type": "string",
+      "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Date (YYYY-MM-DD) of the Logbook journal this event is agenda-linked to."
+    },
+    "synced_at": {
+      "type": "string",
+      "pattern": "^\\d{14}$",
+      "description": "14-digit continuous UTC timestamp YYYYMMDDHHMMSS of the last successful sync."
+    }
+  },
+  "additionalProperties": false
+}
