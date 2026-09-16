@@ -1,0 +1,70 @@
+BEGIN:VCARD
+VERSION:3.0
+PRODID:-//Apple Inc.//macOS 15.6.1//EN
+N:Doe;Jane;;;
+FN:Jane Doe
+ORG:Local Archive Group
+TITLE:Archivist
+UID:550e8400-e29b-41d4-a716-446655440000
+REV:2026-09-16T18:00:00Z
+EMAIL;type=INTERNET;type=WORK;type=pref:jane.doe@example.org
+EMAIL;type=INTERNET;type=HOME:jdoe@archive.example
+TEL;type=CELL;type=VOICE;type=pref:+1-555-0142
+item1.TEL:+1-555-0199
+item1.X-ABLabel:CustomPhone
+item2.URL:https://archive.example/people/jane-doe
+item2.X-ABLabel:_$!<HomePage>!$_
+IMPP;X-SERVICE-TYPE=Matrix:xmpp:@jane:example.org
+PHOTO;ENCODING=b;TYPE=JPEG:/9j/4AAQSkZJRgABAQEAAQABAAD/2wBDAAgGBgcGBQgHBwcJ
+ CQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyMzwuMzQy/8
+ AACwgAAQABAQER/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIE
+ AwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJi
+ coKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWW
+ l5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09f
+ b3+Pn6/9oACAABAAEAAD8A+0AAf//Z
+NOTE:Contact dossier for the local archive group. Yeoman reads this file fr
+ om locker_yeoman/contacts/550e8400-e29b-41d4-a716-446655440000.md. Preferr
+ ed channel is email; Matrix handle is @jane:example.org.
+END:VCARD
+
+BEGIN:VCARD
+VERSION:3.0
+PRODID:-//Apple Inc.//macOS 15.6.1//EN
+N:Hale;Rowan;;;
+FN:Rowan Hale
+ORG:Local Archive Group
+TITLE:CalDAV Coordinator
+UID:7c9e6679-7425-40de-944b-e07fc1f90ae7
+REV:2026-09-16T18:05:00Z
+EMAIL;type=INTERNET;type=WORK;type=pref:rowan.hale@archive.example
+TEL;type=WORK;type=VOICE:+1-555-0168
+item1.TEL:+1-555-0177
+item1.X-ABLabel:CustomPhone
+item3.TEL:+1-555-0102
+item3.X-ABLabel:_$!<Other>!$_
+PHOTO;ENCODING=b;TYPE=JPEG:/9j/4AAQSkZJRgABAQEAAQABAAD/2wBDAAgGBgcGBQgHBwcJ
+ CQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyMzwuMzQy/8
+ AACwgAAQABAQER/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIE
+ AwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJi
+ coKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWW
+ l5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09f
+ b3+Pn6/9oACAABAAEAAD8A+0AAf//Z
+NOTE:CalDAV coordinator for the archive group. Apple Contacts stores the de
+ sk phone under a user-defined label rather than a standard TYPE.
+END:VCARD
+
+BEGIN:VCARD
+VERSION:3.0
+PRODID:-//Apple Inc.//macOS 15.6.1//EN
+N:Marlowe;Ada;;;
+FN:Ada Marlowe
+ORG:Local Archive Group
+TITLE:Cataloguer
+UID:a3bb189e-8bf9-3888-9912-ace4e6543002
+REV:2026-09-16T18:10:00Z
+EMAIL;type=INTERNET;type=WORK:ada.marlowe@archive.example
+TEL;type=CELL;type=VOICE:+1-555-0138
+item1.TEL:+1-555-0188
+item1.X-ABLabel:CustomPhone
+END:VCARD
+

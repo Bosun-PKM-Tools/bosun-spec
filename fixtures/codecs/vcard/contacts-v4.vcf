@@ -1,0 +1,52 @@
+BEGIN:VCARD
+VERSION:4.0
+PRODID:-//Bosun PKM//bosun-spec codec fixtures//EN
+KIND:individual
+N:Doe;Jane;;;
+FN:Jane Doe
+ORG:Local Archive Group
+TITLE:Archivist
+UID:urn:uuid:550e8400-e29b-41d4-a716-446655440000
+REV:20260916T180000Z
+EMAIL;TYPE=work;PREF=1:jane.doe@example.org
+EMAIL;TYPE=home:jdoe@archive.example
+TEL;TYPE=cell,voice;VALUE=uri:tel:+1-555-0142
+TEL;TYPE=work,voice;VALUE=uri:tel:+1-555-0199
+IMPP;TYPE=Matrix:xmpp:@jane:example.org
+PHOTO;MEDIATYPE=image/jpeg:https://archive.example/avatars/550e8400-e29b-41
+ d4-a716-446655440000.jpg
+URL:https://archive.example/people/jane-doe
+END:VCARD
+
+BEGIN:VCARD
+VERSION:4.0
+PRODID:-//Bosun PKM//bosun-spec codec fixtures//EN
+KIND:individual
+N:Hale;Rowan;;;
+FN:Rowan Hale
+ORG:Local Archive Group
+TITLE:CalDAV Coordinator
+UID:urn:uuid:7c9e6679-7425-40de-944b-e07fc1f90ae7
+REV:20260916T180500Z
+EMAIL;TYPE=work;PREF=1:rowan.hale@archive.example
+TEL;TYPE=work,voice;VALUE=uri:tel:+1-555-0168
+PHOTO;MEDIATYPE=image/jpeg:https://archive.example/avatars/7c9e6679-7425-40
+ de-944b-e07fc1f90ae7.jpg
+END:VCARD
+
+BEGIN:VCARD
+VERSION:4.0
+PRODID:-//Bosun PKM//bosun-spec codec fixtures//EN
+KIND:individual
+N:Marlowe;Ada;;;
+FN:Ada Marlowe
+ORG:Local Archive Group
+TITLE:Cataloguer
+UID:urn:uuid:a3bb189e-8bf9-3888-9912-ace4e6543002
+REV:20260916T181000Z
+EMAIL;TYPE=work:ada.marlowe@archive.example
+TEL;TYPE=cell,voice;VALUE=uri:tel:+1-555-0138
+PHOTO;VALUE=uri:https://archive.example/avatars/a3bb189e-8bf9-3888-9912-ace
+ 4e6543002.jpg
+END:VCARD
+

@@ -41,4 +41,4 @@ where = ["."]
 include = []
 
 [tool.setuptools.package-data]
-"*" = ["schemas/*.json", "schemas/**/*.json", "docs/*.md", "fixtures/**/*.md"]
+"*" = ["schemas/*.json", "schemas/**/*.json", "docs/*.md", "fixtures/**/*"]

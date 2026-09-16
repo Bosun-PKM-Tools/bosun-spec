@@ -43,6 +43,18 @@ Golden CommonMark examples with YAML frontmatter that satisfies the correspondin
 | [`yeoman/jane-doe.md`](fixtures/yeoman/jane-doe.md) | Contact dossier with structured channels. |
 | [`commonplace/dune.md`](fixtures/commonplace/dune.md) | Media record with multi-service external IDs. |
 
+Canonical ingestion codec samples (upstream export bytes, not locker notes). RFC documents use CRLF and 75-octet folding; Kindle clippings keep a UTF-8 BOM. Integrity checks live in [`tests/test_codec_fixtures.py`](tests/test_codec_fixtures.py).
+
+| File | Description |
+|---|---|
+| [`codecs/vcard/contacts-v3.vcf`](fixtures/codecs/vcard/contacts-v3.vcf) | Multi-card vCard 3.0 Apple export with `item1.X-ABLabel:CustomPhone` and base64 `PHOTO;ENCODING=b;TYPE=JPEG`. |
+| [`codecs/vcard/contacts-v4.vcf`](fixtures/codecs/vcard/contacts-v4.vcf) | Multi-card vCard 4.0 export with URI-referenced avatars. |
+| [`codecs/ical/agenda-complex.ics`](fixtures/codecs/ical/agenda-complex.ics) | RFC 5545 calendar: daily/weekly `RRULE` + `EXDATE`, multi-day spans, RSVP attendees, local `VJOURNAL`. |
+| [`codecs/tasks/todoist-export.json`](fixtures/codecs/tasks/todoist-export.json) | Todoist backup: nested `parent_id`, priorities 1–4 (p4–p1), recurring dues, project assignment. |
+| [`codecs/tasks/things-export.json`](fixtures/codecs/tasks/things-export.json) | Things 3 dump: areas/projects/headings, deadlines, and checklist items. |
+| [`codecs/media/goodreads-sample.csv`](fixtures/codecs/media/goodreads-sample.csv) | Goodreads export CSV with mixed ISBN-10/13, read dates, star ratings, and custom shelves. |
+| [`codecs/media/kindle-clippings.txt`](fixtures/codecs/media/kindle-clippings.txt) | Kindle `My Clippings.txt` with UTF-8 BOM, page/location offsets, and multi-session highlights. |
+
 ### Reference Documentation (`docs/`)
 
 | File | Description |
@@ -138,6 +150,7 @@ Key invariants:
 ```bash
 pip install jsonschema
 python tests/test_schemas.py
+python tests/test_codec_fixtures.py
 ```
 
 ---
@@ -156,6 +169,12 @@ Run it with:
 python tests/test_schemas.py
 # or
 python -m pytest tests/ -v
+```
+
+[`tests/test_codec_fixtures.py`](tests/test_codec_fixtures.py) checks that every file under `fixtures/codecs/` is valid UTF-8, that vCard/iCalendar documents use CRLF with 75-octet folding, and that Kindle clippings start at the UTF-8 BOM byte boundary.
+
+```bash
+python tests/test_codec_fixtures.py
 ```
 
 ---

@@ -1,0 +1,208 @@
+{
+  "sync_token": "fixtures-todoist-2026-09-16",
+  "full_sync": true,
+  "user": {
+    "id": "4488123",
+    "full_name": "Jane Doe",
+    "email": "jane.doe@example.org",
+    "start_page": "today"
+  },
+  "projects": [
+    {
+      "id": "2198765432",
+      "name": "Inbox",
+      "color": "charcoal",
+      "parent_id": null,
+      "child_order": 0,
+      "collapsed": false,
+      "shared": false,
+      "is_deleted": false,
+      "is_archived": false,
+      "is_favorite": false,
+      "view_style": "list"
+    },
+    {
+      "id": "2198765433",
+      "name": "Harbor Protocol",
+      "color": "blue",
+      "parent_id": null,
+      "child_order": 1,
+      "collapsed": false,
+      "shared": false,
+      "is_deleted": false,
+      "is_archived": false,
+      "is_favorite": true,
+      "view_style": "board"
+    },
+    {
+      "id": "2198765434",
+      "name": "Commonplace Catalog",
+      "color": "olive",
+      "parent_id": null,
+      "child_order": 2,
+      "collapsed": false,
+      "shared": false,
+      "is_deleted": false,
+      "is_archived": false,
+      "is_favorite": false,
+      "view_style": "list"
+    }
+  ],
+  "sections": [
+    {
+      "id": "600111",
+      "project_id": "2198765433",
+      "name": "Implementation Gate",
+      "section_order": 1,
+      "collapsed": false,
+      "is_deleted": false,
+      "is_archived": false
+    }
+  ],
+  "items": [
+    {
+      "id": "6990011223",
+      "user_id": "4488123",
+      "project_id": "2198765433",
+      "section_id": "600111",
+      "parent_id": null,
+      "child_order": 1,
+      "content": "Port Trice task-line markers",
+      "description": "Standalone $trice:task/v1 note. Inline bracket markers parse separately.",
+      "priority": 4,
+      "due": {
+        "date": "2026-09-30",
+        "string": "Sep 30",
+        "lang": "en",
+        "is_recurring": false,
+        "timezone": null
+      },
+      "labels": [
+        "spec",
+        "trice"
+      ],
+      "checked": false,
+      "is_deleted": false,
+      "added_at": "2026-09-16T09:00:00.000000Z"
+    },
+    {
+      "id": "6990011224",
+      "user_id": "4488123",
+      "project_id": "2198765433",
+      "section_id": "600111",
+      "parent_id": "6990011223",
+      "child_order": 1,
+      "content": "Inspect harbormaster MARKER_TO_STATE",
+      "description": "",
+      "priority": 3,
+      "due": null,
+      "labels": [
+        "trice"
+      ],
+      "checked": true,
+      "is_deleted": false,
+      "added_at": "2026-09-16T09:10:00.000000Z"
+    },
+    {
+      "id": "6990011225",
+      "user_id": "4488123",
+      "project_id": "2198765433",
+      "section_id": "600111",
+      "parent_id": "6990011223",
+      "child_order": 2,
+      "content": "Write the remaining fixture notes",
+      "description": "",
+      "priority": 2,
+      "due": {
+        "date": "2026-09-18",
+        "string": "Sep 18",
+        "lang": "en",
+        "is_recurring": false,
+        "timezone": null
+      },
+      "labels": [
+        "spec"
+      ],
+      "checked": false,
+      "is_deleted": false,
+      "added_at": "2026-09-16T09:12:00.000000Z"
+    },
+    {
+      "id": "6990011226",
+      "user_id": "4488123",
+      "project_id": "2198765432",
+      "section_id": null,
+      "parent_id": null,
+      "child_order": 1,
+      "content": "Capture Harbor stand-up notes",
+      "description": "Mirrors the weekday RRULE in agenda-complex.ics.",
+      "priority": 1,
+      "due": {
+        "date": "2026-09-16",
+        "string": "every weekday",
+        "lang": "en",
+        "is_recurring": true,
+        "timezone": "America/Chicago"
+      },
+      "labels": [
+        "logbook"
+      ],
+      "checked": false,
+      "is_deleted": false,
+      "added_at": "2026-09-01T13:00:00.000000Z"
+    },
+    {
+      "id": "6990011227",
+      "user_id": "4488123",
+      "project_id": "2198765434",
+      "section_id": null,
+      "parent_id": null,
+      "child_order": 1,
+      "content": "Catalog the Ace Dune paperback",
+      "description": "ISBN-13 9780441172719 already lives in fixtures/commonplace/dune.md.",
+      "priority": 3,
+      "due": {
+        "date": "every month",
+        "string": "every month",
+        "lang": "en",
+        "is_recurring": true,
+        "timezone": null
+      },
+      "labels": [
+        "commonplace"
+      ],
+      "checked": false,
+      "is_deleted": false,
+      "added_at": "2026-09-16T15:30:00.000000Z"
+    }
+  ],
+  "labels": [
+    {
+      "id": "8001",
+      "name": "spec",
+      "color": "blue",
+      "is_deleted": false
+    },
+    {
+      "id": "8002",
+      "name": "trice",
+      "color": "green",
+      "is_deleted": false
+    },
+    {
+      "id": "8003",
+      "name": "logbook",
+      "color": "charcoal",
+      "is_deleted": false
+    },
+    {
+      "id": "8004",
+      "name": "commonplace",
+      "color": "olive",
+      "is_deleted": false
+    }
+  ],
+  "notes": [],
+  "project_notes": [],
+  "filters": []
+}
