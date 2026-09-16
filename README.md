@@ -22,6 +22,26 @@ This repository contains **only schemas, RFCs, and documentation**. No storage i
 |---|---|
 | [`canonical-note-contract-v0.1.json`](schemas/canonical-note-contract-v0.1.json) | JSON Schema (Draft 2020-12) defining the canonical note frontmatter contract: required fields, timestamp format, tag structure, provenance, lineage, and relationship graph. |
 | [`event-vocab-v0.1.json`](schemas/event-vocab-v0.1.json) | JSON Schema defining the machine-readable event vocabulary: error codes, warning codes, severity levels, and structured payload schemas for all pipeline lifecycle events. |
+| [`v1/trice/task.schema.json`](schemas/v1/trice/task.schema.json) | Trice (Realm 2) standalone task frontmatter: five-state lifecycle (`pending`/`active`/`done`/`dropped`/`blocked`) matching bracket markers ` `, `/`, `x`, `-`, `!`. |
+| [`v1/trice/project.schema.json`](schemas/v1/trice/project.schema.json) | Trice project container grouping `$trice:task/v1` entries toward an outcome. |
+| [`v1/logbook/journal.schema.json`](schemas/v1/logbook/journal.schema.json) | Logbook (Realm 3) daily scratchpad at `locker_logbook/journals/YYYY-MM-DD.md`. |
+| [`v1/logbook/event.schema.json`](schemas/v1/logbook/event.schema.json) | Logbook synced calendar event record (cache/SQLite projection; optional locker note). |
+| [`v1/yeoman/contact.schema.json`](schemas/v1/yeoman/contact.schema.json) | Yeoman (Realm 4) contact dossier at `locker_yeoman/contacts/<uuid>.md`. |
+| [`v1/yeoman/interaction.schema.json`](schemas/v1/yeoman/interaction.schema.json) | Yeoman interaction note; `$pkm.relations` must include at least one `type: contact` UUID. |
+| [`v1/commonplace/work.schema.json`](schemas/v1/commonplace/work.schema.json) | Commonplace (Realm 18) media work at `locker_commonplace/works/<slug>.md` with multi-service `external_ids`. |
+
+Canonical `$id` URIs are `https://bosunpkm.com/schemas/<path-from-schemas/>`.
+
+### Fixtures (`fixtures/`)
+
+Golden CommonMark examples with YAML frontmatter that satisfies the corresponding v1 schemas:
+
+| File | Description |
+|---|---|
+| [`trice/sample-task.md`](fixtures/trice/sample-task.md) | `$trice:task/v1` note demonstrating all five task-line bracket markers. |
+| [`logbook/2026-09-16.md`](fixtures/logbook/2026-09-16.md) | Daily journal with agenda transclusion blocks and time-blocked tasks. |
+| [`yeoman/jane-doe.md`](fixtures/yeoman/jane-doe.md) | Contact dossier with structured channels. |
+| [`commonplace/dune.md`](fixtures/commonplace/dune.md) | Media record with multi-service external IDs. |
 
 ### Reference Documentation (`docs/`)
 
@@ -124,7 +144,7 @@ python tests/test_schemas.py
 
 ## Schema Validation
 
-The [`tests/test_schemas.py`](tests/test_schemas.py) script verifies that all JSON schemas in `schemas/` are:
+The [`tests/test_schemas.py`](tests/test_schemas.py) script verifies that all JSON schemas in `schemas/` (including nested `v1/<realm>/*.schema.json` files) are:
 
 1. Valid JSON (no syntax errors).
 2. Recognised JSON Schema drafts (`$schema` field present).

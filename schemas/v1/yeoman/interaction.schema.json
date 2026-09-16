@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/yeoman/interaction.schema.json",
+  "title": "Bosun Yeoman Interaction Contract v1",
+  "description": "Machine-readable schema contract for a Yeoman (Realm 4: Contacts) interaction note's YAML frontmatter. Created at `locker_yeoman/interactions/<date>-<slug>.md`. `$pkm.relations` MUST contain at least one entry with `type: contact` targeting a contact UUID.",
+  "type": "object",
+  "version": "1.0.0",
+  "required": [
+    "$pkm",
+    "title",
+    "occurred_at"
+  ],
+  "properties": {
+    "$pkm": {
+      "type": "object",
+      "required": [
+        "schema",
+        "relations"
+      ],
+      "properties": {
+        "schema": {
+          "const": "$yeoman:interaction/v1",
+          "description": "Frontmatter type tag identifying this entity as a Yeoman interaction, schema version 1."
+        },
+        "relations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "target",
+              "type"
+            ],
+            "properties": {
+              "target": {
+                "type": "string",
+                "description": "Target entity identifier, typically a contact UUID."
+              },
+              "type": {
+                "type": "string",
+                "description": "Semantic nature of the relationship."
+              }
+            },
+            "additionalProperties": true
+          },
+          "contains": {
+            "type": "object",
+            "required": [
+              "target",
+              "type"
+            ],
+            "properties": {
+              "target": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "type": {
+                "const": "contact"
+              }
+            }
+          },
+          "description": "At least one relation MUST be `{ type: contact, target: <uuid> }`."
+        }
+      },
+      "additionalProperties": true,
+      "description": "PKM envelope carrying the schema tag and required contact relation(s)."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable interaction title."
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the interaction occurred, RFC 3339 / ISO 8601 date-time."
+    },
+    "location": {
+      "type": "string",
+      "description": "Free-text location of the interaction."
+    }
+  },
+  "additionalProperties": true
+}

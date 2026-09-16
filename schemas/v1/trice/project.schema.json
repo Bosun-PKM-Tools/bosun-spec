@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/trice/project.schema.json",
+  "title": "Bosun Trice Project Contract v1",
+  "description": "Machine-readable schema contract for a Trice (Realm 2: Tasks & GTD) project note's YAML frontmatter. A project is a container grouping related `$trice:task/v1` entries toward an outcome.",
+  "type": "object",
+  "version": "1.0.0",
+  "required": [
+    "schema",
+    "id",
+    "title",
+    "status",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "$trice:project/v1",
+      "description": "Frontmatter type tag identifying this entity as a Trice project, schema version 1."
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable project identifier (ULID/UUID), independent of file path."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable project title."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "on_hold",
+        "completed",
+        "dropped"
+      ],
+      "description": "Project lifecycle status."
+    },
+    "area": {
+      "type": "string",
+      "description": "GTD area of focus this project belongs to."
+    },
+    "target_date": {
+      "type": "string",
+      "pattern": "^$|^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Target completion date, ISO 8601 calendar date (YYYY-MM-DD)."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User tags associated with the project."
+    },
+    "task_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Cached count of tasks with `project` equal to this entity's `id`. Disposable projection; recomputed from task frontmatter, never authoritative."
+    },
+    "created_at": {
+      "type": "string",
+      "pattern": "^\\d{14}$",
+      "description": "14-digit continuous UTC timestamp YYYYMMDDHHMMSS."
+    },
+    "updated_at": {
+      "type": "string",
+      "pattern": "^\\d{14}$",
+      "description": "14-digit continuous UTC timestamp YYYYMMDDHHMMSS."
+    }
+  },
+  "additionalProperties": false
+}

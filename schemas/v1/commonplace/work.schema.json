@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/commonplace/work.schema.json",
+  "title": "Bosun Commonplace Work Contract v1",
+  "description": "Machine-readable schema contract for a Commonplace (Realm 18: Media catalog) work note's YAML frontmatter. Authoritative records are CommonMark files at `locker_commonplace/works/<slug>.md`. External identifiers and `sources` URLs are preserved as references; adapters do not fetch them.",
+  "type": "object",
+  "version": "1.0.0",
+  "required": [
+    "$pkm",
+    "title",
+    "medium",
+    "external_ids",
+    "sources"
+  ],
+  "properties": {
+    "$pkm": {
+      "type": "object",
+      "required": [
+        "schema"
+      ],
+      "properties": {
+        "schema": {
+          "const": "$commonplace:work/v1",
+          "description": "Frontmatter type tag identifying this entity as a Commonplace work, schema version 1."
+        },
+        "relations": {
+          "type": "array",
+          "description": "Optional typed graph edges to related works, notes, or people."
+        }
+      },
+      "additionalProperties": true,
+      "description": "PKM envelope carrying the schema tag and optional graph relations."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Canonical title of the work."
+    },
+    "medium": {
+      "type": "string",
+      "enum": [
+        "book",
+        "film",
+        "television",
+        "music",
+        "other"
+      ],
+      "description": "Primary medium of the catalogued work."
+    },
+    "external_ids": {
+      "type": "object",
+      "properties": {
+        "isbn_13": {
+          "type": "string",
+          "pattern": "^[0-9]{13}$",
+          "description": "13-digit ISBN with no hyphens."
+        },
+        "goodreads": {
+          "type": "string",
+          "description": "Goodreads work or edition identifier."
+        },
+        "gutenberg": {
+          "type": "string",
+          "description": "Project Gutenberg ebook number."
+        },
+        "asin": {
+          "type": "string",
+          "description": "Amazon Standard Identification Number."
+        },
+        "imdb": {
+          "type": "string",
+          "pattern": "^tt[0-9]+$",
+          "description": "IMDb title identifier (tt followed by digits)."
+        },
+        "tmdb": {
+          "type": "string",
+          "description": "The Movie Database identifier."
+        },
+        "bandcamp": {
+          "type": "string",
+          "description": "Bandcamp work or album identifier."
+        },
+        "musicbrainz": {
+          "type": "string",
+          "description": "MusicBrainz recording, release, or work MBID."
+        },
+        "discogs": {
+          "type": "string",
+          "description": "Discogs release or master identifier."
+        }
+      },
+      "additionalProperties": true,
+      "description": "Multi-service external identifiers. Unknown provider keys are preserved."
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "url",
+          "kind"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Reference URL. Not fetched by the gateway adapter."
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "stream",
+              "download",
+              "public_domain",
+              "catalog",
+              "other"
+            ],
+            "description": "How the URL relates to the work."
+          }
+        },
+        "additionalProperties": true
+      },
+      "description": "Reference sources for the work. URLs are stored, never retrieved by spec adapters."
+    }
+  },
+  "additionalProperties": true
+}
