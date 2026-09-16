@@ -1,0 +1,1787 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/rpc/fleet-matrix.json",
+  "title": "Bosun Fleet JSON-RPC 2.0 Method Matrix v1",
+  "description": "Canonical catalog of the sixteen Yeoman / Trice / Logbook / Commonplace JSON-RPC 2.0 methods routed by harbormaster over stdio NDJSON (no sockets). Named params only (arrays are rejected). `$defs` holds JSON-RPC envelopes, per-method params/result schemas, and the catalog entry shape. The `methods` object is the reviewable catalog (same hybrid pattern as event-vocab-v0.1.json). Broadcast names are spec-level `info.<vessel>.*` events; harbormaster stub handlers do not emit them yet. Read methods list an empty broadcasts array.",
+  "type": "object",
+  "version": "1.0.0",
+  "jsonrpc": "2.0",
+  "transport": "stdio-ndjson",
+  "errorCodes": {
+    "parseError": -32700,
+    "invalidRequest": -32600,
+    "methodNotFound": -32601,
+    "invalidParams": -32602
+  },
+  "properties": {
+    "jsonrpc": {
+      "const": "2.0"
+    },
+    "transport": {
+      "const": "stdio-ndjson"
+    },
+    "methods": {
+      "type": "object",
+      "minProperties": 16,
+      "additionalProperties": {
+        "$ref": "#/$defs/methodEntry"
+      }
+    }
+  },
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "isoDate": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "isoDateTime": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "eventStart": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2})?(Z|[+-][0-9]{2}:[0-9]{2})?)?$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!.*\\.\\.)(?![/\\\\]).+$"
+    },
+    "email": {
+      "type": "string",
+      "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^.*\\S.*$"
+    },
+    "jsonrpcId": {
+      "description": "JSON-RPC 2.0 request id. Fleet methods are request/response, not notifications; id is required and must be a string or number.",
+      "type": [
+        "string",
+        "number"
+      ]
+    },
+    "jsonrpcErrorObject": {
+      "type": "object",
+      "required": [
+        "code",
+        "message"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "data": true
+      }
+    },
+    "jsonrpcErrorResponse": {
+      "type": "object",
+      "required": [
+        "jsonrpc",
+        "id",
+        "error"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "jsonrpc": {
+          "const": "2.0"
+        },
+        "id": {
+          "type": [
+            "string",
+            "number",
+            "null"
+          ]
+        },
+        "error": {
+          "$ref": "#/$defs/jsonrpcErrorObject"
+        }
+      }
+    },
+    "jsonrpcSuccessResponse": {
+      "type": "object",
+      "required": [
+        "jsonrpc",
+        "id",
+        "result"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "jsonrpc": {
+          "const": "2.0"
+        },
+        "id": {
+          "$ref": "#/$defs/jsonrpcId"
+        },
+        "result": {
+          "type": "object"
+        }
+      }
+    },
+    "broadcastEvent": {
+      "type": "object",
+      "required": [
+        "name",
+        "payload"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^info\\.(yeoman|trice|logbook|commonplace)\\.[a-z_]+$"
+        },
+        "when": {
+          "type": "string"
+        },
+        "payload": {
+          "type": "object"
+        }
+      }
+    },
+    "methodEntry": {
+      "type": "object",
+      "required": [
+        "vessel",
+        "method",
+        "description",
+        "mutates",
+        "request",
+        "result",
+        "error",
+        "broadcasts"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "vessel": {
+          "type": "string",
+          "enum": [
+            "yeoman",
+            "trice",
+            "logbook",
+            "commonplace"
+          ]
+        },
+        "method": {
+          "type": "string",
+          "pattern": "^(yeoman|trice|logbook|commonplace)\\.[a-z_]+$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mutates": {
+          "type": "boolean"
+        },
+        "request": {
+          "type": "object",
+          "required": [
+            "jsonrpc",
+            "method",
+            "id",
+            "params"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "jsonrpc": {
+              "const": "2.0"
+            },
+            "method": {
+              "type": "string",
+              "minLength": 1
+            },
+            "id": {
+              "type": "object",
+              "required": [
+                "required",
+                "types"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "required": {
+                  "const": true
+                },
+                "types": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "string",
+                      "number"
+                    ]
+                  }
+                }
+              }
+            },
+            "params": {
+              "type": "object",
+              "required": [
+                "style",
+                "required",
+                "optional",
+                "schemaRef"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "style": {
+                  "const": "by-name"
+                },
+                "required": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "optional": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "schemaRef": {
+                  "type": "string",
+                  "pattern": "^#/\\$defs/params_[a-z_]+$"
+                }
+              }
+            }
+          }
+        },
+        "result": {
+          "type": "object",
+          "required": [
+            "jsonrpc",
+            "schemaRef",
+            "keys"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "jsonrpc": {
+              "const": "2.0"
+            },
+            "schemaRef": {
+              "type": "string",
+              "pattern": "^#/\\$defs/result_[a-z_]+$"
+            },
+            "keys": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "error": {
+          "type": "object",
+          "required": [
+            "jsonrpc",
+            "schemaRef",
+            "codes"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "jsonrpc": {
+              "const": "2.0"
+            },
+            "schemaRef": {
+              "const": "#/$defs/jsonrpcErrorResponse"
+            },
+            "codes": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": [
+                  "code",
+                  "name",
+                  "when"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "when": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "broadcasts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/broadcastEvent"
+          }
+        }
+      }
+    },
+    "params_yeoman_get_contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid",
+          "description": "Yeoman contact UUID (contacts/<uuid>.md)."
+        }
+      }
+    },
+    "result_yeoman_get_contact": {
+      "type": "object",
+      "required": [
+        "contact"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "contact": {
+          "type": "object",
+          "required": [
+            "id",
+            "name"
+          ]
+        }
+      }
+    },
+    "params_yeoman_list_cadence_due": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "as_of"
+      ],
+      "properties": {
+        "as_of": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Inclusive cadence-due date (YYYY-MM-DD)."
+        }
+      }
+    },
+    "result_yeoman_list_cadence_due": {
+      "type": "object",
+      "required": [
+        "as_of",
+        "contacts"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "as_of": {
+          "$ref": "#/$defs/isoDate"
+        },
+        "contacts": {
+          "type": "array"
+        }
+      }
+    },
+    "params_yeoman_record_interaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "occurred_at",
+        "contact_id"
+      ],
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "occurred_at": {
+          "$ref": "#/$defs/isoDateTime"
+        },
+        "contact_id": {
+          "$ref": "#/$defs/uuid"
+        }
+      }
+    },
+    "result_yeoman_record_interaction": {
+      "type": "object",
+      "required": [
+        "path",
+        "interaction"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "interaction": {
+          "type": "object"
+        }
+      }
+    },
+    "params_yeoman_update_channels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "emails"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "emails": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/email"
+          }
+        }
+      }
+    },
+    "result_yeoman_update_channels": {
+      "type": "object",
+      "required": [
+        "contact"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "contact": {
+          "type": "object",
+          "required": [
+            "id",
+            "emails"
+          ]
+        }
+      }
+    },
+    "params_trice_list_tasks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "vault_root"
+      ],
+      "properties": {
+        "vault_root": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "path": {
+          "$ref": "#/$defs/relativePath",
+          "description": "Optional vault-relative scan path. Defaults to '.'."
+        }
+      }
+    },
+    "result_trice_list_tasks": {
+      "type": "object",
+      "required": [
+        "vault_root",
+        "path",
+        "tasks"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "vault_root": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "tasks": {
+          "type": "array"
+        }
+      }
+    },
+    "params_trice_get_project_queue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Trice project identifier."
+        }
+      }
+    },
+    "result_trice_get_project_queue": {
+      "type": "object",
+      "required": [
+        "project",
+        "tasks"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "project": {
+          "type": "object"
+        },
+        "tasks": {
+          "type": "array"
+        }
+      }
+    },
+    "params_trice_toggle_task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "vault_root",
+        "path",
+        "marker_byte_offset",
+        "state"
+      ],
+      "properties": {
+        "vault_root": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "marker_byte_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "active",
+            "done",
+            "dropped",
+            "blocked"
+          ]
+        }
+      }
+    },
+    "result_trice_toggle_task": {
+      "type": "object",
+      "required": [
+        "vault_root",
+        "path",
+        "marker_byte_offset",
+        "state",
+        "changed"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "vault_root": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "marker_byte_offset": {
+          "type": "integer"
+        },
+        "state": {
+          "type": "string"
+        },
+        "changed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_trice_reschedule_task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "due"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "due": {
+          "$ref": "#/$defs/isoDate"
+        },
+        "scheduled": {
+          "$ref": "#/$defs/isoDate"
+        }
+      }
+    },
+    "result_trice_reschedule_task": {
+      "type": "object",
+      "required": [
+        "task"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "task": {
+          "type": "object"
+        }
+      }
+    },
+    "params_logbook_get_agenda": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "vault_root",
+        "date"
+      ],
+      "properties": {
+        "vault_root": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "date": {
+          "$ref": "#/$defs/isoDate"
+        }
+      }
+    },
+    "result_logbook_get_agenda": {
+      "type": "object",
+      "required": [
+        "date",
+        "path",
+        "exists",
+        "frontmatter",
+        "tasks",
+        "time_blocks",
+        "headings"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "date": {
+          "$ref": "#/$defs/isoDate"
+        },
+        "path": {
+          "type": "string"
+        },
+        "exists": {
+          "type": "boolean"
+        },
+        "frontmatter": {
+          "type": "object"
+        },
+        "tasks": {
+          "type": "array"
+        },
+        "time_blocks": {
+          "type": "array"
+        },
+        "headings": {
+          "type": "array"
+        }
+      }
+    },
+    "params_logbook_query_chronology": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end"
+      ],
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/eventStart"
+        },
+        "end": {
+          "$ref": "#/$defs/eventStart"
+        }
+      }
+    },
+    "result_logbook_query_chronology": {
+      "type": "object",
+      "required": [
+        "start",
+        "end",
+        "events"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "start": {
+          "type": "string"
+        },
+        "end": {
+          "type": "string"
+        },
+        "events": {
+          "type": "array"
+        }
+      }
+    },
+    "params_logbook_append_log_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "date",
+        "body"
+      ],
+      "properties": {
+        "date": {
+          "$ref": "#/$defs/isoDate"
+        },
+        "body": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "result_logbook_append_log_entry": {
+      "type": "object",
+      "required": [
+        "path",
+        "date",
+        "appended",
+        "body"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "date": {
+          "$ref": "#/$defs/isoDate"
+        },
+        "appended": {
+          "type": "boolean"
+        },
+        "body": {
+          "type": "string"
+        }
+      }
+    },
+    "params_logbook_block_time": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "start",
+        "all_day"
+      ],
+      "properties": {
+        "title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "start": {
+          "$ref": "#/$defs/eventStart"
+        },
+        "all_day": {
+          "type": "boolean"
+        }
+      }
+    },
+    "result_logbook_block_time": {
+      "type": "object",
+      "required": [
+        "event"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "event": {
+          "type": "object"
+        }
+      }
+    },
+    "params_commonplace_resolve_id": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "external_ids"
+      ],
+      "properties": {
+        "external_ids": {
+          "type": "object",
+          "minProperties": 1,
+          "properties": {
+            "isbn_13": {
+              "type": "string",
+              "pattern": "^[0-9]{13}$"
+            },
+            "goodreads": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "gutenberg": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "asin": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "imdb": {
+              "type": "string",
+              "pattern": "^tt[0-9]+$"
+            },
+            "tmdb": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "bandcamp": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "musicbrainz": {
+              "$ref": "#/$defs/nonEmptyString"
+            },
+            "discogs": {
+              "$ref": "#/$defs/nonEmptyString"
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "result_commonplace_resolve_id": {
+      "type": "object",
+      "required": [
+        "work"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "work": {
+          "type": "object"
+        }
+      }
+    },
+    "params_commonplace_search_shelf": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "query"
+      ],
+      "properties": {
+        "query": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "medium": {
+          "type": "string",
+          "enum": [
+            "book",
+            "film",
+            "television",
+            "music",
+            "other"
+          ]
+        }
+      }
+    },
+    "result_commonplace_search_shelf": {
+      "type": "object",
+      "required": [
+        "query",
+        "works"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "query": {
+          "type": "string"
+        },
+        "medium": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "works": {
+          "type": "array"
+        }
+      }
+    },
+    "params_commonplace_update_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slug",
+        "status"
+      ],
+      "properties": {
+        "slug": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "status": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "result_commonplace_update_status": {
+      "type": "object",
+      "required": [
+        "path",
+        "slug",
+        "status"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "params_commonplace_append_highlight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slug",
+        "text"
+      ],
+      "properties": {
+        "slug": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "text": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "result_commonplace_append_highlight": {
+      "type": "object",
+      "required": [
+        "path",
+        "slug",
+        "highlight",
+        "appended"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "highlight": {
+          "type": "string"
+        },
+        "appended": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "methods": {
+    "yeoman.get_contact": {
+      "vessel": "yeoman",
+      "method": "yeoman.get_contact",
+      "description": "Return the contact dossier at locker_yeoman/contacts/<uuid>.md.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "yeoman.get_contact",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "id"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_yeoman_get_contact"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_yeoman_get_contact",
+        "keys": [
+          "contact"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "id missing or not a UUID; params not an object"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "yeoman.list_cadence_due": {
+      "vessel": "yeoman",
+      "method": "yeoman.list_cadence_due",
+      "description": "List contacts whose follow-up cadence is due on or before as_of.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "yeoman.list_cadence_due",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "as_of"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_yeoman_list_cadence_due"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_yeoman_list_cadence_due",
+        "keys": [
+          "as_of",
+          "contacts"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "as_of missing or not YYYY-MM-DD; params not an object"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "yeoman.record_interaction": {
+      "vessel": "yeoman",
+      "method": "yeoman.record_interaction",
+      "description": "Create locker_yeoman/interactions/<date>-<slug>.md linked to a contact UUID.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "yeoman.record_interaction",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "title",
+            "occurred_at",
+            "contact_id"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_yeoman_record_interaction"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_yeoman_record_interaction",
+        "keys": [
+          "path",
+          "interaction"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "title empty, occurred_at not ISO-8601, or contact_id not a UUID"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.yeoman.interaction_recorded",
+          "when": "interaction note created",
+          "payload": {
+            "path": "locker_yeoman/interactions/YYYY-MM-DD-<slug>.md",
+            "contact_id": "<uuid>",
+            "occurred_at": "<iso-8601>"
+          }
+        }
+      ]
+    },
+    "yeoman.update_channels": {
+      "vessel": "yeoman",
+      "method": "yeoman.update_channels",
+      "description": "Replace the email channel list on a contact dossier.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "yeoman.update_channels",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "id",
+            "emails"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_yeoman_update_channels"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_yeoman_update_channels",
+        "keys": [
+          "contact"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "id not a UUID or emails is not an array of email strings"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.yeoman.channels_updated",
+          "when": "contact emails replaced",
+          "payload": {
+            "id": "<uuid>",
+            "email_count": 0
+          }
+        }
+      ]
+    },
+    "trice.list_tasks": {
+      "vessel": "trice",
+      "method": "trice.list_tasks",
+      "description": "Scan a vault-relative path for Trice task lines and standalone task notes.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "trice.list_tasks",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "vault_root"
+          ],
+          "optional": [
+            "path"
+          ],
+          "schemaRef": "#/$defs/params_trice_list_tasks"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_trice_list_tasks",
+        "keys": [
+          "vault_root",
+          "path",
+          "tasks"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "vault_root empty, or path absolute / contains .."
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "trice.get_project_queue": {
+      "vessel": "trice",
+      "method": "trice.get_project_queue",
+      "description": "Return a $trice:project/v1 container and its queued tasks.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "trice.get_project_queue",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "id"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_trice_get_project_queue"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_trice_get_project_queue",
+        "keys": [
+          "project",
+          "tasks"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "id missing or blank"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "trice.toggle_task": {
+      "vessel": "trice",
+      "method": "trice.toggle_task",
+      "description": "Set the five-state marker of a task line at a byte offset.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "trice.toggle_task",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "vault_root",
+            "path",
+            "marker_byte_offset",
+            "state"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_trice_toggle_task"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_trice_toggle_task",
+        "keys": [
+          "vault_root",
+          "path",
+          "marker_byte_offset",
+          "state",
+          "changed"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "path escapes the vault, offset is negative, or state is not a Trice lifecycle value"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.trice.task_toggled",
+          "when": "task-line marker rewritten",
+          "payload": {
+            "path": "notes/today.md",
+            "marker_byte_offset": 0,
+            "state": "done"
+          }
+        }
+      ]
+    },
+    "trice.reschedule_task": {
+      "vessel": "trice",
+      "method": "trice.reschedule_task",
+      "description": "Update due (and optional scheduled) dates on a standalone task.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "trice.reschedule_task",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "id",
+            "due"
+          ],
+          "optional": [
+            "scheduled"
+          ],
+          "schemaRef": "#/$defs/params_trice_reschedule_task"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_trice_reschedule_task",
+        "keys": [
+          "task"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "id blank or due/scheduled not YYYY-MM-DD"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.trice.task_rescheduled",
+          "when": "task due date written",
+          "payload": {
+            "id": "<task-id>",
+            "due": "YYYY-MM-DD"
+          }
+        }
+      ]
+    },
+    "logbook.get_agenda": {
+      "vessel": "logbook",
+      "method": "logbook.get_agenda",
+      "description": "Read the daily journal at locker_logbook/journals/YYYY-MM-DD.md and its agenda projection.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "logbook.get_agenda",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "vault_root",
+            "date"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_logbook_get_agenda"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_logbook_get_agenda",
+        "keys": [
+          "date",
+          "path",
+          "exists",
+          "frontmatter",
+          "tasks",
+          "time_blocks",
+          "headings"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "vault_root empty or date not YYYY-MM-DD"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "logbook.query_chronology": {
+      "vessel": "logbook",
+      "method": "logbook.query_chronology",
+      "description": "Query calendar events whose start falls in [start, end].",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "logbook.query_chronology",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "start",
+            "end"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_logbook_query_chronology"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_logbook_query_chronology",
+        "keys": [
+          "start",
+          "end",
+          "events"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "start/end not ISO-8601 date or date-time, or end is before start"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "logbook.append_log_entry": {
+      "vessel": "logbook",
+      "method": "logbook.append_log_entry",
+      "description": "Append a prose block to the daily journal body.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "logbook.append_log_entry",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "date",
+            "body"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_logbook_append_log_entry"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_logbook_append_log_entry",
+        "keys": [
+          "path",
+          "date",
+          "appended",
+          "body"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "date not YYYY-MM-DD or body empty"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.logbook.entry_appended",
+          "when": "journal body appended",
+          "payload": {
+            "path": "locker_logbook/journals/YYYY-MM-DD.md",
+            "date": "YYYY-MM-DD"
+          }
+        }
+      ]
+    },
+    "logbook.block_time": {
+      "vessel": "logbook",
+      "method": "logbook.block_time",
+      "description": "Create a local $logbook:event/v1 time block.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "logbook.block_time",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "title",
+            "start",
+            "all_day"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_logbook_block_time"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_logbook_block_time",
+        "keys": [
+          "event"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "title empty, start not ISO-8601, or all_day not a boolean"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.logbook.time_blocked",
+          "when": "local calendar event created",
+          "payload": {
+            "title": "<title>",
+            "start": "<iso-8601>",
+            "all_day": false
+          }
+        }
+      ]
+    },
+    "commonplace.resolve_id": {
+      "vessel": "commonplace",
+      "method": "commonplace.resolve_id",
+      "description": "Resolve a work by one or more known external_ids keys.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "commonplace.resolve_id",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "external_ids"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_commonplace_resolve_id"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_commonplace_resolve_id",
+        "keys": [
+          "work"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "external_ids empty, unknown key, or imdb/isbn_13 fail format"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "commonplace.search_shelf": {
+      "vessel": "commonplace",
+      "method": "commonplace.search_shelf",
+      "description": "Search locker_commonplace/works by query, optionally filtered by medium.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "commonplace.search_shelf",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "query"
+          ],
+          "optional": [
+            "medium"
+          ],
+          "schemaRef": "#/$defs/params_commonplace_search_shelf"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_commonplace_search_shelf",
+        "keys": [
+          "query",
+          "works"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "query empty or medium not in book|film|television|music|other"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "commonplace.update_status": {
+      "vessel": "commonplace",
+      "method": "commonplace.update_status",
+      "description": "Write reading/listening status onto a work note by slug.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "commonplace.update_status",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "slug",
+            "status"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_commonplace_update_status"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_commonplace_update_status",
+        "keys": [
+          "path",
+          "slug",
+          "status"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "slug or status empty"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.commonplace.status_updated",
+          "when": "work status written",
+          "payload": {
+            "slug": "<slug>",
+            "path": "locker_commonplace/works/<slug>.md",
+            "status": "<status>"
+          }
+        }
+      ]
+    },
+    "commonplace.append_highlight": {
+      "vessel": "commonplace",
+      "method": "commonplace.append_highlight",
+      "description": "Append a highlight/quote to locker_commonplace/works/<slug>.md.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "commonplace.append_highlight",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "slug",
+            "text"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_commonplace_append_highlight"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_commonplace_append_highlight",
+        "keys": [
+          "path",
+          "slug",
+          "highlight",
+          "appended"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "slug or text empty"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.commonplace.highlight_appended",
+          "when": "highlight appended to a work note",
+          "payload": {
+            "slug": "<slug>",
+            "path": "locker_commonplace/works/<slug>.md"
+          }
+        }
+      ]
+    }
+  }
+}
