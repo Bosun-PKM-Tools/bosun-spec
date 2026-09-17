@@ -1,4 +1,6 @@
 ---
+$careen:
+  campaign_lore_node: "urn:charthouse:lore:018f0000-0048-7000-8000-000000000001"
 title: 'Careen Project: Narrative Campaign Canon Refactor'
 kanban_stage: in_progress
 sprint_ref: sprint-2026-38
