@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/rpc/error-envelope.schema.json",
+  "title": "Bosun Fleet JSON-RPC 2.0 Error Envelope Contract v1",
+  "description": "Strict JSON Schema Draft 2020-12 specification for JSON-RPC 2.0 stdio error responses with Bosun custom error codes (-32000 Schema Validation Failed, -32001 Vault Locked/Crypto Error, -32002 Orphan URN Detected).",
+  "type": "object",
+  "version": "1.0.0",
+  "required": [
+    "jsonrpc",
+    "id",
+    "error"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "jsonrpc": {
+      "const": "2.0"
+    },
+    "id": {
+      "type": [
+        "string",
+        "number",
+        "null"
+      ]
+    },
+    "error": {
+      "$ref": "#/$defs/errorObject"
+    }
+  },
+  "$defs": {
+    "errorObject": {
+      "type": "object",
+      "required": [
+        "code",
+        "message"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "integer",
+          "description": "JSON-RPC standard error code (-32700..-32600) or Bosun custom error code (-32000 Schema Validation Failed, -32001 Vault Locked/Crypto Error, -32002 Orphan URN Detected)."
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Short human-readable summary of the error."
+        },
+        "data": {
+          "type": "object",
+          "description": "Structured diagnostics, schema validation errors, or crypto lock metadata."
+        }
+      }
+    },
+    "schemaValidationErrorObject": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "const": -32000
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "data": {
+          "$ref": "#/$defs/schemaValidationErrorData"
+        }
+      }
+    },
+    "schemaValidationErrorData": {
+      "type": "object",
+      "required": [
+        "schema",
+        "errors"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "description": "Canonical schema ID or URI that failed validation."
+        },
+        "path": {
+          "type": [
+            "string",
+            "array"
+          ],
+          "description": "Document property path or JSON Pointer where failure occurred."
+        },
+        "errors": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": [
+              "string",
+              "object"
+            ]
+          },
+          "description": "List of schema violation diagnostic messages."
+        }
+      }
+    },
+    "vaultLockedErrorObject": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "const": -32001
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "data": {
+          "$ref": "#/$defs/vaultLockedErrorData"
+        }
+      }
+    },
+    "vaultLockedErrorData": {
+      "type": "object",
+      "required": [
+        "vault_path",
+        "reason"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "vault_path": {
+          "type": "string",
+          "description": "Path to the locked or cryptographically protected vault."
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Specific failure reason (e.g. 'vault_locked', 'key_derivation_failed', 'invalid_passphrase')."
+        },
+        "lock_state": {
+          "type": [
+            "string",
+            "boolean"
+          ],
+          "description": "Status of hardware token or lock sentinel."
+        }
+      }
+    },
+    "orphanUrnErrorObject": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "data"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "const": -32002
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "data": {
+          "$ref": "#/$defs/orphanUrnErrorData"
+        }
+      }
+    },
+    "orphanUrnErrorData": {
+      "type": "object",
+      "required": [
+        "urn"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "urn": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "Orphaned or unresolved canonical URN reference."
+        },
+        "source_path": {
+          "type": "string",
+          "description": "Relative path of note declaring the broken pointer."
+        },
+        "predicate": {
+          "type": "string",
+          "description": "Relationship verb or frontmatter field containing the orphan."
+        },
+        "realm": {
+          "type": "string",
+          "description": "Source realm identifier."
+        }
+      }
+    }
+  }
+}
