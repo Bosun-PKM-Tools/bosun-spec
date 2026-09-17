@@ -1,0 +1,526 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/rpc/event-payloads.schema.json",
+  "title": "Bosun Fleet Event Payloads Contract v1",
+  "description": "Formal JSON Schema Draft 2020-12 contract for notification events emitted by Harbormaster adapters across all 50 realms (e.g. cadence:habitHit, trice:taskStateChanged, quartermaster:txAppended). Supports JSON-RPC 2.0 notifications, Harbormaster event envelopes, and stdio broadcast envelopes.",
+  "type": "object",
+  "version": "1.0.0",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/jsonrpcNotification"
+    },
+    {
+      "$ref": "#/$defs/harbormasterEventEnvelope"
+    },
+    {
+      "$ref": "#/$defs/broadcastEventEnvelope"
+    }
+  ],
+  "$defs": {
+    "jsonrpcNotification": {
+      "type": "object",
+      "description": "Standard JSON-RPC 2.0 notification envelope (no 'id' member).",
+      "required": [
+        "jsonrpc",
+        "method",
+        "params"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "jsonrpc": {
+          "const": "2.0"
+        },
+        "method": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^([a-z0-9_-]+:[a-zA-Z0-9_-]+|info\\.[a-z0-9_]+\\.[a-z0-9_]+)$",
+          "description": "Event name in '<realm>:<eventName>' or 'info.<vessel>.<event>' format."
+        },
+        "params": {
+          "type": "object",
+          "description": "Event parameters and domain payload."
+        }
+      }
+    },
+    "harbormasterEventEnvelope": {
+      "type": "object",
+      "description": "Harbormaster pub/sub domain event envelope.",
+      "required": [
+        "event",
+        "realm",
+        "payload"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "event": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Event identifier (e.g. 'cadence:habitHit', 'trice:taskStateChanged')."
+        },
+        "realm": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$",
+          "description": "Canonical realm publishing this event."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "RFC 3339 / ISO 8601 UTC timestamp."
+        },
+        "payload": {
+          "type": "object",
+          "description": "Structured domain event payload."
+        }
+      }
+    },
+    "broadcastEventEnvelope": {
+      "type": "object",
+      "description": "Harbormaster stdio broadcast notification matching fleet-matrix.json.",
+      "required": [
+        "name",
+        "payload"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Canonical broadcast name (e.g. 'info.cadence.habit_logged', 'cadence:habitHit')."
+        },
+        "when": {
+          "type": "string",
+          "description": "Trigger precondition description."
+        },
+        "payload": {
+          "type": "object",
+          "description": "Event data payload."
+        }
+      }
+    },
+    "bosunGraphIndexedPayload": {
+      "type": "object",
+      "required": ["vault_root", "node_count"],
+      "properties": {
+        "vault_root": {"type": "string"},
+        "node_count": {"type": "integer"},
+        "edge_count": {"type": "integer"}
+      }
+    },
+    "yeomanInteractionRecordedPayload": {
+      "type": "object",
+      "required": ["contact_id", "occurred_at"],
+      "properties": {
+        "contact_id": {"type": "string"},
+        "occurred_at": {"type": "string"},
+        "title": {"type": "string"},
+        "path": {"type": "string"}
+      }
+    },
+    "triceTaskStateChangedPayload": {
+      "type": "object",
+      "required": ["task_id", "new_state"],
+      "properties": {
+        "task_id": {"type": "string"},
+        "previous_state": {"type": "string"},
+        "new_state": {
+          "type": "string",
+          "enum": ["pending", "active", "done", "dropped", "blocked"]
+        },
+        "updated_at": {"type": "string"}
+      }
+    },
+    "logbookEntryAppendedPayload": {
+      "type": "object",
+      "required": ["path", "date"],
+      "properties": {
+        "path": {"type": "string"},
+        "date": {"type": "string"}
+      }
+    },
+    "quartermasterTxAppendedPayload": {
+      "type": "object",
+      "required": ["account", "amount"],
+      "properties": {
+        "tx_id": {"type": "string"},
+        "account": {"type": "string"},
+        "amount": {"type": "number"},
+        "currency": {"type": "string"},
+        "date": {"type": "string"},
+        "tx_hash": {"type": "string"}
+      }
+    },
+    "harborSiteBuiltPayload": {
+      "type": "object",
+      "required": ["page_count", "duration_ms"],
+      "properties": {
+        "page_count": {"type": "integer"},
+        "duration_ms": {"type": "number"}
+      }
+    },
+    "pressCutSheetGeneratedPayload": {
+      "type": "object",
+      "required": ["sku", "path"],
+      "properties": {
+        "sku": {"type": "string"},
+        "path": {"type": "string"},
+        "width_mm": {"type": "number"},
+        "height_mm": {"type": "number"}
+      }
+    },
+    "embersExifIndexedPayload": {
+      "type": "object",
+      "required": ["media_hash", "path"],
+      "properties": {
+        "media_hash": {"type": "string"},
+        "path": {"type": "string"}
+      }
+    },
+    "careenStageMovedPayload": {
+      "type": "object",
+      "required": ["task_id", "stage"],
+      "properties": {
+        "task_id": {"type": "string"},
+        "stage": {"type": "string"},
+        "previous_stage": {"type": "string"}
+      }
+    },
+    "primerCardReviewedPayload": {
+      "type": "object",
+      "required": ["card_id", "rating"],
+      "properties": {
+        "card_id": {"type": "string"},
+        "rating": {"type": "integer"}
+      }
+    },
+    "passageWaypointAddedPayload": {
+      "type": "object",
+      "required": ["itinerary_id", "name"],
+      "properties": {
+        "itinerary_id": {"type": "string"},
+        "name": {"type": "string"},
+        "coordinates": {"type": "array", "items": {"type": "number"}}
+      }
+    },
+    "galleyRecipeScaledPayload": {
+      "type": "object",
+      "required": ["recipe_id", "target_servings"],
+      "properties": {
+        "recipe_id": {"type": "string"},
+        "target_servings": {"type": "integer"}
+      }
+    },
+    "pratiqueHl7IngestedPayload": {
+      "type": "object",
+      "required": ["payload"],
+      "properties": {
+        "payload": {"type": "string"}
+      }
+    },
+    "tacticianSimulationCompletedPayload": {
+      "type": "object",
+      "required": ["race_id", "iterations"],
+      "properties": {
+        "race_id": {"type": "string"},
+        "iterations": {"type": "integer"}
+      }
+    },
+    "drydockMaintenanceLoggedPayload": {
+      "type": "object",
+      "required": ["property_urn", "activity"],
+      "properties": {
+        "property_urn": {"type": "string"},
+        "activity": {"type": "string"},
+        "cost_usd": {"type": "number"}
+      }
+    },
+    "squadronServiceLoggedPayload": {
+      "type": "object",
+      "required": ["vin", "service_type"],
+      "properties": {
+        "vin": {"type": "string"},
+        "service_type": {"type": "string"},
+        "engine_hours": {"type": "number"}
+      }
+    },
+    "supercargoBinTransferredPayload": {
+      "type": "object",
+      "required": ["item_id", "from_bin", "to_bin"],
+      "properties": {
+        "item_id": {"type": "string"},
+        "from_bin": {"type": "string"},
+        "to_bin": {"type": "string"}
+      }
+    },
+    "commonplaceStatusUpdatedPayload": {
+      "type": "object",
+      "required": ["slug", "status"],
+      "properties": {
+        "slug": {"type": "string"},
+        "status": {"type": "string"},
+        "path": {"type": "string"}
+      }
+    },
+    "chanteyTranscriptAppendedPayload": {
+      "type": "object",
+      "required": ["episode_id", "timestamp_offset"],
+      "properties": {
+        "episode_id": {"type": "string"},
+        "timestamp_offset": {"type": "number"}
+      }
+    },
+    "marqueeCutLoggedPayload": {
+      "type": "object",
+      "required": ["rush_bin", "timecode_in", "timecode_out"],
+      "properties": {
+        "rush_bin": {"type": "string"},
+        "timecode_in": {"type": "string"},
+        "timecode_out": {"type": "string"}
+      }
+    },
+    "scrimshawCadModelLinkedPayload": {
+      "type": "object",
+      "required": ["part_slug", "cad_model_cas"],
+      "properties": {
+        "part_slug": {"type": "string"},
+        "cad_model_cas": {"type": "string"}
+      }
+    },
+    "traverseGeojsonIngestedPayload": {
+      "type": "object",
+      "required": ["srid"],
+      "properties": {
+        "srid": {"type": "integer"}
+      }
+    },
+    "docentDoiResolvedPayload": {
+      "type": "object",
+      "required": ["doi"],
+      "properties": {
+        "doi": {"type": "string"},
+        "bibtex_key": {"type": "string"}
+      }
+    },
+    "proctorDocketFiledPayload": {
+      "type": "object",
+      "required": ["docket_number", "document_title"],
+      "properties": {
+        "docket_number": {"type": "string"},
+        "document_title": {"type": "string"},
+        "file_cas": {"type": "string"}
+      }
+    },
+    "ropewalkDotfilesSyncedPayload": {
+      "type": "object",
+      "required": ["repo_slug"],
+      "properties": {
+        "repo_slug": {"type": "string"},
+        "dry_run": {"type": "boolean"}
+      }
+    },
+    "gavelMinutesRecordedPayload": {
+      "type": "object",
+      "required": ["committee_slug", "meeting_date"],
+      "properties": {
+        "committee_slug": {"type": "string"},
+        "meeting_date": {"type": "string"},
+        "attendees": {"type": "array"}
+      }
+    },
+    "lineageIndividualAddedPayload": {
+      "type": "object",
+      "required": ["name", "pedigree_branch"],
+      "properties": {
+        "name": {"type": "string"},
+        "pedigree_branch": {"type": "string"}
+      }
+    },
+    "legacyTrustVerifiedPayload": {
+      "type": "object",
+      "required": ["trust_ref"],
+      "properties": {
+        "trust_ref": {"type": "string"},
+        "valid": {"type": "boolean"}
+      }
+    },
+    "arborAmendmentRecordedPayload": {
+      "type": "object",
+      "required": ["plot_id", "amendment_type"],
+      "properties": {
+        "plot_id": {"type": "string"},
+        "amendment_type": {"type": "string"},
+        "soil_ph": {"type": "number"}
+      }
+    },
+    "theGlassTideLoggedPayload": {
+      "type": "object",
+      "required": ["tide_gauge_urn", "height_meters"],
+      "properties": {
+        "tide_gauge_urn": {"type": "string"},
+        "height_meters": {"type": "number"},
+        "timestamp": {"type": "string"}
+      }
+    },
+    "dispatchOutboundLoggedPayload": {
+      "type": "object",
+      "required": ["sender_urn", "recipient_urn"],
+      "properties": {
+        "sender_urn": {"type": "string"},
+        "recipient_urn": {"type": "string"},
+        "courier_tracking": {"type": "string"}
+      }
+    },
+    "registryDocumentVaultedPayload": {
+      "type": "object",
+      "required": ["document_type", "issuing_jurisdiction"],
+      "properties": {
+        "document_type": {"type": "string"},
+        "issuing_jurisdiction": {"type": "string"},
+        "expiry_date": {"type": "string"}
+      }
+    },
+    "purserSubscriptionLoggedPayload": {
+      "type": "object",
+      "required": ["active_only"],
+      "properties": {
+        "active_only": {"type": "boolean"}
+      }
+    },
+    "cadenceHabitHitPayload": {
+      "type": "object",
+      "required": ["habit_id", "date"],
+      "properties": {
+        "habit_id": {"type": "string"},
+        "date": {"type": "string"},
+        "streak": {"type": "integer"},
+        "notes": {"type": "string"}
+      }
+    },
+    "reckoningDecisionLoggedPayload": {
+      "type": "object",
+      "required": ["decision_title", "framework"],
+      "properties": {
+        "decision_title": {"type": "string"},
+        "framework": {"type": "string"}
+      }
+    },
+    "strongboxFingerprintDerivedPayload": {
+      "type": "object",
+      "required": ["public_key", "key_algorithm"],
+      "properties": {
+        "public_key": {"type": "string"},
+        "key_algorithm": {"type": "string"}
+      }
+    },
+    "trajectoryMilestoneAddedPayload": {
+      "type": "object",
+      "required": ["role_title", "milestone_title"],
+      "properties": {
+        "role_title": {"type": "string"},
+        "milestone_title": {"type": "string"}
+      }
+    },
+    "binnacleScriptureAnnotatedPayload": {
+      "type": "object",
+      "required": ["scripture_ref", "annotation"],
+      "properties": {
+        "scripture_ref": {"type": "string"},
+        "annotation": {"type": "string"}
+      }
+    },
+    "claimPriorArtRecordedPayload": {
+      "type": "object",
+      "required": ["patent_number", "prior_art_urn"],
+      "properties": {
+        "patent_number": {"type": "string"},
+        "prior_art_urn": {"type": "string"}
+      }
+    },
+    "tributeGiftLoggedPayload": {
+      "type": "object",
+      "required": ["recipient_contact_urn", "gift_item"],
+      "properties": {
+        "recipient_contact_urn": {"type": "string"},
+        "gift_item": {"type": "string"},
+        "value_usd": {"type": "number"}
+      }
+    },
+    "weftTailoringLoggedPayload": {
+      "type": "object",
+      "required": ["garment_id"],
+      "properties": {
+        "garment_id": {"type": "string"},
+        "alteration_notes": {"type": "string"}
+      }
+    },
+    "reverieDreamLoggedPayload": {
+      "type": "object",
+      "required": ["description"],
+      "properties": {
+        "description": {"type": "string"},
+        "lucidity_level": {"type": "integer"}
+      }
+    },
+    "provenanceAppraisalAddedPayload": {
+      "type": "object",
+      "required": ["item_urn", "appraisal_usd"],
+      "properties": {
+        "item_urn": {"type": "string"},
+        "appraisal_usd": {"type": "number"}
+      }
+    },
+    "menagerieVetVisitLoggedPayload": {
+      "type": "object",
+      "required": ["pet_id", "clinic_urn"],
+      "properties": {
+        "pet_id": {"type": "string"},
+        "clinic_urn": {"type": "string"}
+      }
+    },
+    "musterRationsCheckedPayload": {
+      "type": "object",
+      "required": ["tier"],
+      "properties": {
+        "tier": {"type": "string"}
+      }
+    },
+    "breadboardSchematicLinkedPayload": {
+      "type": "object",
+      "required": ["board_id", "schematic_cas"],
+      "properties": {
+        "board_id": {"type": "string"},
+        "schematic_cas": {"type": "string"}
+      }
+    },
+    "pavilionCueSheetGeneratedPayload": {
+      "type": "object",
+      "required": ["event_id"],
+      "properties": {
+        "event_id": {"type": "string"}
+      }
+    },
+    "charthouseLoreNodeQueriedPayload": {
+      "type": "object",
+      "required": ["campaign_id"],
+      "properties": {
+        "campaign_id": {"type": "string"},
+        "node_key": {"type": "string"}
+      }
+    },
+    "commonwealthHoursLoggedPayload": {
+      "type": "object",
+      "required": ["initiative_name", "volunteer_urn", "hours"],
+      "properties": {
+        "initiative_name": {"type": "string"},
+        "volunteer_urn": {"type": "string"},
+        "hours": {"type": "number"}
+      }
+    },
+    "relayHeartbeatRecordedPayload": {
+      "type": "object",
+      "required": ["channel_id", "timestamp"],
+      "properties": {
+        "channel_id": {"type": "string"},
+        "timestamp": {"type": "string"}
+      }
+    }
+  }
+}
