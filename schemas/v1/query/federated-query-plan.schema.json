@@ -1,0 +1,592 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/query/federated-query-plan.schema.json",
+  "title": "Bosun Federated Graph Query Plan Specification v1",
+  "description": "Strict JSON Schema Draft 2020-12 contract defining distributed multi-vault graph query execution plans, including vault endpoint declarations (local path or stdio RPC process), ordered distributed traversal steps, and cross-vault URN join specifications.",
+  "type": "object",
+  "version": "1.0.0",
+  "required": [
+    "plan_id",
+    "vault_endpoints",
+    "distributed_steps",
+    "join_keys"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "plan_id": {
+      "$ref": "#/$defs/uuidv7",
+      "description": "UUIDv7 query execution plan identifier."
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable title or label for the federated query plan."
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the cross-vault query objective and traversal route."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "default": "1.0.0",
+      "description": "Semantic specification version of the execution plan."
+    },
+    "vault_endpoints": {
+      "type": "object",
+      "minProperties": 1,
+      "description": "Map of vault alias identifiers to physical filesystem or stdio RPC process endpoints.",
+      "propertyNames": {
+        "pattern": "^[a-zA-Z0-9_-]+$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/vaultEndpoint"
+      }
+    },
+    "distributed_steps": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Ordered sequence of distributed traversal and join execution steps across endpoints.",
+      "items": {
+        "$ref": "#/$defs/distributedStep"
+      }
+    },
+    "join_keys": {
+      "oneOf": [
+        {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/joinKeyDefinition"
+          },
+          "description": "Map of join key identifiers to cross-vault URN matching specifications."
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/joinKeyDefinition"
+          },
+          "description": "List of cross-vault URN join key specifications."
+        }
+      ],
+      "description": "Specifications for matching and correlating entity URNs across vault boundaries."
+    },
+    "aggregation": {
+      "type": "object",
+      "description": "Directives for merging and consolidating intermediate results across distributed steps.",
+      "additionalProperties": false,
+      "properties": {
+        "merge_strategy": {
+          "type": "string",
+          "enum": [
+            "union",
+            "deduplicate",
+            "intersect"
+          ],
+          "default": "deduplicate",
+          "description": "Policy for combining entity sets produced by multiple vault steps."
+        },
+        "projections": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "nodes",
+              "edges",
+              "subgraph_adjacency_matrix",
+              "shortest_path"
+            ]
+          },
+          "default": [
+            "nodes",
+            "edges"
+          ],
+          "description": "Consolidated projections to return in the final federated result."
+        },
+        "global_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum number of total consolidated nodes or edges returned."
+        }
+      }
+    },
+    "max_total_duration_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Maximum allowed wall-clock execution duration in milliseconds for the entire plan."
+    },
+    "concurrency_limit": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 4,
+      "description": "Maximum number of distributed steps that may execute in parallel."
+    }
+  },
+  "$defs": {
+    "uuidv7": {
+      "type": "string",
+      "pattern": "^(urn:uuid:)?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      "description": "Canonical UUIDv7 identifier, formatted as 36-char hex UUID string or urn:uuid:... URN."
+    },
+    "urn": {
+      "type": "string",
+      "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+      "description": "Canonical RFC 8141 URN."
+    },
+    "vaultEndpoint": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/localPathEndpoint"
+        },
+        {
+          "$ref": "#/$defs/stdioRpcEndpoint"
+        },
+        {
+          "$ref": "#/$defs/uriStringEndpoint"
+        },
+        {
+          "$ref": "#/$defs/httpEndpoint"
+        }
+      ],
+      "description": "Specification for connecting to a vault instance via local directory or stdio RPC."
+    },
+    "localPathEndpoint": {
+      "type": "object",
+      "description": "Local filesystem directory containing a Bosun PKM vault locker.",
+      "required": [
+        "type",
+        "path"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "local",
+            "filesystem",
+            "path"
+          ],
+          "description": "Endpoint type discriminator for local filesystem access."
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Filesystem path pointing to the vault root directory."
+        },
+        "alias": {
+          "type": "string",
+          "description": "Optional explicit alias mirroring the endpoint map key."
+        },
+        "read_only": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether the vault is opened in read-only mode."
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "markdown_pkm",
+            "sqlite",
+            "duckdb",
+            "parquet",
+            "json"
+          ],
+          "default": "markdown_pkm",
+          "description": "Underlying storage format of the vault."
+        }
+      }
+    },
+    "stdioRpcEndpoint": {
+      "type": "object",
+      "description": "External subprocess communicating via JSON-RPC 2.0 over standard I/O (stdio).",
+      "required": [
+        "type",
+        "command"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "stdio_rpc",
+            "process",
+            "rpc",
+            "stdio"
+          ],
+          "description": "Endpoint type discriminator for stdio RPC processes."
+        },
+        "command": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Executable or script command name/path (e.g. 'harbormaster', 'bosun-agent')."
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Command-line arguments passed when launching the subprocess."
+        },
+        "env": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Environment variables injected into the subprocess."
+        },
+        "working_dir": {
+          "type": "string",
+          "description": "Working directory for the subprocess."
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 10000,
+          "description": "Per-request stdio timeout in milliseconds."
+        },
+        "protocol": {
+          "type": "string",
+          "enum": [
+            "jsonrpc-2.0",
+            "harbormaster-v1"
+          ],
+          "default": "jsonrpc-2.0",
+          "description": "RPC wire protocol dialect."
+        }
+      }
+    },
+    "uriStringEndpoint": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Shorthand local filesystem path or file:// URI (e.g. '/vaults/primary', 'file:///C:/dev/vault')."
+    },
+    "httpEndpoint": {
+      "type": "object",
+      "description": "Remote network HTTP endpoint exposing vault query RPC.",
+      "required": [
+        "type",
+        "url"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "http",
+            "https"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Base URL of the remote vault service."
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 10000
+        },
+        "auth_token": {
+          "type": "string",
+          "description": "Bearer token or authorization header value."
+        }
+      }
+    },
+    "joinKeyDefinition": {
+      "type": "object",
+      "description": "Specification for matching entity URNs and relations across vault boundaries.",
+      "required": [
+        "source_field",
+        "target_field",
+        "matching_strategy"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "key_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Unique identifier or name for this cross-vault join rule."
+        },
+        "source_field": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Attribute path or URN field in the source entity (e.g. '$pkm.relations.assignedToContact', 'target', 'source')."
+        },
+        "target_field": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Attribute path or URN field in the target entity (e.g. '$pkm.id', 'id', 'urn')."
+        },
+        "matching_strategy": {
+          "type": "string",
+          "enum": [
+            "exact_urn",
+            "uuid_v7",
+            "predicate_target",
+            "wikilink_slug",
+            "entity_id"
+          ],
+          "description": "Identity correlation strategy across vault partitions."
+        },
+        "cardinality": {
+          "type": "string",
+          "enum": [
+            "one_to_one",
+            "one_to_many",
+            "many_to_many",
+            "many_to_one"
+          ],
+          "default": "one_to_many",
+          "description": "Expected relationship cardinality across the join boundary."
+        },
+        "description": {
+          "type": "string",
+          "description": "Documentation string for this join contract."
+        }
+      }
+    },
+    "stepQuery": {
+      "type": "object",
+      "description": "Graph DSL query specification executed against the target vault endpoint.",
+      "additionalProperties": false,
+      "properties": {
+        "linked_from": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/urn"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/urn"
+              }
+            }
+          ]
+        },
+        "target_node": {
+          "$ref": "#/$defs/urn"
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "outbound",
+            "inbound",
+            "both",
+            "bidirectional"
+          ],
+          "default": "outbound"
+        },
+        "edge_types": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "relations",
+              "wikilinks",
+              "stage_gates",
+              "all"
+            ]
+          },
+          "default": [
+            "relations",
+            "wikilinks"
+          ]
+        },
+        "max_depth": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000,
+          "default": 1
+        },
+        "match_realm": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          ]
+        },
+        "has_relation": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            {
+              "type": "object"
+            }
+          ]
+        },
+        "predicate_pattern": {
+          "type": "string",
+          "minLength": 1
+        },
+        "projections": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "nodes",
+              "edges",
+              "subgraph_adjacency_matrix",
+              "shortest_path"
+            ]
+          },
+          "default": [
+            "nodes",
+            "edges"
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "distributedStep": {
+      "type": "object",
+      "description": "An individual query execution step targeting a specific vault in the federation.",
+      "required": [
+        "step_id",
+        "target_vault",
+        "operation"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "step_id": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "integer",
+              "minimum": 1
+            }
+          ],
+          "description": "Identifier uniquely naming this step within the plan."
+        },
+        "target_vault": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Endpoint alias indicating where this step executes (must map to a key in vault_endpoints)."
+        },
+        "operation": {
+          "type": "string",
+          "enum": [
+            "traverse",
+            "scan",
+            "join",
+            "project",
+            "filter",
+            "shortest_path",
+            "subgraph",
+            "aggregate"
+          ],
+          "description": "Graph operation executed by this distributed step."
+        },
+        "query": {
+          "$ref": "#/$defs/stepQuery",
+          "description": "Graph DSL query dispatched to the target vault."
+        },
+        "input_from_step": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "integer",
+              "minimum": 1
+            }
+          ],
+          "description": "Predecessor step_id providing input seeds or intermediate edges."
+        },
+        "input_field": {
+          "type": "string",
+          "enum": [
+            "nodes",
+            "matched_nodes",
+            "edges",
+            "resolved_edges",
+            "shortest_path"
+          ],
+          "default": "matched_nodes",
+          "description": "Field from predecessor result consumed as input seeds."
+        },
+        "join_with_step": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "integer",
+              "minimum": 1
+            }
+          ],
+          "description": "Peer step_id to join results against."
+        },
+        "join_key": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Reference to a key in join_keys specifying the identity correlation rule."
+        },
+        "join_type": {
+          "type": "string",
+          "enum": [
+            "inner",
+            "left_outer",
+            "cross",
+            "semi",
+            "anti"
+          ],
+          "default": "inner",
+          "description": "Relational join semantics applied across vault boundaries."
+        },
+        "parallel": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this step can run concurrently with peer steps."
+        },
+        "optional": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether plan execution can proceed if this vault is unavailable."
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Per-step execution timeout in milliseconds."
+        },
+        "description": {
+          "type": "string",
+          "description": "Documentation string for this step."
+        }
+      }
+    }
+  }
+}

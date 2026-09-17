@@ -1,0 +1,88 @@
+{
+  "plan_id": "018f3a00-0000-7000-8000-0000000000f1",
+  "title": "Primary↔Archive sovereign vault bridge",
+  "description": "Join live Trice/Yeoman notes in Primary Vault to historical Careen/Commonplace notes in Archive Vault on shared entity URNs.",
+  "version": "1.0.0",
+  "vault_endpoints": {
+    "primary": {
+      "type": "local",
+      "path": "fixtures/synthetic_vault",
+      "alias": "primary",
+      "read_only": true,
+      "format": "markdown_pkm"
+    },
+    "archive": {
+      "type": "stdio_rpc",
+      "command": "harbormaster",
+      "args": ["engine", "stdio", "--vault", "/vaults/archive"],
+      "env": {"BOSUN_VAULT_ROLE": "archive"},
+      "timeout_ms": 8000,
+      "protocol": "jsonrpc-2.0"
+    }
+  },
+  "distributed_steps": [
+    {
+      "step_id": "scan_primary_live_notes",
+      "target_vault": "primary",
+      "operation": "traverse",
+      "query": {
+        "linked_from": "urn:trice:task:018f3a00-0000-7000-8000-000000000003",
+        "direction": "outbound",
+        "edge_types": ["relations"],
+        "max_depth": 1,
+        "match_realm": ["trice", "yeoman"],
+        "has_relation": "assignedToContact",
+        "projections": ["nodes", "edges"]
+      },
+      "description": "Traverse live Trice tasks and Yeoman contacts in Primary Vault."
+    },
+    {
+      "step_id": "scan_archive_historical_notes",
+      "target_vault": "archive",
+      "operation": "scan",
+      "parallel": true,
+      "query": {
+        "linked_from": "urn:careen:project:018f3a00-0000-7000-8000-000000000009",
+        "direction": "outbound",
+        "edge_types": ["relations", "stage_gates"],
+        "max_depth": 2,
+        "match_realm": ["careen", "commonplace"],
+        "has_relation": ["blocks", "actionItemDerivedFrom"],
+        "projections": ["nodes", "edges"]
+      },
+      "description": "Scan historical Careen projects and Commonplace works in Archive Vault."
+    },
+    {
+      "step_id": "join_primary_archive_urns",
+      "target_vault": "archive",
+      "operation": "join",
+      "input_from_step": "scan_primary_live_notes",
+      "input_field": "matched_nodes",
+      "join_with_step": "scan_archive_historical_notes",
+      "join_key": "task_derived_from_project",
+      "join_type": "inner",
+      "query": {
+        "match_realm": ["careen", "trice"],
+        "projections": ["nodes", "edges"]
+      },
+      "description": "Inner-join Primary Trice task URNs to Archive Careen project URNs."
+    }
+  ],
+  "join_keys": {
+    "task_derived_from_project": {
+      "key_id": "task_derived_from_project",
+      "source_field": "$pkm.relations.actionItemDerivedFrom",
+      "target_field": "$pkm.id",
+      "matching_strategy": "exact_urn",
+      "cardinality": "many_to_one",
+      "description": "Match live Trice task actionItemDerivedFrom URN to archived Careen project identity URN."
+    }
+  },
+  "aggregation": {
+    "merge_strategy": "deduplicate",
+    "projections": ["nodes", "edges"],
+    "global_limit": 500
+  },
+  "max_total_duration_ms": 15000,
+  "concurrency_limit": 2
+}
