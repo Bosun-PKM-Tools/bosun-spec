@@ -22,7 +22,7 @@
     },
     "methods": {
       "type": "object",
-      "minProperties": 56,
+      "minProperties": 106,
       "additionalProperties": {
         "$ref": "#/$defs/methodEntry"
       }
@@ -189,7 +189,32 @@
             "traverse",
             "docent",
             "proctor",
-            "ropewalk"
+            "ropewalk",
+            "gavel",
+            "lineage",
+            "legacy",
+            "arbor",
+            "the_glass",
+            "dispatch",
+            "registry",
+            "purser",
+            "cadence",
+            "reckoning",
+            "strongbox",
+            "trajectory",
+            "binnacle",
+            "claim",
+            "tribute",
+            "weft",
+            "reverie",
+            "provenance",
+            "menagerie",
+            "muster",
+            "breadboard",
+            "pavilion",
+            "charthouse",
+            "commonwealth",
+            "relay"
           ]
         },
         "method": {
@@ -2380,6 +2405,1947 @@
         },
         "divergence": {
           "type": "integer"
+        }
+      }
+    },
+    "params_gavel_record_minutes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "committee_slug",
+        "meeting_date",
+        "notes"
+      ],
+      "properties": {
+        "committee_slug": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Committee slug identifier"
+        },
+        "meeting_date": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Meeting date YYYY-MM-DD"
+        },
+        "notes": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Minutes body or summary"
+        },
+        "attendees": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of attendee names"
+        }
+      }
+    },
+    "result_gavel_record_minutes": {
+      "type": "object",
+      "required": [
+        "minutes_id",
+        "recorded"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "minutes_id": {
+          "type": "string"
+        },
+        "recorded": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_gavel_tally_motion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "committee_slug",
+        "motion_id",
+        "yeas",
+        "nays"
+      ],
+      "properties": {
+        "committee_slug": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Committee slug identifier"
+        },
+        "motion_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Motion identifier"
+        },
+        "yeas": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Affirmative vote tally"
+        },
+        "nays": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Negative vote tally"
+        },
+        "abstentions": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Abstention tally"
+        }
+      }
+    },
+    "result_gavel_tally_motion": {
+      "type": "object",
+      "required": [
+        "passed",
+        "total_votes"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "passed": {
+          "type": "boolean"
+        },
+        "total_votes": {
+          "type": "integer"
+        }
+      }
+    },
+    "params_lineage_query_ancestors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "individual_urn"
+      ],
+      "properties": {
+        "individual_urn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Target individual URN"
+        },
+        "generations": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Max generation traversal depth"
+        }
+      }
+    },
+    "result_lineage_query_ancestors": {
+      "type": "object",
+      "required": [
+        "ancestors",
+        "count"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "ancestors": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "count": {
+          "type": "integer"
+        }
+      }
+    },
+    "params_lineage_add_individual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "pedigree_branch"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Full name of individual"
+        },
+        "pedigree_branch": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Pedigree branch name"
+        },
+        "gedcom_id": {
+          "type": "string",
+          "description": "GEDCOM cross-reference identifier"
+        },
+        "birth_date": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Birth date YYYY-MM-DD"
+        }
+      }
+    },
+    "result_lineage_add_individual": {
+      "type": "object",
+      "required": [
+        "individual_urn",
+        "created"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "individual_urn": {
+          "type": "string"
+        },
+        "created": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_legacy_verify_trust": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trust_ref"
+      ],
+      "properties": {
+        "trust_ref": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Trust reference slug or identifier"
+        },
+        "durable_poa_hash": {
+          "type": "string",
+          "minLength": 1,
+          "description": "SHA-256 digest of durable POA"
+        }
+      }
+    },
+    "result_legacy_verify_trust": {
+      "type": "object",
+      "required": [
+        "verified",
+        "status"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "verified": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "params_legacy_update_executor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trust_ref",
+        "executor_contact_urn"
+      ],
+      "properties": {
+        "trust_ref": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Trust reference slug or identifier"
+        },
+        "executor_contact_urn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Yeoman contact URN of executor"
+        }
+      }
+    },
+    "result_legacy_update_executor": {
+      "type": "object",
+      "required": [
+        "trust_ref",
+        "updated"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "trust_ref": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_arbor_get_planting_schedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "planting_zone"
+      ],
+      "properties": {
+        "planting_zone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "USDA planting hardiness zone"
+        },
+        "taxonomic_species": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Taxonomic binomial species"
+        }
+      }
+    },
+    "result_arbor_get_planting_schedule": {
+      "type": "object",
+      "required": [
+        "zone",
+        "schedule"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "zone": {
+          "type": "string"
+        },
+        "schedule": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "params_arbor_record_amendment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "plot_id",
+        "soil_ph",
+        "amendment_type"
+      ],
+      "properties": {
+        "plot_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Bed or plot identifier"
+        },
+        "soil_ph": {
+          "type": "number",
+          "description": "Soil pH level"
+        },
+        "amendment_type": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Soil amendment material"
+        },
+        "date": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Application date YYYY-MM-DD"
+        }
+      }
+    },
+    "result_arbor_record_amendment": {
+      "type": "object",
+      "required": [
+        "plot_id",
+        "recorded"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "plot_id": {
+          "type": "string"
+        },
+        "recorded": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_the_glass_query_barometer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "station_id"
+      ],
+      "properties": {
+        "station_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Station identifier"
+        },
+        "hours": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Hours of lookback history"
+        }
+      }
+    },
+    "result_the_glass_query_barometer": {
+      "type": "object",
+      "required": [
+        "station_id",
+        "current_hpa",
+        "trend"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "station_id": {
+          "type": "string"
+        },
+        "current_hpa": {
+          "type": "number"
+        },
+        "trend": {
+          "type": "string"
+        }
+      }
+    },
+    "params_the_glass_log_tide": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tide_gauge_urn",
+        "height_meters"
+      ],
+      "properties": {
+        "tide_gauge_urn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Tide gauge URN identifier"
+        },
+        "height_meters": {
+          "type": "number",
+          "description": "Tidal height in meters"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/isoDateTime",
+          "description": "Observation UTC timestamp"
+        }
+      }
+    },
+    "result_the_glass_log_tide": {
+      "type": "object",
+      "required": [
+        "tide_gauge_urn",
+        "recorded"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "tide_gauge_urn": {
+          "type": "string"
+        },
+        "recorded": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_dispatch_log_outbound": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sender_urn",
+        "recipient_urn",
+        "courier_tracking"
+      ],
+      "properties": {
+        "sender_urn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Sender contact URN"
+        },
+        "recipient_urn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Recipient contact URN"
+        },
+        "courier_tracking": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Courier tracking number"
+        },
+        "postmark_date": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Postmark date YYYY-MM-DD"
+        }
+      }
+    },
+    "result_dispatch_log_outbound": {
+      "type": "object",
+      "required": [
+        "dispatch_id",
+        "logged"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "dispatch_id": {
+          "type": "string"
+        },
+        "logged": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_dispatch_trace_delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "courier_tracking"
+      ],
+      "properties": {
+        "courier_tracking": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Courier tracking number"
+        }
+      }
+    },
+    "result_dispatch_trace_delivery": {
+      "type": "object",
+      "required": [
+        "courier_tracking",
+        "status"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "courier_tracking": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "params_registry_check_expiry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type"
+      ],
+      "properties": {
+        "document_type": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Document type classification"
+        },
+        "jurisdiction": {
+          "type": "string",
+          "description": "Issuing jurisdiction"
+        }
+      }
+    },
+    "result_registry_check_expiry": {
+      "type": "object",
+      "required": [
+        "expiring_documents",
+        "count"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "expiring_documents": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "count": {
+          "type": "integer"
+        }
+      }
+    },
+    "params_registry_vault_document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "document_type",
+        "issuing_jurisdiction",
+        "expiry_date",
+        "encrypted_credential_cas"
+      ],
+      "properties": {
+        "document_type": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Document type"
+        },
+        "issuing_jurisdiction": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Issuing jurisdiction"
+        },
+        "expiry_date": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Document expiry date YYYY-MM-DD"
+        },
+        "encrypted_credential_cas": {
+          "type": "string",
+          "minLength": 1,
+          "description": "CAS address of encrypted payload"
+        }
+      }
+    },
+    "result_registry_vault_document": {
+      "type": "object",
+      "required": [
+        "doc_urn",
+        "vaulted"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "doc_urn": {
+          "type": "string"
+        },
+        "vaulted": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_purser_list_subscriptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "active_only": {
+          "type": "boolean",
+          "description": "Filter active subscriptions only"
+        },
+        "billing_cadence": {
+          "type": "string",
+          "description": "Billing cadence (monthly/annual)"
+        }
+      }
+    },
+    "result_purser_list_subscriptions": {
+      "type": "object",
+      "required": [
+        "subscriptions",
+        "total_monthly_usd"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "subscriptions": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "total_monthly_usd": {
+          "type": "number"
+        }
+      }
+    },
+    "params_purser_calc_burn_rate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "timeframe_months": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Projection horizon in months"
+        }
+      }
+    },
+    "result_purser_calc_burn_rate": {
+      "type": "object",
+      "required": [
+        "burn_rate_usd",
+        "monthly_recurring_usd",
+        "projected_annual_usd"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "burn_rate_usd": {
+          "type": "number"
+        },
+        "monthly_recurring_usd": {
+          "type": "number"
+        },
+        "projected_annual_usd": {
+          "type": "number"
+        }
+      }
+    },
+    "params_cadence_log_habit_hit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "habit_id"
+      ],
+      "properties": {
+        "habit_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Habit identifier"
+        },
+        "date": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Completion date YYYY-MM-DD"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Ritual notes"
+        }
+      }
+    },
+    "result_cadence_log_habit_hit": {
+      "type": "object",
+      "required": [
+        "streak_count_current",
+        "best_streak",
+        "hit_recorded"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "streak_count_current": {
+          "type": "integer"
+        },
+        "best_streak": {
+          "type": "integer"
+        },
+        "hit_recorded": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_cadence_query_streaks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "habit_id": {
+          "type": "string",
+          "description": "Filter by habit identifier"
+        },
+        "min_streak": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Minimum active streak count"
+        }
+      }
+    },
+    "result_cadence_query_streaks": {
+      "type": "object",
+      "required": [
+        "habits",
+        "total_active_streaks"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "habits": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "total_active_streaks": {
+          "type": "integer"
+        }
+      }
+    },
+    "params_reckoning_audit_bias": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id"
+      ],
+      "properties": {
+        "decision_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Decision record identifier"
+        },
+        "framework": {
+          "type": "string",
+          "description": "Analysis framework"
+        }
+      }
+    },
+    "result_reckoning_audit_bias": {
+      "type": "object",
+      "required": [
+        "decision_id",
+        "bias_flags",
+        "risk_score"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "decision_id": {
+          "type": "string"
+        },
+        "bias_flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "risk_score": {
+          "type": "number"
+        }
+      }
+    },
+    "params_reckoning_log_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_title",
+        "framework",
+        "rationale"
+      ],
+      "properties": {
+        "decision_title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Decision title"
+        },
+        "framework": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Decision framework"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Core decision rationale"
+        },
+        "risk_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Identified risk tags"
+        }
+      }
+    },
+    "result_reckoning_log_decision": {
+      "type": "object",
+      "required": [
+        "decision_id",
+        "recorded"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "decision_id": {
+          "type": "string"
+        },
+        "recorded": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_strongbox_audit_keys": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "hardware_token_serial": {
+          "type": "string",
+          "description": "Hardware token serial number"
+        }
+      }
+    },
+    "result_strongbox_audit_keys": {
+      "type": "object",
+      "required": [
+        "keys",
+        "stale_count"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "keys": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "stale_count": {
+          "type": "integer"
+        }
+      }
+    },
+    "params_strongbox_derive_fingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "public_key",
+        "key_algorithm"
+      ],
+      "properties": {
+        "public_key": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Public key text or OpenSSH format"
+        },
+        "key_algorithm": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Cryptographic algorithm name"
+        }
+      }
+    },
+    "result_strongbox_derive_fingerprint": {
+      "type": "object",
+      "required": [
+        "fingerprint",
+        "algorithm"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "fingerprint": {
+          "type": "string"
+        },
+        "algorithm": {
+          "type": "string"
+        }
+      }
+    },
+    "params_trajectory_add_milestone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role_title",
+        "organization_urn",
+        "milestone_title"
+      ],
+      "properties": {
+        "role_title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Career role or title"
+        },
+        "organization_urn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Organization URN identifier"
+        },
+        "milestone_title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Milestone description or achievement"
+        },
+        "date": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Milestone achievement date YYYY-MM-DD"
+        }
+      }
+    },
+    "result_trajectory_add_milestone": {
+      "type": "object",
+      "required": [
+        "milestone_id",
+        "added"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "milestone_id": {
+          "type": "string"
+        },
+        "added": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_trajectory_export_cv": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": [
+            "markdown",
+            "json",
+            "html"
+          ],
+          "description": "Output serialization format"
+        },
+        "include_private": {
+          "type": "boolean",
+          "description": "Include private/confidential projects"
+        }
+      }
+    },
+    "result_trajectory_export_cv": {
+      "type": "object",
+      "required": [
+        "rendered_output",
+        "format"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "rendered_output": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string"
+        }
+      }
+    },
+    "params_binnacle_search_axioms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "query"
+      ],
+      "properties": {
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Search keyword or text"
+        },
+        "tradition": {
+          "type": "string",
+          "description": "Theological or philosophical tradition"
+        }
+      }
+    },
+    "result_binnacle_search_axioms": {
+      "type": "object",
+      "required": [
+        "axioms",
+        "count"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "axioms": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "count": {
+          "type": "integer"
+        }
+      }
+    },
+    "params_binnacle_annotate_scripture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scripture_ref",
+        "annotation"
+      ],
+      "properties": {
+        "scripture_ref": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Scripture reference string"
+        },
+        "annotation": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Commentary text"
+        },
+        "credo_key": {
+          "type": "string",
+          "description": "Credo axiom key"
+        }
+      }
+    },
+    "result_binnacle_annotate_scripture": {
+      "type": "object",
+      "required": [
+        "annotation_id",
+        "saved"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "annotation_id": {
+          "type": "string"
+        },
+        "saved": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_claim_record_prior_art": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "patent_number",
+        "prior_art_urn"
+      ],
+      "properties": {
+        "patent_number": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Patent publication number"
+        },
+        "prior_art_urn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Prior art document URN"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Relevance notes"
+        }
+      }
+    },
+    "result_claim_record_prior_art": {
+      "type": "object",
+      "required": [
+        "patent_number",
+        "recorded"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "patent_number": {
+          "type": "string"
+        },
+        "recorded": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_claim_check_filing_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "patent_number"
+      ],
+      "properties": {
+        "patent_number": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Patent publication number"
+        },
+        "jurisdiction": {
+          "type": "string",
+          "description": "Patent office jurisdiction"
+        }
+      }
+    },
+    "result_claim_check_filing_status": {
+      "type": "object",
+      "required": [
+        "patent_number",
+        "status"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "patent_number": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "params_tribute_query_sizes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recipient_contact_urn"
+      ],
+      "properties": {
+        "recipient_contact_urn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Yeoman contact URN"
+        }
+      }
+    },
+    "result_tribute_query_sizes": {
+      "type": "object",
+      "required": [
+        "recipient_contact_urn",
+        "sizing_profile"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "recipient_contact_urn": {
+          "type": "string"
+        },
+        "sizing_profile": {
+          "type": "object"
+        }
+      }
+    },
+    "params_tribute_log_gift": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recipient_contact_urn",
+        "gift_item"
+      ],
+      "properties": {
+        "recipient_contact_urn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Yeoman contact URN"
+        },
+        "gift_item": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Gift item description"
+        },
+        "value_usd": {
+          "type": "number",
+          "description": "Estimated value in USD"
+        },
+        "date": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Date gifted YYYY-MM-DD"
+        }
+      }
+    },
+    "result_tribute_log_gift": {
+      "type": "object",
+      "required": [
+        "gift_id",
+        "logged",
+        "reciprocity_balance"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "gift_id": {
+          "type": "string"
+        },
+        "logged": {
+          "type": "boolean"
+        },
+        "reciprocity_balance": {
+          "type": "number"
+        }
+      }
+    },
+    "params_weft_query_inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "category": {
+          "type": "string",
+          "description": "Garment category classification"
+        },
+        "material": {
+          "type": "string",
+          "description": "Textile material"
+        }
+      }
+    },
+    "result_weft_query_inventory": {
+      "type": "object",
+      "required": [
+        "garments",
+        "total_items"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "garments": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "total_items": {
+          "type": "integer"
+        }
+      }
+    },
+    "params_weft_log_tailoring": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "garment_id",
+        "alteration_notes"
+      ],
+      "properties": {
+        "garment_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Garment identifier"
+        },
+        "alteration_notes": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Tailoring notes"
+        },
+        "measurements": {
+          "type": "object",
+          "description": "Updated measurements"
+        }
+      }
+    },
+    "result_weft_log_tailoring": {
+      "type": "object",
+      "required": [
+        "garment_id",
+        "tailored"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "garment_id": {
+          "type": "string"
+        },
+        "tailored": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_reverie_log_dream": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "lucidity_level"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Narrative dream description"
+        },
+        "lucidity_level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Lucidity score (1-5)"
+        },
+        "motif_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Dream motif tags"
+        },
+        "date": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Dream morning date YYYY-MM-DD"
+        }
+      }
+    },
+    "result_reverie_log_dream": {
+      "type": "object",
+      "required": [
+        "dream_id",
+        "logged"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "dream_id": {
+          "type": "string"
+        },
+        "logged": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_reverie_search_motifs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "motif"
+      ],
+      "properties": {
+        "motif": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Motif keyword to search"
+        }
+      }
+    },
+    "result_reverie_search_motifs": {
+      "type": "object",
+      "required": [
+        "dreams",
+        "frequency"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "dreams": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "frequency": {
+          "type": "integer"
+        }
+      }
+    },
+    "params_provenance_verify_chain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_urn"
+      ],
+      "properties": {
+        "item_urn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Asset URN identifier"
+        }
+      }
+    },
+    "result_provenance_verify_chain": {
+      "type": "object",
+      "required": [
+        "item_urn",
+        "verified",
+        "custody_chain"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "item_urn": {
+          "type": "string"
+        },
+        "verified": {
+          "type": "boolean"
+        },
+        "custody_chain": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "params_provenance_add_appraisal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_urn",
+        "appraisal_usd",
+        "appraiser"
+      ],
+      "properties": {
+        "item_urn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Asset URN identifier"
+        },
+        "appraisal_usd": {
+          "type": "number",
+          "description": "Appraised valuation in USD"
+        },
+        "appraiser": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Certified appraiser name"
+        },
+        "date": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Appraisal date YYYY-MM-DD"
+        }
+      }
+    },
+    "result_provenance_add_appraisal": {
+      "type": "object",
+      "required": [
+        "item_urn",
+        "recorded"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "item_urn": {
+          "type": "string"
+        },
+        "recorded": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_menagerie_log_vet_visit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pet_id",
+        "clinic_urn",
+        "diagnosis"
+      ],
+      "properties": {
+        "pet_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Pet or domestic animal identifier"
+        },
+        "clinic_urn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Veterinary clinic URN"
+        },
+        "diagnosis": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Clinical diagnosis or summary"
+        },
+        "date": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Visit date YYYY-MM-DD"
+        }
+      }
+    },
+    "result_menagerie_log_vet_visit": {
+      "type": "object",
+      "required": [
+        "visit_id",
+        "logged"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "visit_id": {
+          "type": "string"
+        },
+        "logged": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_menagerie_list_vaccines_due": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "pet_id": {
+          "type": "string",
+          "description": "Filter by pet identifier"
+        },
+        "as_of": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Evaluation date YYYY-MM-DD"
+        }
+      }
+    },
+    "result_menagerie_list_vaccines_due": {
+      "type": "object",
+      "required": [
+        "vaccines_due",
+        "count"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "vaccines_due": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "count": {
+          "type": "integer"
+        }
+      }
+    },
+    "params_muster_check_rations_expiry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "as_of": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Audit baseline date YYYY-MM-DD"
+        },
+        "tier": {
+          "type": "string",
+          "description": "Readiness tier (e.g. 72h, 14d)"
+        }
+      }
+    },
+    "result_muster_check_rations_expiry": {
+      "type": "object",
+      "required": [
+        "expiring_rations",
+        "count"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "expiring_rations": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "count": {
+          "type": "integer"
+        }
+      }
+    },
+    "params_muster_audit_bugout_bag": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bag_id"
+      ],
+      "properties": {
+        "bag_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Bug-out kit or bag identifier"
+        }
+      }
+    },
+    "result_muster_audit_bugout_bag": {
+      "type": "object",
+      "required": [
+        "bag_id",
+        "status",
+        "missing_items"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "bag_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "missing_items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "params_breadboard_query_pinout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "board_id"
+      ],
+      "properties": {
+        "board_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Development board model identifier"
+        },
+        "pin_number": {
+          "type": "string",
+          "description": "Specific GPIO pin designator"
+        }
+      }
+    },
+    "result_breadboard_query_pinout": {
+      "type": "object",
+      "required": [
+        "board_id",
+        "pinout"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "board_id": {
+          "type": "string"
+        },
+        "pinout": {
+          "type": "object"
+        }
+      }
+    },
+    "params_breadboard_link_schematic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "board_id",
+        "schematic_cas"
+      ],
+      "properties": {
+        "board_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Board identifier"
+        },
+        "schematic_cas": {
+          "type": "string",
+          "minLength": 1,
+          "description": "CAS address of CAD schematic"
+        },
+        "revision": {
+          "type": "string",
+          "description": "Hardware revision string"
+        }
+      }
+    },
+    "result_breadboard_link_schematic": {
+      "type": "object",
+      "required": [
+        "board_id",
+        "linked"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "board_id": {
+          "type": "string"
+        },
+        "linked": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_pavilion_generate_cue_sheet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event_id"
+      ],
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Event production identifier"
+        }
+      }
+    },
+    "result_pavilion_generate_cue_sheet": {
+      "type": "object",
+      "required": [
+        "event_id",
+        "cue_sheet"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "event_id": {
+          "type": "string"
+        },
+        "cue_sheet": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "params_pavilion_tally_rsvps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event_id"
+      ],
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Event production identifier"
+        }
+      }
+    },
+    "result_pavilion_tally_rsvps": {
+      "type": "object",
+      "required": [
+        "event_id",
+        "total_confirmed",
+        "capacity"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "event_id": {
+          "type": "string"
+        },
+        "total_confirmed": {
+          "type": "integer"
+        },
+        "capacity": {
+          "type": "integer"
+        }
+      }
+    },
+    "params_charthouse_query_timeline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "campaign_id"
+      ],
+      "properties": {
+        "campaign_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Campaign identifier"
+        },
+        "epoch": {
+          "type": "string",
+          "description": "Historical timeline epoch"
+        }
+      }
+    },
+    "result_charthouse_query_timeline": {
+      "type": "object",
+      "required": [
+        "campaign_id",
+        "timeline_events"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "campaign_id": {
+          "type": "string"
+        },
+        "timeline_events": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "params_charthouse_get_lore_node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "node_key"
+      ],
+      "properties": {
+        "node_key": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hierarchical lore node key"
+        }
+      }
+    },
+    "result_charthouse_get_lore_node": {
+      "type": "object",
+      "required": [
+        "node_key",
+        "content",
+        "connected_nodes"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "node_key": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "connected_nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "params_commonwealth_log_hours": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "initiative_name",
+        "volunteer_urn",
+        "hours"
+      ],
+      "properties": {
+        "initiative_name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Community initiative name"
+        },
+        "volunteer_urn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Volunteer contact URN"
+        },
+        "hours": {
+          "type": "number",
+          "description": "Hours contributed"
+        },
+        "date": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Contribution date YYYY-MM-DD"
+        }
+      }
+    },
+    "result_commonwealth_log_hours": {
+      "type": "object",
+      "required": [
+        "log_id",
+        "logged"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "log_id": {
+          "type": "string"
+        },
+        "logged": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_commonwealth_list_aid_roster": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "initiative_name": {
+          "type": "string",
+          "description": "Community initiative name"
+        }
+      }
+    },
+    "result_commonwealth_list_aid_roster": {
+      "type": "object",
+      "required": [
+        "volunteers",
+        "count"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "volunteers": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "count": {
+          "type": "integer"
+        }
+      }
+    },
+    "params_relay_send_heartbeat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "channel_id"
+      ],
+      "properties": {
+        "channel_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Heartbeat channel identifier"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/isoDateTime",
+          "description": "Heartbeat UTC timestamp"
+        }
+      }
+    },
+    "result_relay_send_heartbeat": {
+      "type": "object",
+      "required": [
+        "channel_id",
+        "received_at",
+        "status"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "channel_id": {
+          "type": "string"
+        },
+        "received_at": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "params_relay_test_deadman_trigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "channel_id"
+      ],
+      "properties": {
+        "channel_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Heartbeat channel identifier"
+        },
+        "dry_run": {
+          "type": "boolean",
+          "description": "Dry-run simulation flag"
+        }
+      }
+    },
+    "result_relay_test_deadman_trigger": {
+      "type": "object",
+      "required": [
+        "channel_id",
+        "simulated",
+        "target_recipients"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "channel_id": {
+          "type": "string"
+        },
+        "simulated": {
+          "type": "boolean"
+        },
+        "target_recipients": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     }
@@ -5257,6 +7223,2561 @@
         ]
       },
       "broadcasts": []
+    },
+    "gavel.record_minutes": {
+      "vessel": "gavel",
+      "method": "gavel.record_minutes",
+      "description": "Record formal committee meeting minutes and attendee attendance.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "gavel.record_minutes",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "committee_slug",
+            "meeting_date",
+            "notes"
+          ],
+          "optional": [
+            "attendees"
+          ],
+          "schemaRef": "#/$defs/params_gavel_record_minutes"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_gavel_record_minutes",
+        "keys": [
+          "minutes_id",
+          "recorded"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_gavel_record_minutes schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.gavel.minutes_recorded",
+          "when": "committee minutes archived",
+          "payload": {
+            "committee_slug": "<slug>",
+            "meeting_date": "<date>"
+          }
+        }
+      ]
+    },
+    "gavel.tally_motion": {
+      "vessel": "gavel",
+      "method": "gavel.tally_motion",
+      "description": "Tally votes and record the outcome of a committee motion.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "gavel.tally_motion",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "committee_slug",
+            "motion_id",
+            "yeas",
+            "nays"
+          ],
+          "optional": [
+            "abstentions"
+          ],
+          "schemaRef": "#/$defs/params_gavel_tally_motion"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_gavel_tally_motion",
+        "keys": [
+          "passed",
+          "total_votes"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_gavel_tally_motion schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.gavel.motion_tallied",
+          "when": "motion vote count finalized",
+          "payload": {
+            "motion_id": "<motion>",
+            "passed": true
+          }
+        }
+      ]
+    },
+    "lineage.query_ancestors": {
+      "vessel": "lineage",
+      "method": "lineage.query_ancestors",
+      "description": "Query ancestor pedigree tree for an individual node.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "lineage.query_ancestors",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "individual_urn"
+          ],
+          "optional": [
+            "generations"
+          ],
+          "schemaRef": "#/$defs/params_lineage_query_ancestors"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_lineage_query_ancestors",
+        "keys": [
+          "ancestors",
+          "count"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_lineage_query_ancestors schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "lineage.add_individual": {
+      "vessel": "lineage",
+      "method": "lineage.add_individual",
+      "description": "Add a new individual to the genealogical ledger.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "lineage.add_individual",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "name",
+            "pedigree_branch"
+          ],
+          "optional": [
+            "gedcom_id",
+            "birth_date"
+          ],
+          "schemaRef": "#/$defs/params_lineage_add_individual"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_lineage_add_individual",
+        "keys": [
+          "individual_urn",
+          "created"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_lineage_add_individual schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.lineage.individual_added",
+          "when": "individual registered in pedigree",
+          "payload": {
+            "individual_urn": "<urn>",
+            "name": "<name>"
+          }
+        }
+      ]
+    },
+    "legacy.verify_trust": {
+      "vessel": "legacy",
+      "method": "legacy.verify_trust",
+      "description": "Verify trust integrity, fiduciary delegation, and durable POA credentials.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "legacy.verify_trust",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "trust_ref"
+          ],
+          "optional": [
+            "durable_poa_hash"
+          ],
+          "schemaRef": "#/$defs/params_legacy_verify_trust"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_legacy_verify_trust",
+        "keys": [
+          "verified",
+          "status"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_legacy_verify_trust schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "legacy.update_executor": {
+      "vessel": "legacy",
+      "method": "legacy.update_executor",
+      "description": "Update designated executor contact URN for estate trust.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "legacy.update_executor",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "trust_ref",
+            "executor_contact_urn"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_legacy_update_executor"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_legacy_update_executor",
+        "keys": [
+          "trust_ref",
+          "updated"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_legacy_update_executor schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.legacy.executor_updated",
+          "when": "estate executor assignment modified",
+          "payload": {
+            "trust_ref": "<ref>",
+            "executor_contact_urn": "<urn>"
+          }
+        }
+      ]
+    },
+    "arbor.get_planting_schedule": {
+      "vessel": "arbor",
+      "method": "arbor.get_planting_schedule",
+      "description": "Retrieve optimal planting calendar based on USDA planting zone and species.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "arbor.get_planting_schedule",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "planting_zone"
+          ],
+          "optional": [
+            "taxonomic_species"
+          ],
+          "schemaRef": "#/$defs/params_arbor_get_planting_schedule"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_arbor_get_planting_schedule",
+        "keys": [
+          "zone",
+          "schedule"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_arbor_get_planting_schedule schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "arbor.record_amendment": {
+      "vessel": "arbor",
+      "method": "arbor.record_amendment",
+      "description": "Log soil amendment or pH modification for a garden bed plot.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "arbor.record_amendment",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "plot_id",
+            "soil_ph",
+            "amendment_type"
+          ],
+          "optional": [
+            "date"
+          ],
+          "schemaRef": "#/$defs/params_arbor_record_amendment"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_arbor_record_amendment",
+        "keys": [
+          "plot_id",
+          "recorded"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_arbor_record_amendment schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.arbor.amendment_recorded",
+          "when": "soil amendment logged",
+          "payload": {
+            "plot_id": "<plot>",
+            "soil_ph": 6.5
+          }
+        }
+      ]
+    },
+    "the_glass.query_barometer": {
+      "vessel": "the_glass",
+      "method": "the_glass.query_barometer",
+      "description": "Query barometric pressure trends from meteorological sensor stations.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "the_glass.query_barometer",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "station_id"
+          ],
+          "optional": [
+            "hours"
+          ],
+          "schemaRef": "#/$defs/params_the_glass_query_barometer"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_the_glass_query_barometer",
+        "keys": [
+          "station_id",
+          "current_hpa",
+          "trend"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_the_glass_query_barometer schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "the_glass.log_tide": {
+      "vessel": "the_glass",
+      "method": "the_glass.log_tide",
+      "description": "Record tide gauge level telemetry and tidal phase observation.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "the_glass.log_tide",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "tide_gauge_urn",
+            "height_meters"
+          ],
+          "optional": [
+            "timestamp"
+          ],
+          "schemaRef": "#/$defs/params_the_glass_log_tide"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_the_glass_log_tide",
+        "keys": [
+          "tide_gauge_urn",
+          "recorded"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_the_glass_log_tide schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.the_glass.tide_logged",
+          "when": "tide observation logged",
+          "payload": {
+            "tide_gauge_urn": "<urn>",
+            "height_meters": 1.85
+          }
+        }
+      ]
+    },
+    "dispatch.log_outbound": {
+      "vessel": "dispatch",
+      "method": "dispatch.log_outbound",
+      "description": "Log outbound postal package or courier shipment with tracking identifier.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "dispatch.log_outbound",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "sender_urn",
+            "recipient_urn",
+            "courier_tracking"
+          ],
+          "optional": [
+            "postmark_date"
+          ],
+          "schemaRef": "#/$defs/params_dispatch_log_outbound"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_dispatch_log_outbound",
+        "keys": [
+          "dispatch_id",
+          "logged"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_dispatch_log_outbound schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.dispatch.outbound_logged",
+          "when": "outbound parcel logged",
+          "payload": {
+            "courier_tracking": "<tracking>"
+          }
+        }
+      ]
+    },
+    "dispatch.trace_delivery": {
+      "vessel": "dispatch",
+      "method": "dispatch.trace_delivery",
+      "description": "Trace status and transit history of an active courier tracking number.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "dispatch.trace_delivery",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "courier_tracking"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_dispatch_trace_delivery"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_dispatch_trace_delivery",
+        "keys": [
+          "courier_tracking",
+          "status"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_dispatch_trace_delivery schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "registry.check_expiry": {
+      "vessel": "registry",
+      "method": "registry.check_expiry",
+      "description": "Scan vaulted vital registry documents for impending credential expiration.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "registry.check_expiry",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "document_type"
+          ],
+          "optional": [
+            "jurisdiction"
+          ],
+          "schemaRef": "#/$defs/params_registry_check_expiry"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_registry_check_expiry",
+        "keys": [
+          "expiring_documents",
+          "count"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_registry_check_expiry schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "registry.vault_document": {
+      "vessel": "registry",
+      "method": "registry.vault_document",
+      "description": "Store encrypted vital document payload in sovereign credential vault.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "registry.vault_document",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "document_type",
+            "issuing_jurisdiction",
+            "expiry_date",
+            "encrypted_credential_cas"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_registry_vault_document"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_registry_vault_document",
+        "keys": [
+          "doc_urn",
+          "vaulted"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_registry_vault_document schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.registry.document_vaulted",
+          "when": "vital record vaulted",
+          "payload": {
+            "doc_urn": "<urn>",
+            "document_type": "<type>"
+          }
+        }
+      ]
+    },
+    "purser.list_subscriptions": {
+      "vessel": "purser",
+      "method": "purser.list_subscriptions",
+      "description": "List recurring SaaS, utility, and vendor subscriptions with burn metrics.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "purser.list_subscriptions",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [],
+          "optional": [
+            "active_only",
+            "billing_cadence"
+          ],
+          "schemaRef": "#/$defs/params_purser_list_subscriptions"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_purser_list_subscriptions",
+        "keys": [
+          "subscriptions",
+          "total_monthly_usd"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_purser_list_subscriptions schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "purser.calc_burn_rate": {
+      "vessel": "purser",
+      "method": "purser.calc_burn_rate",
+      "description": "Calculate operational monthly and annualized subscription burn rate.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "purser.calc_burn_rate",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [],
+          "optional": [
+            "timeframe_months"
+          ],
+          "schemaRef": "#/$defs/params_purser_calc_burn_rate"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_purser_calc_burn_rate",
+        "keys": [
+          "burn_rate_usd",
+          "monthly_recurring_usd",
+          "projected_annual_usd"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_purser_calc_burn_rate schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "cadence.log_habit_hit": {
+      "vessel": "cadence",
+      "method": "cadence.log_habit_hit",
+      "description": "Record completion of a scheduled daily ritual or habit discipline.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "cadence.log_habit_hit",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "habit_id"
+          ],
+          "optional": [
+            "date",
+            "notes"
+          ],
+          "schemaRef": "#/$defs/params_cadence_log_habit_hit"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_cadence_log_habit_hit",
+        "keys": [
+          "streak_count_current",
+          "best_streak",
+          "hit_recorded"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_cadence_log_habit_hit schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.cadence.habit_logged",
+          "when": "habit ritual completed",
+          "payload": {
+            "habit_id": "<id>",
+            "streak": 1
+          }
+        }
+      ]
+    },
+    "cadence.query_streaks": {
+      "vessel": "cadence",
+      "method": "cadence.query_streaks",
+      "description": "Query streak metrics and retention health across habit commitments.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "cadence.query_streaks",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [],
+          "optional": [
+            "habit_id",
+            "min_streak"
+          ],
+          "schemaRef": "#/$defs/params_cadence_query_streaks"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_cadence_query_streaks",
+        "keys": [
+          "habits",
+          "total_active_streaks"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_cadence_query_streaks schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "reckoning.audit_bias": {
+      "vessel": "reckoning",
+      "method": "reckoning.audit_bias",
+      "description": "Audit cognitive biases and pre-mortem vulnerabilities in a strategic decision.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "reckoning.audit_bias",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "decision_id"
+          ],
+          "optional": [
+            "framework"
+          ],
+          "schemaRef": "#/$defs/params_reckoning_audit_bias"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_reckoning_audit_bias",
+        "keys": [
+          "decision_id",
+          "bias_flags",
+          "risk_score"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_reckoning_audit_bias schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "reckoning.log_decision": {
+      "vessel": "reckoning",
+      "method": "reckoning.log_decision",
+      "description": "Record structured architectural or strategic decision with pre-mortem analysis.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "reckoning.log_decision",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "decision_title",
+            "framework",
+            "rationale"
+          ],
+          "optional": [
+            "risk_tags"
+          ],
+          "schemaRef": "#/$defs/params_reckoning_log_decision"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_reckoning_log_decision",
+        "keys": [
+          "decision_id",
+          "recorded"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_reckoning_log_decision schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.reckoning.decision_logged",
+          "when": "decision registered in reckoning journal",
+          "payload": {
+            "decision_id": "<id>"
+          }
+        }
+      ]
+    },
+    "strongbox.audit_keys": {
+      "vessel": "strongbox",
+      "method": "strongbox.audit_keys",
+      "description": "Audit hardware security keys, subkeys, and expiration status.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "strongbox.audit_keys",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [],
+          "optional": [
+            "hardware_token_serial"
+          ],
+          "schemaRef": "#/$defs/params_strongbox_audit_keys"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_strongbox_audit_keys",
+        "keys": [
+          "keys",
+          "stale_count"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_strongbox_audit_keys schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "strongbox.derive_fingerprint": {
+      "vessel": "strongbox",
+      "method": "strongbox.derive_fingerprint",
+      "description": "Derive cryptographic fingerprint for an asymmetric public key.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "strongbox.derive_fingerprint",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "public_key",
+            "key_algorithm"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_strongbox_derive_fingerprint"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_strongbox_derive_fingerprint",
+        "keys": [
+          "fingerprint",
+          "algorithm"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_strongbox_derive_fingerprint schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "trajectory.add_milestone": {
+      "vessel": "trajectory",
+      "method": "trajectory.add_milestone",
+      "description": "Record career milestone, publication, or organizational tenure achievement.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "trajectory.add_milestone",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "role_title",
+            "organization_urn",
+            "milestone_title"
+          ],
+          "optional": [
+            "date"
+          ],
+          "schemaRef": "#/$defs/params_trajectory_add_milestone"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_trajectory_add_milestone",
+        "keys": [
+          "milestone_id",
+          "added"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_trajectory_add_milestone schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.trajectory.milestone_added",
+          "when": "career milestone logged",
+          "payload": {
+            "milestone_id": "<id>"
+          }
+        }
+      ]
+    },
+    "trajectory.export_cv": {
+      "vessel": "trajectory",
+      "method": "trajectory.export_cv",
+      "description": "Export chronological curriculum vitae in specified serialization format.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "trajectory.export_cv",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [],
+          "optional": [
+            "format",
+            "include_private"
+          ],
+          "schemaRef": "#/$defs/params_trajectory_export_cv"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_trajectory_export_cv",
+        "keys": [
+          "rendered_output",
+          "format"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_trajectory_export_cv schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "binnacle.search_axioms": {
+      "vessel": "binnacle",
+      "method": "binnacle.search_axioms",
+      "description": "Search philosophical axioms, core credos, and canonized tenets.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "binnacle.search_axioms",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "query"
+          ],
+          "optional": [
+            "tradition"
+          ],
+          "schemaRef": "#/$defs/params_binnacle_search_axioms"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_binnacle_search_axioms",
+        "keys": [
+          "axioms",
+          "count"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_binnacle_search_axioms schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "binnacle.annotate_scripture": {
+      "vessel": "binnacle",
+      "method": "binnacle.annotate_scripture",
+      "description": "Attach personal commentary or ethical reflection to canonical scripture passage.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "binnacle.annotate_scripture",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "scripture_ref",
+            "annotation"
+          ],
+          "optional": [
+            "credo_key"
+          ],
+          "schemaRef": "#/$defs/params_binnacle_annotate_scripture"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_binnacle_annotate_scripture",
+        "keys": [
+          "annotation_id",
+          "saved"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_binnacle_annotate_scripture schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.binnacle.scripture_annotated",
+          "when": "scripture passage annotated",
+          "payload": {
+            "scripture_ref": "<ref>"
+          }
+        }
+      ]
+    },
+    "claim.record_prior_art": {
+      "vessel": "claim",
+      "method": "claim.record_prior_art",
+      "description": "Associate prior art reference or literature citation with a patent claim.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "claim.record_prior_art",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "patent_number",
+            "prior_art_urn"
+          ],
+          "optional": [
+            "notes"
+          ],
+          "schemaRef": "#/$defs/params_claim_record_prior_art"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_claim_record_prior_art",
+        "keys": [
+          "patent_number",
+          "recorded"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_claim_record_prior_art schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.claim.prior_art_recorded",
+          "when": "prior art attached to claim",
+          "payload": {
+            "patent_number": "<pat>",
+            "prior_art_urn": "<urn>"
+          }
+        }
+      ]
+    },
+    "claim.check_filing_status": {
+      "vessel": "claim",
+      "method": "claim.check_filing_status",
+      "description": "Query prosecution and office action status for a registered patent.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "claim.check_filing_status",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "patent_number"
+          ],
+          "optional": [
+            "jurisdiction"
+          ],
+          "schemaRef": "#/$defs/params_claim_check_filing_status"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_claim_check_filing_status",
+        "keys": [
+          "patent_number",
+          "status"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_claim_check_filing_status schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "tribute.query_sizes": {
+      "vessel": "tribute",
+      "method": "tribute.query_sizes",
+      "description": "Lookup tailoring measurements and gift sizing profile for a contact.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "tribute.query_sizes",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "recipient_contact_urn"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_tribute_query_sizes"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_tribute_query_sizes",
+        "keys": [
+          "recipient_contact_urn",
+          "sizing_profile"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_tribute_query_sizes schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "tribute.log_gift": {
+      "vessel": "tribute",
+      "method": "tribute.log_gift",
+      "description": "Record gift sent or received and update reciprocity ledger balance.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "tribute.log_gift",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "recipient_contact_urn",
+            "gift_item"
+          ],
+          "optional": [
+            "value_usd",
+            "date"
+          ],
+          "schemaRef": "#/$defs/params_tribute_log_gift"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_tribute_log_gift",
+        "keys": [
+          "gift_id",
+          "logged",
+          "reciprocity_balance"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_tribute_log_gift schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.tribute.gift_logged",
+          "when": "gift transaction recorded",
+          "payload": {
+            "recipient_contact_urn": "<urn>",
+            "gift_item": "<item>"
+          }
+        }
+      ]
+    },
+    "weft.query_inventory": {
+      "vessel": "weft",
+      "method": "weft.query_inventory",
+      "description": "Query wardrobe inventory by garment category and textile composition.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "weft.query_inventory",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [],
+          "optional": [
+            "category",
+            "material"
+          ],
+          "schemaRef": "#/$defs/params_weft_query_inventory"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_weft_query_inventory",
+        "keys": [
+          "garments",
+          "total_items"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_weft_query_inventory schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "weft.log_tailoring": {
+      "vessel": "weft",
+      "method": "weft.log_tailoring",
+      "description": "Log bespoke tailoring alterations and updated body measurements.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "weft.log_tailoring",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "garment_id",
+            "alteration_notes"
+          ],
+          "optional": [
+            "measurements"
+          ],
+          "schemaRef": "#/$defs/params_weft_log_tailoring"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_weft_log_tailoring",
+        "keys": [
+          "garment_id",
+          "tailored"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_weft_log_tailoring schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.weft.tailoring_logged",
+          "when": "tailoring alteration recorded",
+          "payload": {
+            "garment_id": "<id>"
+          }
+        }
+      ]
+    },
+    "reverie.log_dream": {
+      "vessel": "reverie",
+      "method": "reverie.log_dream",
+      "description": "Record dream journal entry with motif tags, sleep stage, and lucidity level.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "reverie.log_dream",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "description",
+            "lucidity_level"
+          ],
+          "optional": [
+            "motif_tags",
+            "date"
+          ],
+          "schemaRef": "#/$defs/params_reverie_log_dream"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_reverie_log_dream",
+        "keys": [
+          "dream_id",
+          "logged"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_reverie_log_dream schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.reverie.dream_logged",
+          "when": "dream entry committed",
+          "payload": {
+            "dream_id": "<id>",
+            "lucidity": 4
+          }
+        }
+      ]
+    },
+    "reverie.search_motifs": {
+      "vessel": "reverie",
+      "method": "reverie.search_motifs",
+      "description": "Search recurring archetypal dream motifs and analyze frequency.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "reverie.search_motifs",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "motif"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_reverie_search_motifs"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_reverie_search_motifs",
+        "keys": [
+          "dreams",
+          "frequency"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_reverie_search_motifs schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "provenance.verify_chain": {
+      "vessel": "provenance",
+      "method": "provenance.verify_chain",
+      "description": "Verify custody chain and cryptographic authenticity certificate for an asset.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "provenance.verify_chain",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "item_urn"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_provenance_verify_chain"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_provenance_verify_chain",
+        "keys": [
+          "item_urn",
+          "verified",
+          "custody_chain"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_provenance_verify_chain schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "provenance.add_appraisal": {
+      "vessel": "provenance",
+      "method": "provenance.add_appraisal",
+      "description": "Record formal certified valuation appraisal for a provenance asset.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "provenance.add_appraisal",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "item_urn",
+            "appraisal_usd",
+            "appraiser"
+          ],
+          "optional": [
+            "date"
+          ],
+          "schemaRef": "#/$defs/params_provenance_add_appraisal"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_provenance_add_appraisal",
+        "keys": [
+          "item_urn",
+          "recorded"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_provenance_add_appraisal schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.provenance.appraisal_added",
+          "when": "certified appraisal logged",
+          "payload": {
+            "item_urn": "<urn>",
+            "appraisal_usd": 32000.0
+          }
+        }
+      ]
+    },
+    "menagerie.log_vet_visit": {
+      "vessel": "menagerie",
+      "method": "menagerie.log_vet_visit",
+      "description": "Record veterinary clinic visit, clinical diagnosis, and medication orders.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "menagerie.log_vet_visit",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "pet_id",
+            "clinic_urn",
+            "diagnosis"
+          ],
+          "optional": [
+            "date"
+          ],
+          "schemaRef": "#/$defs/params_menagerie_log_vet_visit"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_menagerie_log_vet_visit",
+        "keys": [
+          "visit_id",
+          "logged"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_menagerie_log_vet_visit schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.menagerie.vet_visit_logged",
+          "when": "vet clinical visit logged",
+          "payload": {
+            "pet_id": "<pet>",
+            "clinic_urn": "<urn>"
+          }
+        }
+      ]
+    },
+    "menagerie.list_vaccines_due": {
+      "vessel": "menagerie",
+      "method": "menagerie.list_vaccines_due",
+      "description": "Query upcoming and overdue vaccinations across domestic animals.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "menagerie.list_vaccines_due",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [],
+          "optional": [
+            "pet_id",
+            "as_of"
+          ],
+          "schemaRef": "#/$defs/params_menagerie_list_vaccines_due"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_menagerie_list_vaccines_due",
+        "keys": [
+          "vaccines_due",
+          "count"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_menagerie_list_vaccines_due schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "muster.check_rations_expiry": {
+      "vessel": "muster",
+      "method": "muster.check_rations_expiry",
+      "description": "Audit shelf-life expiration dates for emergency survival rations.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "muster.check_rations_expiry",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [],
+          "optional": [
+            "as_of",
+            "tier"
+          ],
+          "schemaRef": "#/$defs/params_muster_check_rations_expiry"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_muster_check_rations_expiry",
+        "keys": [
+          "expiring_rations",
+          "count"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_muster_check_rations_expiry schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "muster.audit_bugout_bag": {
+      "vessel": "muster",
+      "method": "muster.audit_bugout_bag",
+      "description": "Audit emergency bug-out bag contents against essential readiness checklist.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "muster.audit_bugout_bag",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "bag_id"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_muster_audit_bugout_bag"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_muster_audit_bugout_bag",
+        "keys": [
+          "bag_id",
+          "status",
+          "missing_items"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_muster_audit_bugout_bag schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "breadboard.query_pinout": {
+      "vessel": "breadboard",
+      "method": "breadboard.query_pinout",
+      "description": "Query GPIO pinout assignment and hardware bus mapping for development boards.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "breadboard.query_pinout",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "board_id"
+          ],
+          "optional": [
+            "pin_number"
+          ],
+          "schemaRef": "#/$defs/params_breadboard_query_pinout"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_breadboard_query_pinout",
+        "keys": [
+          "board_id",
+          "pinout"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_breadboard_query_pinout schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "breadboard.link_schematic": {
+      "vessel": "breadboard",
+      "method": "breadboard.link_schematic",
+      "description": "Link electronic CAD schematic or PCB revision to breadboard hardware profile.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "breadboard.link_schematic",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "board_id",
+            "schematic_cas"
+          ],
+          "optional": [
+            "revision"
+          ],
+          "schemaRef": "#/$defs/params_breadboard_link_schematic"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_breadboard_link_schematic",
+        "keys": [
+          "board_id",
+          "linked"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_breadboard_link_schematic schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.breadboard.schematic_linked",
+          "when": "schematic attached to board",
+          "payload": {
+            "board_id": "<board>",
+            "revision": "Rev C"
+          }
+        }
+      ]
+    },
+    "pavilion.generate_cue_sheet": {
+      "vessel": "pavilion",
+      "method": "pavilion.generate_cue_sheet",
+      "description": "Generate sequential run-of-show cue sheet for event production.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "pavilion.generate_cue_sheet",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "event_id"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_pavilion_generate_cue_sheet"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_pavilion_generate_cue_sheet",
+        "keys": [
+          "event_id",
+          "cue_sheet"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_pavilion_generate_cue_sheet schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "pavilion.tally_rsvps": {
+      "vessel": "pavilion",
+      "method": "pavilion.tally_rsvps",
+      "description": "Tally confirmed, declined, and pending attendee RSVPs against venue capacity.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "pavilion.tally_rsvps",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "event_id"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_pavilion_tally_rsvps"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_pavilion_tally_rsvps",
+        "keys": [
+          "event_id",
+          "total_confirmed",
+          "capacity"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_pavilion_tally_rsvps schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "charthouse.query_timeline": {
+      "vessel": "charthouse",
+      "method": "charthouse.query_timeline",
+      "description": "Query campaign timeline events within a historical epoch or world setting.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "charthouse.query_timeline",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "campaign_id"
+          ],
+          "optional": [
+            "epoch"
+          ],
+          "schemaRef": "#/$defs/params_charthouse_query_timeline"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_charthouse_query_timeline",
+        "keys": [
+          "campaign_id",
+          "timeline_events"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_charthouse_query_timeline schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "charthouse.get_lore_node": {
+      "vessel": "charthouse",
+      "method": "charthouse.get_lore_node",
+      "description": "Retrieve worldbuilding lore node and transcluded narrative connections.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "charthouse.get_lore_node",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "node_key"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_charthouse_get_lore_node"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_charthouse_get_lore_node",
+        "keys": [
+          "node_key",
+          "content",
+          "connected_nodes"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_charthouse_get_lore_node schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "commonwealth.log_hours": {
+      "vessel": "commonwealth",
+      "method": "commonwealth.log_hours",
+      "description": "Log volunteer civic hours contributed to a mutual aid initiative.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "commonwealth.log_hours",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "initiative_name",
+            "volunteer_urn",
+            "hours"
+          ],
+          "optional": [
+            "date"
+          ],
+          "schemaRef": "#/$defs/params_commonwealth_log_hours"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_commonwealth_log_hours",
+        "keys": [
+          "log_id",
+          "logged"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_commonwealth_log_hours schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.commonwealth.hours_logged",
+          "when": "volunteer hours recorded",
+          "payload": {
+            "initiative_name": "<init>",
+            "hours": 4.5
+          }
+        }
+      ]
+    },
+    "commonwealth.list_aid_roster": {
+      "vessel": "commonwealth",
+      "method": "commonwealth.list_aid_roster",
+      "description": "List active volunteer roster and skill assignments for a community initiative.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "commonwealth.list_aid_roster",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [],
+          "optional": [
+            "initiative_name"
+          ],
+          "schemaRef": "#/$defs/params_commonwealth_list_aid_roster"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_commonwealth_list_aid_roster",
+        "keys": [
+          "volunteers",
+          "count"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_commonwealth_list_aid_roster schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "relay.send_heartbeat": {
+      "vessel": "relay",
+      "method": "relay.send_heartbeat",
+      "description": "Transmit liveness heartbeat signal resetting sovereign dead-man timer.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "relay.send_heartbeat",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "channel_id"
+          ],
+          "optional": [
+            "timestamp"
+          ],
+          "schemaRef": "#/$defs/params_relay_send_heartbeat"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_relay_send_heartbeat",
+        "keys": [
+          "channel_id",
+          "received_at",
+          "status"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_relay_send_heartbeat schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.relay.heartbeat_recorded",
+          "when": "liveness heartbeat confirmed",
+          "payload": {
+            "channel_id": "<channel>"
+          }
+        }
+      ]
+    },
+    "relay.test_deadman_trigger": {
+      "vessel": "relay",
+      "method": "relay.test_deadman_trigger",
+      "description": "Simulate dead-man switch timer expiration and verify trigger cascade dispatch.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "relay.test_deadman_trigger",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "channel_id"
+          ],
+          "optional": [
+            "dry_run"
+          ],
+          "schemaRef": "#/$defs/params_relay_test_deadman_trigger"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_relay_test_deadman_trigger",
+        "keys": [
+          "channel_id",
+          "simulated",
+          "target_recipients"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_relay_test_deadman_trigger schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.relay.deadman_tested",
+          "when": "deadman trigger dry-run simulated",
+          "payload": {
+            "channel_id": "<channel>",
+            "simulated": true
+          }
+        }
+      ]
     }
   }
 }
