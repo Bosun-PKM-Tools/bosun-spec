@@ -96,7 +96,8 @@
       "enum": [
         "nodes",
         "edges",
-        "subgraph_adjacency_matrix"
+        "subgraph_adjacency_matrix",
+        "shortest_path"
       ],
       "description": "Target projection formats to be produced by the graph query engine."
     },
@@ -338,6 +339,10 @@
           "type": "boolean",
           "default": true,
           "description": "Whether to traverse typed $pkm.relations."
+        },
+        "target_node": {
+          "$ref": "#/$defs/urn",
+          "description": "Optional destination node URN for point-to-point path finding or reachability."
         }
       }
     },
@@ -442,6 +447,10 @@
             "$ref": "#/$defs/projectionName"
           },
           "description": "Result projections to calculate (nodes, edges, and/or subgraph_adjacency_matrix)."
+        },
+        "target_node": {
+          "$ref": "#/$defs/urn",
+          "description": "Optional destination node URN for point-to-point path finding or reachability."
         },
         "limit": {
           "type": "integer",
@@ -615,6 +624,13 @@
         },
         "subgraph_adjacency_matrix": {
           "$ref": "#/$defs/subgraphAdjacencyMatrix"
+        },
+        "shortest_path": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/urn"
+          },
+          "description": "Ordered sequence of node URNs forming the shortest path from origin to target."
         },
         "metrics": {
           "type": "object",

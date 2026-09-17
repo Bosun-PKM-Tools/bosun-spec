@@ -240,6 +240,9 @@ class GraphQueryEngine:
         projections = query.get("projections", ["nodes", "edges"])
         limit = query.get("limit")
 
+        target_node_raw = query.get("target_node") or filters.get("target_node")
+        target_node = self.graph.resolve_urn(str(target_node_raw)) if target_node_raw else None
+
         # Determine seeds
         if not start_nodes:
             # All graph nodes matching initial realm filter
@@ -252,6 +255,7 @@ class GraphQueryEngine:
         visited_nodes: Set[str] = set()
         traversed_edges: List[Edge] = []
         node_depths: Dict[str, int] = {}
+        parent_map: Dict[str, str] = {}
 
         queue: deque[Tuple[str, int]] = deque()
         for root in start_nodes:
@@ -260,6 +264,7 @@ class GraphQueryEngine:
                 node_depths[root] = 0
                 queue.append((root, 0))
 
+        target_found = False
         while queue:
             current_id, depth = queue.popleft()
             if depth >= max_depth:
@@ -315,8 +320,14 @@ class GraphQueryEngine:
                 traversed_edges.append(edge)
                 if neighbor_id not in visited_nodes:
                     visited_nodes.add(neighbor_id)
+                    parent_map[neighbor_id] = current_id
                     node_depths[neighbor_id] = depth + 1
                     queue.append((neighbor_id, depth + 1))
+                    if target_node and neighbor_id == target_node:
+                        target_found = True
+                        break
+            if target_found:
+                break
 
         # Build Projection Results
         result: Dict[str, Any] = {
@@ -324,6 +335,21 @@ class GraphQueryEngine:
         }
         if query.get("query_id"):
             result["query_id"] = query["query_id"]
+
+        # If target_node was requested or shortest_path in projections, compute shortest_path
+        if target_node or "shortest_path" in projections:
+            if target_node and target_node in parent_map:
+                sp: List[str] = [target_node]
+                curr = target_node
+                while curr in parent_map:
+                    curr = parent_map[curr]
+                    sp.append(curr)
+                sp.reverse()
+                result["shortest_path"] = sp
+            elif target_node and target_node in start_nodes:
+                result["shortest_path"] = [target_node]
+            else:
+                result["shortest_path"] = []
 
         # Collect and project nodes
         ordered_node_ids = sorted(visited_nodes)
@@ -398,6 +424,43 @@ class GraphQueryEngine:
         }
 
         return result
+
+    def find_shortest_path(
+        self,
+        source_urn: str,
+        target_urn: str,
+        max_depth: int = 100
+    ) -> Optional[List[str]]:
+        """Compute the shortest path sequence of node URNs from source to target."""
+        src = self.graph.resolve_urn(source_urn)
+        tgt = self.graph.resolve_urn(target_urn)
+        if src == tgt:
+            return [src]
+
+        visited: Set[str] = {src}
+        parent: Dict[str, str] = {}
+        queue: deque[Tuple[str, int]] = deque([(src, 0)])
+
+        while queue:
+            curr, d = queue.popleft()
+            if d >= max_depth:
+                continue
+            for edge in self.graph.out_edges.get(curr, []):
+                nxt = edge.target
+                if nxt not in visited:
+                    visited.add(nxt)
+                    parent[nxt] = curr
+                    if nxt == tgt:
+                        # Reconstruct path
+                        path = [tgt]
+                        c = tgt
+                        while c in parent:
+                            c = parent[c]
+                            path.append(c)
+                        path.reverse()
+                        return path
+                    queue.append((nxt, d + 1))
+        return None
 
 
 def main() -> None:
