@@ -1,0 +1,21 @@
+{
+  "query_id": "invalid-illegal-predicate-in-path",
+  "linked_from": "urn:careen:project:018f3a00-0000-7000-8000-000000000009",
+  "direction": "outbound",
+  "edge_types": ["relations", "stage_gates"],
+  "max_depth": 2,
+  "match_realm": ["careen", "trice", "yeoman"],
+  "path": [
+    {
+      "predicate": "blocks",
+      "target": "urn:trice:task:018f3a00-0000-7000-8000-000000000003",
+      "target_realm": "trice"
+    },
+    {
+      "predicate": "appraisedBy",
+      "target": "urn:yeoman:contact:018f3a00-0000-7000-8000-000000000002",
+      "target_realm": "yeoman"
+    }
+  ],
+  "projections": ["nodes", "edges"]
+}
