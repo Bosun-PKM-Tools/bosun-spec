@@ -9,10 +9,14 @@ Implements directional graph traversal over:
 
 Applies filters:
   - `match_realm`: filter by single or multiple realm identifiers.
-  - `has_relation`: filter nodes possessing specified relation predicate or target.
+  - `has_relation`: OR of relation predicates (string, list, or relationFilter).
+  - `path`: ordered AND of relationFilter hops (every hop must match in sequence).
   - `linked_from`: origin root node URN(s) for directional traversal.
   - `max_depth`: maximum hop distance from origin.
   - `predicate_pattern`: regex pattern matching edge predicate labels.
+
+Indexes notes by `$pkm.id` plus realm-typed URN aliases from
+`lint_relations_graph.defined_urns_for_note` (e.g. `urn:careen:project:<uuid>`).
 
 Computes projections conforming to schemas/v1/query/graph-dsl.schema.json:
   - `nodes`: list of vertex definitions with realm, title, depth, and attributes.
@@ -37,11 +41,21 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from scripts.lint_relations_graph import (
+    STAGE_GATE_PREDICATES,
+    parse_note,
+    split_frontmatter,
+)
+
 _SCHEMA_PATH = _REPO_ROOT / "schemas" / "v1" / "query" / "graph-dsl.schema.json"
 
 _CANONICAL_URN_PATTERN = re.compile(r"urn:([a-z0-9_-]+):([a-z0-9_-]+):([0-9a-fA-F-]{36})")
 _UUID_URN_PATTERN = re.compile(r"^urn:uuid:([0-9a-fA-F-]{36})$")
 _WIKILINK_PATTERN = re.compile(r"\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|[^\]]+)?\]\]")
+_TITLE_LINE = re.compile(r"^title:\s*(.*)$", re.MULTILINE)
 
 
 @dataclass
@@ -91,100 +105,110 @@ class VaultGraph:
         return self.aliases.get(identifier, identifier)
 
 
+def _title_from_frontmatter(frontmatter: str, fallback: str) -> str:
+    """Best-effort root `title:` scalar; matches lint_relations_graph unquoting."""
+    match = _TITLE_LINE.search(frontmatter)
+    if not match:
+        return fallback
+    value = match.group(1).strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+        value = value[1:-1]
+    return value or fallback
+
+
+def _edge_type_allowed(
+    edge: Edge,
+    edge_types: Set[str],
+    include_wikilinks: bool,
+    include_relations: bool,
+) -> bool:
+    kind = edge.edge_type
+    if kind in ("wikilink", "wikilinks") and include_wikilinks is False:
+        return False
+    if kind in ("relation", "relations") and include_relations is False:
+        return False
+    if "all" in edge_types:
+        return True
+    if kind in edge_types:
+        return True
+    plural = kind if kind.endswith("s") else f"{kind}s"
+    singular = kind[:-1] if kind.endswith("s") else kind
+    if plural in edge_types or singular in edge_types:
+        return True
+    if "stage_gates" in edge_types or "stage_gate" in edge_types:
+        if kind in ("stage_gate", "stage_gates"):
+            return True
+        if kind in ("relation", "relations") and edge.predicate in STAGE_GATE_PREDICATES:
+            return True
+    return False
+
+
 def load_vault_graph(vault_dir: pathlib.Path) -> VaultGraph:
-    """Parse all Markdown notes in vault_dir and construct the directed graph."""
+    """Parse all Markdown notes in vault_dir and construct the directed graph.
+
+    Reuses ``lint_relations_graph.parse_note`` so realm-typed aliases
+    (``urn:yeoman:contact:<uuid>``, ``urn:trice:task:<uuid>``,
+    ``urn:careen:project:<uuid>``, ...) resolve to the same node as ``$pkm.id``.
+    """
     graph = VaultGraph()
     if not vault_dir.exists():
         return graph
 
-    try:
-        import yaml
-        _HAS_YAML = True
-    except ImportError:
-        _HAS_YAML = False
-
-    raw_notes = []
-    # Discover notes
-    for path in vault_dir.rglob("*.md"):
-        if not path.is_file():
-            continue
+    raw_notes: List[Tuple[Node, Any, str]] = []
+    for path in sorted(p for p in vault_dir.rglob("*.md") if p.is_file()):
         try:
             content = path.read_text(encoding="utf-8")
         except Exception:
             continue
-
-        frontmatter: Dict[str, Any] = {}
-        body = content
-        if content.startswith("---"):
-            parts = content.split("---", 2)
-            if len(parts) >= 3:
-                if _HAS_YAML:
-                    try:
-                        frontmatter = yaml.safe_load(parts[1]) or {}
-                    except Exception:
-                        pass
-                body = parts[2]
-
-        pkm = frontmatter.get("$pkm") if isinstance(frontmatter, dict) else {}
-        if not isinstance(pkm, dict):
-            pkm = {}
-
-        pkm_id = pkm.get("id")
-        realm = pkm.get("realm", path.parent.name.split("-", 1)[-1])
-        title = frontmatter.get("title", path.stem)
-        relpath = str(path.relative_to(vault_dir)).replace("\\", "/")
-
-        node_id = str(pkm_id) if pkm_id else f"urn:bosun:{realm}:{path.stem}"
+        record = parse_note(path, vault_dir)
+        _fm, body = split_frontmatter(content)
+        realm = record.realm or path.parent.name.split("-", 1)[-1]
+        node_id = record.pkm_id or f"urn:bosun:{realm}:{path.stem}"
         node = Node(
             id=node_id,
             realm=str(realm),
-            title=str(title),
-            path=relpath,
-            attributes={"frontmatter": frontmatter},
+            title=_title_from_frontmatter(_fm, path.stem),
+            path=record.relpath,
+            attributes={"relations": dict(record.relations)},
         )
-        aliases = [path.stem, f"[[{path.stem}]]", path.name]
+        aliases = list(record.defined_urns) + [path.stem, f"[[{path.stem}]]", path.name]
         graph.add_node(node, aliases=aliases)
-        raw_notes.append((node, pkm, body))
+        raw_notes.append((node, record, body))
 
-    # Second pass: wire relations and wikilinks
-    for node, pkm, body in raw_notes:
-        # Typed $pkm.relations
-        relations = pkm.get("relations")
-        if isinstance(relations, dict):
-            for predicate, targets in relations.items():
-                if isinstance(targets, str):
-                    target_list = [targets]
-                elif isinstance(targets, list):
-                    target_list = [str(t) for t in targets]
-                else:
-                    target_list = []
+    for node, record, body in raw_notes:
+        seen_edges: Set[Tuple[str, str, str]] = set()
 
-                for tgt in target_list:
-                    resolved_tgt = graph.resolve_urn(tgt)
-                    graph.add_edge(
-                        Edge(
-                            source=node.id,
-                            target=resolved_tgt,
-                            predicate=predicate,
-                            direction="outbound",
-                            edge_type="relation",
-                        )
-                    )
+        def _add(predicate: str, target: str, edge_type: str) -> None:
+            resolved_tgt = graph.resolve_urn(target)
+            key = (node.id, resolved_tgt, predicate)
+            if key in seen_edges:
+                return
+            seen_edges.add(key)
+            graph.add_edge(
+                Edge(
+                    source=node.id,
+                    target=resolved_tgt,
+                    predicate=predicate,
+                    direction="outbound",
+                    edge_type=edge_type,
+                )
+            )
 
-        # Markdown body wikilinks
+        for predicate, targets in record.relations.items():
+            for tgt in targets:
+                _add(predicate, tgt, "relation")
+
+        for predicate, target in record.stage_gate_edges:
+            edge_type = (
+                "relation" if predicate in record.relations else "stage_gate"
+            )
+            _add(predicate, target, edge_type)
+
         for match in _WIKILINK_PATTERN.finditer(body):
             target_slug = match.group(1).strip()
             resolved_target = graph.resolve_urn(target_slug)
             if resolved_target in graph.nodes:
-                graph.add_edge(
-                    Edge(
-                        source=node.id,
-                        target=resolved_target,
-                        predicate="wikilink",
-                        direction="outbound",
-                        edge_type="wikilink",
-                    )
-                )
+                _add("wikilink", resolved_target, "wikilink")
 
     return graph
 
@@ -194,6 +218,138 @@ class GraphQueryEngine:
 
     def __init__(self, graph: VaultGraph) -> None:
         self.graph = graph
+
+    def _candidate_edges(
+        self, node_id: str, direction: str
+    ) -> List[Tuple[Edge, str]]:
+        candidates: List[Tuple[Edge, str]] = []
+        if direction in ("outbound", "both", "bidirectional"):
+            for edge in self.graph.out_edges.get(node_id, []):
+                candidates.append((edge, self.graph.resolve_urn(edge.target)))
+        if direction in ("inbound", "both", "bidirectional"):
+            for edge in self.graph.in_edges.get(node_id, []):
+                in_edge = Edge(
+                    source=edge.target,
+                    target=edge.source,
+                    predicate=edge.predicate,
+                    direction="inbound",
+                    edge_type=edge.edge_type,
+                    weight=edge.weight,
+                    properties=edge.properties,
+                )
+                candidates.append((in_edge, self.graph.resolve_urn(edge.source)))
+        return candidates
+
+    def _hop_matches(
+        self,
+        edge: Edge,
+        hop: Dict[str, Any],
+        resolved_neighbor: str,
+        neighbor_node: Optional[Node],
+    ) -> bool:
+        if edge.predicate != hop.get("predicate"):
+            return False
+        if "target" in hop:
+            expected = self.graph.resolve_urn(str(hop["target"]))
+            if resolved_neighbor != expected:
+                return False
+        if "target_realm" in hop:
+            if (
+                neighbor_node is None
+                or neighbor_node.realm.lower() != str(hop["target_realm"]).lower()
+            ):
+                return False
+        return True
+
+    def _relation_constraint_matches(
+        self,
+        edge: Edge,
+        resolved_neighbor: str,
+        required_relations: Optional[Set[str]],
+        required_relation_obj: Optional[Dict[str, Any]],
+    ) -> bool:
+        """has_relation is an OR of predicates (or one relationFilter) on the edge."""
+        if required_relations and edge.predicate not in required_relations:
+            return False
+        if required_relation_obj:
+            return self._hop_matches(
+                edge,
+                required_relation_obj,
+                resolved_neighbor,
+                self.graph.nodes.get(resolved_neighbor),
+            )
+        return True
+
+    def _walk_path(
+        self,
+        start_nodes: List[str],
+        hops: List[Dict[str, Any]],
+        *,
+        direction: str,
+        max_depth: int,
+        edge_types: Set[str],
+        include_wikilinks: bool,
+        include_relations: bool,
+        pred_regex: Optional[re.Pattern[str]],
+        allowed_realms: Optional[Set[str]],
+    ) -> Tuple[Set[str], List[Edge], Dict[str, int]]:
+        """Walk an ordered AND of hops. Incomplete paths contribute no nodes."""
+        empty: Tuple[Set[str], List[Edge], Dict[str, int]] = (set(), [], {})
+        if not hops or max_depth < len(hops):
+            return empty
+
+        completed_nodes: Set[str] = set()
+        completed_edges: List[Edge] = []
+        node_depths: Dict[str, int] = {}
+        seen_edge_keys: Set[Tuple[str, str, str, str]] = set()
+
+        def _record(nodes_so_far: List[str], edges_so_far: List[Edge]) -> None:
+            for depth, nid in enumerate(nodes_so_far):
+                completed_nodes.add(nid)
+                prev = node_depths.get(nid)
+                if prev is None or depth < prev:
+                    node_depths[nid] = depth
+            for edge in edges_so_far:
+                key = (edge.source, edge.target, edge.predicate, edge.direction)
+                if key in seen_edge_keys:
+                    continue
+                seen_edge_keys.add(key)
+                completed_edges.append(edge)
+
+        def dfs(
+            node_id: str,
+            hop_idx: int,
+            nodes_so_far: List[str],
+            edges_so_far: List[Edge],
+        ) -> None:
+            if hop_idx == len(hops):
+                _record(nodes_so_far, edges_so_far)
+                return
+            hop = hops[hop_idx]
+            for edge, neighbor_id in self._candidate_edges(node_id, direction):
+                if not _edge_type_allowed(
+                    edge, edge_types, include_wikilinks, include_relations
+                ):
+                    continue
+                if pred_regex and not pred_regex.search(edge.predicate):
+                    continue
+                neighbor_node = self.graph.nodes.get(neighbor_id)
+                if allowed_realms and neighbor_node:
+                    if neighbor_node.realm.lower() not in allowed_realms:
+                        continue
+                if not self._hop_matches(edge, hop, neighbor_id, neighbor_node):
+                    continue
+                dfs(
+                    neighbor_id,
+                    hop_idx + 1,
+                    nodes_so_far + [neighbor_id],
+                    edges_so_far + [edge],
+                )
+
+        for root in start_nodes:
+            if root in self.graph.nodes:
+                dfs(root, 0, [root], [])
+        return completed_nodes, completed_edges, node_depths
 
     def execute(self, query: Dict[str, Any]) -> Dict[str, Any]:
         """Execute a graph query dictionary and return projected results."""
@@ -236,6 +392,12 @@ class GraphQueryEngine:
         direction = query.get("direction", "outbound").lower()
         max_depth = query.get("max_depth", filters.get("max_depth", 1))
         edge_types = set(query.get("edge_types", ["relations", "wikilinks"]))
+        include_wikilinks = filters.get("include_wikilinks", True)
+        include_relations = filters.get("include_relations", True)
+
+        path_hops = query.get("path") or filters.get("path")
+        if not isinstance(path_hops, list) or not path_hops:
+            path_hops = None
 
         projections = query.get("projections", ["nodes", "edges"])
         limit = query.get("limit")
@@ -251,83 +413,70 @@ class GraphQueryEngine:
                     continue
                 start_nodes.append(node_id)
 
-        # BFS Traversal
         visited_nodes: Set[str] = set()
         traversed_edges: List[Edge] = []
         node_depths: Dict[str, int] = {}
         parent_map: Dict[str, str] = {}
 
-        queue: deque[Tuple[str, int]] = deque()
-        for root in start_nodes:
-            if root in self.graph.nodes:
-                visited_nodes.add(root)
-                node_depths[root] = 0
-                queue.append((root, 0))
+        if path_hops:
+            visited_nodes, traversed_edges, node_depths = self._walk_path(
+                start_nodes,
+                path_hops,
+                direction=direction,
+                max_depth=max_depth,
+                edge_types=edge_types,
+                include_wikilinks=bool(include_wikilinks),
+                include_relations=bool(include_relations),
+                pred_regex=pred_regex,
+                allowed_realms=allowed_realms,
+            )
+        else:
+            queue: deque[Tuple[str, int]] = deque()
+            for root in start_nodes:
+                if root in self.graph.nodes:
+                    visited_nodes.add(root)
+                    node_depths[root] = 0
+                    queue.append((root, 0))
 
-        target_found = False
-        while queue:
-            current_id, depth = queue.popleft()
-            if depth >= max_depth:
-                continue
-
-            candidates: List[Tuple[Edge, str]] = []
-            if direction in ("outbound", "both", "bidirectional"):
-                for edge in self.graph.out_edges.get(current_id, []):
-                    candidates.append((edge, edge.target))
-            if direction in ("inbound", "both", "bidirectional"):
-                for edge in self.graph.in_edges.get(current_id, []):
-                    # Inbound edge reversed perspective
-                    in_edge = Edge(
-                        source=edge.target,
-                        target=edge.source,
-                        predicate=edge.predicate,
-                        direction="inbound",
-                        edge_type=edge.edge_type,
-                        weight=edge.weight,
-                        properties=edge.properties,
-                    )
-                    candidates.append((in_edge, edge.source))
-
-            for edge, neighbor_id in candidates:
-                # Filter edge type
-                if edge.edge_type not in edge_types and "all" not in edge_types:
-                    plural_type = f"{edge.edge_type}s"
-                    if plural_type not in edge_types:
-                        continue
-
-                # Filter predicate regex pattern
-                if pred_regex and not pred_regex.search(edge.predicate):
+            target_found = False
+            while queue:
+                current_id, depth = queue.popleft()
+                if depth >= max_depth:
                     continue
 
-                # Check neighbor realm filter if traversing into it
-                neighbor_node = self.graph.nodes.get(neighbor_id)
-                if neighbor_node and allowed_realms:
-                    if neighbor_node.realm.lower() not in allowed_realms:
+                for edge, neighbor_id in self._candidate_edges(current_id, direction):
+                    if not _edge_type_allowed(
+                        edge, edge_types, bool(include_wikilinks), bool(include_relations)
+                    ):
                         continue
 
-                # Check has_relation filter on neighbor
-                if neighbor_node and required_relations:
-                    neighbor_preds = {e.predicate for e in self.graph.out_edges.get(neighbor_id, [])}
-                    if not required_relations.intersection(neighbor_preds):
+                    if pred_regex and not pred_regex.search(edge.predicate):
                         continue
 
-                if neighbor_node and required_relation_obj:
-                    target_pred = required_relation_obj.get("predicate")
-                    neighbor_edges = self.graph.out_edges.get(neighbor_id, [])
-                    if not any(e.predicate == target_pred for e in neighbor_edges):
+                    neighbor_node = self.graph.nodes.get(neighbor_id)
+                    if neighbor_node and allowed_realms:
+                        if neighbor_node.realm.lower() not in allowed_realms:
+                            continue
+
+                    if not self._relation_constraint_matches(
+                        edge,
+                        neighbor_id,
+                        required_relations,
+                        required_relation_obj,
+                    ):
                         continue
 
-                traversed_edges.append(edge)
-                if neighbor_id not in visited_nodes:
-                    visited_nodes.add(neighbor_id)
-                    parent_map[neighbor_id] = current_id
-                    node_depths[neighbor_id] = depth + 1
-                    queue.append((neighbor_id, depth + 1))
-                    if target_node and neighbor_id == target_node:
-                        target_found = True
-                        break
-            if target_found:
-                break
+                    traversed_edges.append(edge)
+                    if neighbor_id not in visited_nodes:
+                        visited_nodes.add(neighbor_id)
+                        parent_map[neighbor_id] = current_id
+                        node_depths[neighbor_id] = depth + 1
+                        queue.append((neighbor_id, depth + 1))
+                        if target_node and neighbor_id == target_node:
+                            target_found = True
+                            break
+                if target_found:
+                    break
 
         # Build Projection Results
         result: Dict[str, Any] = {
