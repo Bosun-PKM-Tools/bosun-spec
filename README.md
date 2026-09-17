@@ -31,6 +31,8 @@ This repository contains **only schemas, RFCs, and documentation**. No storage i
 | [`v1/commonplace/work.schema.json`](schemas/v1/commonplace/work.schema.json) | Commonplace (Realm 18) media work at `locker_commonplace/works/<slug>.md` with multi-service `external_ids`. |
 | [`v1/relations/relations.schema.json`](schemas/v1/relations/relations.schema.json) | Typed `$pkm.relations` object: canonical predicate verbs with `urn:<realm>:<entity_type>:<uuid>` targets. |
 | [`v1/rpc/fleet-matrix.json`](schemas/v1/rpc/fleet-matrix.json) | JSON-RPC 2.0 fleet method matrix (16 Yeoman/Trice/Logbook/Commonplace methods) plus Draft 2020-12 envelope/`$defs` schemas. |
+| [`v1/rpc/error-envelope.schema.json`](schemas/v1/rpc/error-envelope.schema.json) | JSON-RPC 2.0 error envelope with Bosun server-error codes `-32000` schema failure, `-32001` vault lock/contention, `-32002` orphan URN. |
+| [`v1/rpc/event-payloads.schema.json`](schemas/v1/rpc/event-payloads.schema.json) | JSON-RPC 2.0 notifications and Harbormaster event envelopes, plus per-realm `*Payload` `$defs` for all 50 realms. |
 
 Canonical `$id` URIs are `https://bosunpkm.com/schemas/<path-from-schemas/>`.
 
@@ -166,6 +168,7 @@ pip install jsonschema
 python tests/test_schemas.py
 python tests/test_codec_fixtures.py
 python tests/test_relations_spec.py
+python tests/test_rpc_schemas.py
 ```
 
 ---
@@ -196,6 +199,12 @@ python tests/test_codec_fixtures.py
 
 ```bash
 python tests/test_relations_spec.py
+```
+
+[`tests/test_rpc_schemas.py`](tests/test_rpc_schemas.py) validates JSON-RPC 2.0 error envelopes (timeout, schema failure, lock contention) against `schemas/v1/rpc/error-envelope.schema.json` and checks every event payload `$def` in `schemas/v1/rpc/event-payloads.schema.json`.
+
+```bash
+python tests/test_rpc_schemas.py
 ```
 
 ---
