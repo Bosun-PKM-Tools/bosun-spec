@@ -1,0 +1,498 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/query/graph-dsl.schema.json",
+  "title": "Bosun Vault Graph Query DSL Specification v1",
+  "description": "Strict JSON Schema Draft 2020-12 specification defining the Vault Graph Query DSL. Supports directional graph traversal over typed $pkm.relations and Markdown wikilinks, with filtering across realms, relations, linkages, traversal depths, and predicate patterns, projecting node sets, edge collections, and subgraph adjacency matrices.",
+  "type": "object",
+  "version": "1.0.0",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/graphQuery"
+    },
+    {
+      "$ref": "#/$defs/graphQueryResult"
+    },
+    {
+      "$ref": "#/$defs/graphQueryEnvelope"
+    }
+  ],
+  "$defs": {
+    "urn": {
+      "type": "string",
+      "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+      "description": "Canonical RFC 8141 URN (e.g. urn:yeoman:contact:<uuid>, urn:uuid:<uuid>, urn:careen:project:<uuid>)."
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "outbound",
+        "inbound",
+        "both",
+        "bidirectional"
+      ],
+      "default": "outbound",
+      "description": "Direction of graph traversal along relations and wikilinks."
+    },
+    "edgeType": {
+      "type": "string",
+      "enum": [
+        "relations",
+        "wikilinks",
+        "stage_gates",
+        "all"
+      ],
+      "description": "Classification of graph link: $pkm.relations predicate or Markdown [[wikilink]]."
+    },
+    "projectionName": {
+      "type": "string",
+      "enum": [
+        "nodes",
+        "edges",
+        "subgraph_adjacency_matrix"
+      ],
+      "description": "Target projection formats to be produced by the graph query engine."
+    },
+    "relationFilter": {
+      "type": "object",
+      "required": [
+        "predicate"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "predicate": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Typed relation predicate name (e.g. assignedToContact, purchasedViaTx)."
+        },
+        "target": {
+          "$ref": "#/$defs/urn",
+          "description": "Optional specific target entity URN."
+        },
+        "target_realm": {
+          "type": "string",
+          "description": "Optional target realm filter (e.g. yeoman, qtm, charthouse)."
+        }
+      }
+    },
+    "queryFilters": {
+      "type": "object",
+      "description": "Filter constraints applied during graph discovery and traversal.",
+      "additionalProperties": false,
+      "properties": {
+        "match_realm": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "description": "Single realm identifier (e.g. 'yeoman', 'trice', 'careen')."
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "description": "Array of allowed realm identifiers."
+            }
+          ],
+          "description": "Filter restricting nodes to specified realm(s)."
+        },
+        "has_relation": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "description": "Predicate name that must be present (e.g. 'assignedToContact')."
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "description": "List of relation predicate names, where at least one must be present."
+            },
+            {
+              "$ref": "#/$defs/relationFilter"
+            }
+          ],
+          "description": "Filter requiring the entity to participate in specific relation(s)."
+        },
+        "linked_from": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/urn",
+              "description": "Root starting node URN."
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/urn"
+              },
+              "description": "Set of root starting node URNs."
+            }
+          ],
+          "description": "Origin node(s) for directional traversal."
+        },
+        "max_depth": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000,
+          "default": 1,
+          "description": "Maximum traversal depth / hop count from starting node(s)."
+        },
+        "predicate_pattern": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Regular expression pattern matching allowed relation predicates (e.g. '^assigned.*', '.*Contact$')."
+        },
+        "include_wikilinks": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to traverse untyped Markdown wikilinks [[note-title]]."
+        },
+        "include_relations": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to traverse typed $pkm.relations."
+        }
+      }
+    },
+    "graphQuery": {
+      "type": "object",
+      "description": "Graph traversal and projection query specification.",
+      "additionalProperties": false,
+      "properties": {
+        "query_id": {
+          "type": "string",
+          "description": "Optional unique query tracking identifier."
+        },
+        "linked_from": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/urn"
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/urn"
+              }
+            }
+          ],
+          "description": "Root starting node(s) for directional graph traversal."
+        },
+        "direction": {
+          "$ref": "#/$defs/direction"
+        },
+        "edge_types": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/edgeType"
+          },
+          "default": [
+            "relations",
+            "wikilinks"
+          ],
+          "description": "Link categories to include in traversal."
+        },
+        "max_depth": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000,
+          "default": 1,
+          "description": "Maximum traversal depth / hop distance from root node(s)."
+        },
+        "match_realm": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          ],
+          "description": "Shortcut filter restricting traversal to specific realm(s)."
+        },
+        "has_relation": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            {
+              "$ref": "#/$defs/relationFilter"
+            }
+          ],
+          "description": "Shortcut filter requiring presence of specific relation predicate(s)."
+        },
+        "predicate_pattern": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Regex pattern matching edge predicate labels."
+        },
+        "filters": {
+          "$ref": "#/$defs/queryFilters"
+        },
+        "projections": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/projectionName"
+          },
+          "description": "Result projections to calculate (nodes, edges, and/or subgraph_adjacency_matrix)."
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum number of total nodes or edges returned."
+        }
+      }
+    },
+    "nodeProjection": {
+      "type": "object",
+      "description": "Projected graph vertex attributes.",
+      "required": [
+        "id",
+        "realm"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/urn",
+          "description": "Canonical entity URN identifying this node."
+        },
+        "realm": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Canonical realm identifier for this note."
+        },
+        "title": {
+          "type": "string",
+          "description": "Human-readable note title or label."
+        },
+        "path": {
+          "type": "string",
+          "description": "Vault-relative Markdown file path."
+        },
+        "depth": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Traversal distance in hops from root node."
+        },
+        "attributes": {
+          "type": "object",
+          "description": "Arbitrary note metadata or payload fields."
+        }
+      }
+    },
+    "edgeProjection": {
+      "type": "object",
+      "description": "Projected graph link connecting two entity vertices.",
+      "required": [
+        "source",
+        "target",
+        "predicate",
+        "direction",
+        "edge_type"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/urn",
+          "description": "Origin node URN."
+        },
+        "target": {
+          "$ref": "#/$defs/urn",
+          "description": "Destination node URN."
+        },
+        "predicate": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Edge predicate verb (e.g. 'assignedToContact', 'purchasedViaTx', 'wikilink')."
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "outbound",
+            "inbound",
+            "bidirectional",
+            "undirected"
+          ],
+          "description": "Traversal direction relative to query root."
+        },
+        "edge_type": {
+          "type": "string",
+          "enum": [
+            "relation",
+            "relations",
+            "wikilink",
+            "wikilinks",
+            "stage_gate",
+            "stage_gates"
+          ],
+          "description": "Category of graph connection."
+        },
+        "weight": {
+          "type": "number",
+          "default": 1.0,
+          "description": "Optional edge traversal weight or affinity score."
+        },
+        "properties": {
+          "type": "object",
+          "description": "Optional edge annotation metadata."
+        }
+      }
+    },
+    "subgraphAdjacencyMatrix": {
+      "type": "object",
+      "description": "Adjacency matrix representation of the projected graph subgraph.",
+      "required": [
+        "nodes",
+        "matrix"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/urn"
+          },
+          "description": "Ordered array of node URN identifiers indexing rows and columns."
+        },
+        "matrix": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "description": "Square N x N adjacency matrix where matrix[i][j] represents edge connectivity/weight from nodes[i] to nodes[j]."
+        },
+        "dimension": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Dimension N of the square adjacency matrix."
+        },
+        "directed": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether the matrix represents a directed graph."
+        }
+      }
+    },
+    "graphQueryResult": {
+      "type": "object",
+      "description": "Execution result projection containing filtered subgraph entities.",
+      "additionalProperties": false,
+      "properties": {
+        "query_id": {
+          "type": "string",
+          "description": "Matching query identifier if supplied."
+        },
+        "projections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/projectionName"
+          },
+          "description": "Projections included in this result."
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/nodeProjection"
+          },
+          "description": "List of projected graph node entities."
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/edgeProjection"
+          },
+          "description": "List of projected directional edge connections."
+        },
+        "subgraph_adjacency_matrix": {
+          "$ref": "#/$defs/subgraphAdjacencyMatrix"
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "node_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "edge_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "traversal_depth": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "execution_time_ms": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "graphQueryEnvelope": {
+      "type": "object",
+      "description": "Unified query and result transmission envelope.",
+      "required": [
+        "query"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "$ref": "#/$defs/graphQuery"
+        },
+        "result": {
+          "$ref": "#/$defs/graphQueryResult"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "success",
+            "partial",
+            "timeout",
+            "error"
+          ],
+          "default": "success"
+        },
+        "error_message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
