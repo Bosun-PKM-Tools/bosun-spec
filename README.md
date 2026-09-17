@@ -29,6 +29,8 @@ This repository contains **only schemas, RFCs, and documentation**. No storage i
 | [`v1/yeoman/contact.schema.json`](schemas/v1/yeoman/contact.schema.json) | Yeoman (Realm 4) contact dossier at `locker_yeoman/contacts/<uuid>.md`. |
 | [`v1/yeoman/interaction.schema.json`](schemas/v1/yeoman/interaction.schema.json) | Yeoman interaction note; `$pkm.relations` must include at least one `type: contact` UUID. |
 | [`v1/commonplace/work.schema.json`](schemas/v1/commonplace/work.schema.json) | Commonplace (Realm 18) media work at `locker_commonplace/works/<slug>.md` with multi-service `external_ids`. |
+| [`v1/relations/relations.schema.json`](schemas/v1/relations/relations.schema.json) | Typed `$pkm.relations` object: canonical predicate verbs with `urn:<realm>:<entity_type>:<uuid>` targets. |
+| [`v1/rpc/fleet-matrix.json`](schemas/v1/rpc/fleet-matrix.json) | JSON-RPC 2.0 fleet method matrix (16 Yeoman/Trice/Logbook/Commonplace methods) plus Draft 2020-12 envelope/`$defs` schemas. |
 
 Canonical `$id` URIs are `https://bosunpkm.com/schemas/<path-from-schemas/>`.
 
@@ -42,6 +44,8 @@ Golden CommonMark examples with YAML frontmatter that satisfies the correspondin
 | [`logbook/2026-09-16.md`](fixtures/logbook/2026-09-16.md) | Daily journal with agenda transclusion blocks and time-blocked tasks. |
 | [`yeoman/jane-doe.md`](fixtures/yeoman/jane-doe.md) | Contact dossier with structured channels. |
 | [`commonplace/dune.md`](fixtures/commonplace/dune.md) | Media record with multi-service external IDs. |
+| [`relations/task-delegated.md`](fixtures/relations/task-delegated.md) | Trice task whose `$pkm.relations.assignedToContact` targets a Yeoman contact URN. |
+| [`relations/event-attended.md`](fixtures/relations/event-attended.md) | Meeting note whose `$pkm.relations.attendedEvent` targets a Logbook event URN. |
 
 Canonical ingestion codec samples (upstream export bytes, not locker notes). RFC documents use CRLF and 75-octet folding; Kindle clippings keep a UTF-8 BOM. Integrity checks live in [`tests/test_codec_fixtures.py`](tests/test_codec_fixtures.py).
 
@@ -151,6 +155,7 @@ Key invariants:
 pip install jsonschema
 python tests/test_schemas.py
 python tests/test_codec_fixtures.py
+python tests/test_relations_spec.py
 ```
 
 ---
@@ -175,6 +180,12 @@ python -m pytest tests/ -v
 
 ```bash
 python tests/test_codec_fixtures.py
+```
+
+[`tests/test_relations_spec.py`](tests/test_relations_spec.py) extracts `$pkm.relations` from the relations fixtures, validates them against `relations.schema.json`, and checks that `fleet-matrix.json` catalogs all sixteen JSON-RPC methods.
+
+```bash
+python tests/test_relations_spec.py
 ```
 
 ---

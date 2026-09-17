@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/relations/relations.schema.json",
+  "title": "Bosun PKM Typed Relations Contract v1",
+  "description": "Validates a `$pkm.relations` block inside note YAML frontmatter — not an entire markdown file. Canonical nesting matches existing yeoman/commonplace fixtures: `$pkm: { relations: { <verb>: <urn> | [<urn>, ...] } }`. This object form uses typed predicate verbs with canonical URN targets `urn:<realm>:<entity_type>:<uuid>` (UUID portion `[0-9a-fA-F-]{36}`). It is distinct from the older array-of-`{target,type}` edges used by `$yeoman:interaction/v1` and `canonical-note-contract-v0.1.json`. Unknown verbs are rejected. Each verb accepts a single matching URN string or a non-empty array of matching URNs (one-or-more; harbormaster docs are explicit that interactions may link one or more contacts, and the verb-keyed contract was otherwise ambiguous).",
+  "type": "object",
+  "version": "1.0.0",
+  "additionalProperties": false,
+  "properties": {
+    "purchasedViaTx": {
+      "$ref": "#/$defs/purchasedViaTxTarget",
+      "description": "This note records a purchase settled by a QTM transaction."
+    },
+    "attendedEvent": {
+      "$ref": "#/$defs/attendedEventTarget",
+      "description": "The subject of this note attended a Logbook calendar event."
+    },
+    "assignedToContact": {
+      "$ref": "#/$defs/yeomanContactTarget",
+      "description": "Responsibility for this action/note is assigned to a Yeoman contact."
+    },
+    "waitingOnContact": {
+      "$ref": "#/$defs/yeomanContactTarget",
+      "description": "This note is blocked until a Yeoman contact acts."
+    },
+    "actionItemDerivedFrom": {
+      "$ref": "#/$defs/actionItemDerivedFromTarget",
+      "description": "This action item was derived from a Trice task."
+    },
+    "consultedProvider": {
+      "$ref": "#/$defs/yeomanContactTarget",
+      "description": "A Yeoman contact was consulted as a provider on this note."
+    }
+  },
+  "$defs": {
+    "purchasedViaTxUrn": {
+      "type": "string",
+      "pattern": "^urn:qtm:tx:[0-9a-fA-F-]{36}$",
+      "description": "Canonical QTM transaction URN."
+    },
+    "purchasedViaTxTarget": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/purchasedViaTxUrn"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/purchasedViaTxUrn"
+          }
+        }
+      ]
+    },
+    "attendedEventUrn": {
+      "type": "string",
+      "pattern": "^urn:logbook:event:[0-9a-fA-F-]{36}$",
+      "description": "Canonical Logbook event URN."
+    },
+    "attendedEventTarget": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/attendedEventUrn"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/attendedEventUrn"
+          }
+        }
+      ]
+    },
+    "yeomanContactUrn": {
+      "type": "string",
+      "pattern": "^urn:yeoman:contact:[0-9a-fA-F-]{36}$",
+      "description": "Canonical Yeoman contact URN."
+    },
+    "yeomanContactTarget": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/yeomanContactUrn"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/yeomanContactUrn"
+          }
+        }
+      ]
+    },
+    "triceTaskUrn": {
+      "type": "string",
+      "pattern": "^urn:trice:task:[0-9a-fA-F-]{36}$",
+      "description": "Canonical Trice task URN."
+    },
+    "actionItemDerivedFromTarget": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/triceTaskUrn"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/triceTaskUrn"
+          }
+        }
+      ]
+    }
+  }
+}
