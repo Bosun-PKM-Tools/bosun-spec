@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/46-breadboard.schema.json",
+  "title": "Bosun Realm 46: Breadboard Contract v1",
+  "description": "Machine-readable delta schema contract for Breadboard (Realm 46), extending Archetype Catalog Dossier and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "breadboard",
+              "description": "Canonical realm identifier for Breadboard."
+            }
+          }
+        },
+        "schematic_cas": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "CAS hash of KiCad or EDA electrical schematic."
+        },
+        "pcb_revision": {
+          "type": "string",
+          "description": "Board layout hardware revision tag (e.g. 'v1.2', 'Rev C')."
+        },
+        "gpio_pinout_map": {
+          "type": "object",
+          "description": "Microcontroller GPIO pin-to-signal functional mapping.",
+          "additionalProperties": true
+        },
+        "operating_voltage_vdc": {
+          "type": "number",
+          "description": "Nominal DC operating circuit voltage (e.g. 3.3, 5.0, 12.0)."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

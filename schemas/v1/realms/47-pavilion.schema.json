@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/47-pavilion.schema.json",
+  "title": "Bosun Realm 47: Pavilion Contract v1",
+  "description": "Machine-readable delta schema contract for Pavilion (Realm 47), extending Archetype Stage-Gate Manifest and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/stage-gate-manifest.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "pavilion",
+              "description": "Canonical realm identifier for Pavilion."
+            }
+          }
+        },
+        "run_of_show_steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "cue_time",
+              "activity"
+            ],
+            "properties": {
+              "cue_time": {
+                "type": "string",
+                "description": "Timing cue or offset."
+              },
+              "activity": {
+                "type": "string",
+                "description": "Program action or speaker cue."
+              },
+              "owner": {
+                "type": "string",
+                "description": "Responsible coordinator."
+              }
+            },
+            "additionalProperties": true
+          },
+          "description": "Chronological run-of-show cues for the gathering."
+        },
+        "venue_reservation_urn": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "URN of venue booking or facility lease."
+        },
+        "headcount_target": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Target or cap for participant attendance."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

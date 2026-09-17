@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/36-strongbox.schema.json",
+  "title": "Bosun Realm 36: Strongbox Contract v1",
+  "description": "Machine-readable delta schema contract for Strongbox (Realm 36), extending Archetype Sovereign Vault and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/sovereign-vault.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "strongbox",
+              "description": "Canonical realm identifier for Strongbox."
+            }
+          }
+        },
+        "key_algorithm": {
+          "type": "string",
+          "description": "Cryptographic key algorithm (e.g. 'Ed25519', 'RSA-4096', 'ECDSA-secp256k1')."
+        },
+        "public_key_fingerprint": {
+          "type": "string",
+          "description": "Hex or OpenSSH fingerprint of the public key."
+        },
+        "hardware_token_serial": {
+          "type": "string",
+          "description": "Serial number of backing hardware security token (HSM / YubiKey)."
+        },
+        "derivation_path": {
+          "type": "string",
+          "pattern": "^m(/[0-9]+'?)+$",
+          "description": "BIP-32 / BIP-44 hierarchical deterministic key derivation path."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

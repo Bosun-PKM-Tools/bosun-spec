@@ -10,6 +10,9 @@
       "$ref": "https://bosunpkm.com/schemas/v1/archetypes/dual-track-telemetry.schema.json"
     },
     {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
       "type": "object",
       "properties": {
         "$pkm": {

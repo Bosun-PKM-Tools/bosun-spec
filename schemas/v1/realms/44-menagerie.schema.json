@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/44-menagerie.schema.json",
+  "title": "Bosun Realm 44: Menagerie Contract v1",
+  "description": "Machine-readable delta schema contract for Menagerie (Realm 44), extending Archetype Interaction Ledger and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/interaction-ledger.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "menagerie",
+              "description": "Canonical realm identifier for Menagerie."
+            }
+          }
+        },
+        "species_breed": {
+          "type": "string",
+          "description": "Biological species and domestic breed identification."
+        },
+        "microchip_hex_id": {
+          "type": "string",
+          "pattern": "^[0-9A-Fa-f]{10,16}$",
+          "description": "ISO 11784/11785 RFID implant microchip identification code."
+        },
+        "vet_clinic_urn": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "URN of the primary veterinary medical center."
+        },
+        "vaccination_schedule": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "vaccine",
+              "due_date"
+            ],
+            "properties": {
+              "vaccine": {
+                "type": "string",
+                "description": "Immunization vaccine name."
+              },
+              "administered_date": {
+                "type": "string",
+                "description": "Administration date."
+              },
+              "due_date": {
+                "type": "string",
+                "description": "Booster revaccination due date."
+              }
+            },
+            "additionalProperties": true
+          },
+          "description": "Scheduled and administered animal immunizations."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

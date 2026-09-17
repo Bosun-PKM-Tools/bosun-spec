@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/31-dispatch.schema.json",
+  "title": "Bosun Realm 31: Dispatch Contract v1",
+  "description": "Machine-readable delta schema contract for Dispatch (Realm 31), extending Archetype Interaction Ledger and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/interaction-ledger.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "dispatch",
+              "description": "Canonical realm identifier for Dispatch."
+            }
+          }
+        },
+        "sender_urn": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "URN of the sending party or agent."
+        },
+        "recipient_urn": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "URN of the receiving party or destination."
+        },
+        "postmark_date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "description": "Postal or dispatch acceptance date (YYYY-MM-DD)."
+        },
+        "courier_tracking": {
+          "type": "string",
+          "description": "Waybill or tracking identifier from courier carrier."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

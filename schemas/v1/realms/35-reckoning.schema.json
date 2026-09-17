@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/35-reckoning.schema.json",
+  "title": "Bosun Realm 35: Reckoning Contract v1",
+  "description": "Machine-readable delta schema contract for Reckoning (Realm 35), extending Archetype Catalog Dossier and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "reckoning",
+              "description": "Canonical realm identifier for Reckoning."
+            }
+          }
+        },
+        "decision_framework": {
+          "type": "string",
+          "description": "Methodology applied to evaluate the decision (e.g. 'SPADE', 'WRAP', 'Cynefin')."
+        },
+        "pre_mortem_risk_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Anticipated failure modes identified during pre-mortem evaluation."
+        },
+        "bias_audit_flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Cognitive biases explicitly checked and mitigated."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

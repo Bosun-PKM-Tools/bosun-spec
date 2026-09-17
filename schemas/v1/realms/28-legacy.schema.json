@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/28-legacy.schema.json",
+  "title": "Bosun Realm 28: Legacy Contract v1",
+  "description": "Machine-readable delta schema contract for Legacy (Realm 28), extending Archetype Sovereign Vault and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/sovereign-vault.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "legacy",
+              "description": "Canonical realm identifier for Legacy."
+            }
+          }
+        },
+        "trust_ref": {
+          "type": "string",
+          "description": "Reference identifier to legal trust or estate instrument."
+        },
+        "living_will_cas": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "CAS hash or URN of the encrypted advance healthcare directive / living will."
+        },
+        "executor_contact_urn": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "URN referencing the appointed executor contact."
+        },
+        "durable_poa_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$",
+          "description": "SHA-256 digest of the durable power of attorney deed."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

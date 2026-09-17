@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/27-lineage.schema.json",
+  "title": "Bosun Realm 27: Lineage Contract v1",
+  "description": "Machine-readable delta schema contract for Lineage (Realm 27), extending Archetype Interaction Ledger and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/interaction-ledger.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "lineage",
+              "description": "Canonical realm identifier for Lineage."
+            }
+          }
+        },
+        "individual_urn": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "Canonical URN of the genealogical person entity."
+        },
+        "pedigree_branch": {
+          "type": "string",
+          "description": "Descent line or family branch name (e.g. maternal, patrilineal)."
+        },
+        "vital_dates": {
+          "type": "object",
+          "properties": {
+            "birth": {
+              "type": "string",
+              "description": "Birth date or year."
+            },
+            "death": {
+              "type": "string",
+              "description": "Death date or year."
+            },
+            "marriage": {
+              "type": "string",
+              "description": "Marriage date or year."
+            }
+          },
+          "additionalProperties": true,
+          "description": "Key life milestone vital dates."
+        },
+        "gedcom_id": {
+          "type": "string",
+          "description": "GEDCOM record identifier (e.g. @I0001@)."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}
