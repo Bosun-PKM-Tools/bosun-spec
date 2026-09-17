@@ -1,6 +1,5 @@
 ---
 $careen:
-  campaign_lore_node: "urn:charthouse:lore:018f0000-0048-7000-8000-000000000001"
 title: 'Careen Project: Narrative Campaign Canon Refactor'
 kanban_stage: in_progress
 sprint_ref: sprint-2026-38
@@ -11,6 +10,8 @@ $pkm:
   created_at: '2026-09-17T10:00:00Z'
   updated_at: '2026-09-17T11:00:00Z'
   relations:
+    campaign_lore_node: "urn:charthouse:lore:01a0aecf-0d00-7138-ac6d-b0c0cbab3a9c"
+
     actionItemDerivedFrom: urn:trice:task:01a0aecf-0d00-7faf-bc3f-9a51a93c7c05
 ---
 
