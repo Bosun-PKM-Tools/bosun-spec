@@ -1,0 +1,13 @@
+# Equivalent of careen-blocks-trice-assigned-contact.graph.json
+# Careen project --blocks--> Trice task --assignedToContact--> Yeoman contact
+# Stage-gate family siblings of blocks: blocked_by, depends_on
+PREFIX bosun: <https://bosunpkm.com/vocab#>
+
+SELECT ?careen ?trice ?yeoman
+WHERE {
+  BIND(<urn:careen:project:018f3a00-0000-7000-8000-000000000009> AS ?careen)
+  BIND(<urn:trice:task:018f3a00-0000-7000-8000-000000000003> AS ?trice)
+  BIND(<urn:yeoman:contact:018f3a00-0000-7000-8000-000000000002> AS ?yeoman)
+  ?careen bosun:blocks ?trice .
+  ?trice bosun:assignedToContact ?yeoman .
+}

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://bosunpkm.com/schemas/v1/query/graph-dsl.schema.json",
   "title": "Bosun Vault Graph Query DSL Specification v1",
-  "description": "Strict JSON Schema Draft 2020-12 specification defining the Vault Graph Query DSL. Supports directional graph traversal over typed $pkm.relations and Markdown wikilinks, with filtering across realms, relations, linkages, traversal depths, and predicate patterns, projecting node sets, edge collections, and subgraph adjacency matrices.",
+  "description": "Strict JSON Schema Draft 2020-12 specification defining the Vault Graph Query DSL. Supports directional graph traversal over typed $pkm.relations and Markdown wikilinks, with filtering across realms, relations, linkages, traversal depths, predicate patterns, and ordered multi-hop path AND (every hop must match), projecting node sets, edge collections, and subgraph adjacency matrices.",
   "type": "object",
   "version": "1.0.0",
   "oneOf": [
@@ -96,7 +96,8 @@
       "enum": [
         "nodes",
         "edges",
-        "subgraph_adjacency_matrix"
+        "subgraph_adjacency_matrix",
+        "shortest_path"
       ],
       "description": "Target projection formats to be produced by the graph query engine."
     },
@@ -253,6 +254,14 @@
         }
       ]
     },
+    "relationPath": {
+      "type": "array",
+      "minItems": 2,
+      "description": "Ordered AND of hops. Every relationFilter must match in sequence along the traversal (e.g. Careen --blocks--> Trice --assignedToContact--> Yeoman). Distinct from has_relation arrays, which are OR of predicate names.",
+      "items": {
+        "$ref": "#/$defs/relationFilter"
+      }
+    },
     "queryFilters": {
       "type": "object",
       "description": "Filter constraints applied during graph discovery and traversal.",
@@ -299,6 +308,10 @@
           ],
           "description": "Filter requiring the entity to participate in specific relation(s)."
         },
+        "path": {
+          "$ref": "#/$defs/relationPath",
+          "description": "Ordered AND of relation hops that must all match during traversal."
+        },
         "linked_from": {
           "oneOf": [
             {
@@ -338,6 +351,10 @@
           "type": "boolean",
           "default": true,
           "description": "Whether to traverse typed $pkm.relations."
+        },
+        "target_node": {
+          "$ref": "#/$defs/urn",
+          "description": "Optional destination node URN for point-to-point path finding or reachability."
         }
       }
     },
@@ -426,6 +443,10 @@
           ],
           "description": "Shortcut filter requiring presence of specific relation predicate(s)."
         },
+        "path": {
+          "$ref": "#/$defs/relationPath",
+          "description": "Shortcut ordered AND of relation hops that must all match during traversal."
+        },
         "predicate_pattern": {
           "type": "string",
           "minLength": 1,
@@ -442,6 +463,10 @@
             "$ref": "#/$defs/projectionName"
           },
           "description": "Result projections to calculate (nodes, edges, and/or subgraph_adjacency_matrix)."
+        },
+        "target_node": {
+          "$ref": "#/$defs/urn",
+          "description": "Optional destination node URN for point-to-point path finding or reachability."
         },
         "limit": {
           "type": "integer",
@@ -615,6 +640,13 @@
         },
         "subgraph_adjacency_matrix": {
           "$ref": "#/$defs/subgraphAdjacencyMatrix"
+        },
+        "shortest_path": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/urn"
+          },
+          "description": "Ordered sequence of node URNs forming the shortest path from origin to target."
         },
         "metrics": {
           "type": "object",

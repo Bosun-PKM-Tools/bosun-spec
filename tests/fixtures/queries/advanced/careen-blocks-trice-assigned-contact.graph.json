@@ -1,0 +1,40 @@
+{
+  "query_id": "careen-blocks-trice-assigned-contact",
+  "linked_from": "urn:careen:project:018f3a00-0000-7000-8000-000000000009",
+  "direction": "outbound",
+  "edge_types": ["relations", "stage_gates"],
+  "max_depth": 2,
+  "match_realm": ["careen", "trice", "yeoman"],
+  "path": [
+    {
+      "predicate": "blocks",
+      "target": "urn:trice:task:018f3a00-0000-7000-8000-000000000003",
+      "target_realm": "trice"
+    },
+    {
+      "predicate": "assignedToContact",
+      "target": "urn:yeoman:contact:018f3a00-0000-7000-8000-000000000002",
+      "target_realm": "yeoman"
+    }
+  ],
+  "predicate_pattern": "^(blocks|blocked_by|depends_on|assignedToContact)$",
+  "filters": {
+    "linked_from": "urn:careen:project:018f3a00-0000-7000-8000-000000000009",
+    "path": [
+      {
+        "predicate": "blocks",
+        "target": "urn:trice:task:018f3a00-0000-7000-8000-000000000003",
+        "target_realm": "trice"
+      },
+      {
+        "predicate": "assignedToContact",
+        "target": "urn:yeoman:contact:018f3a00-0000-7000-8000-000000000002",
+        "target_realm": "yeoman"
+      }
+    ],
+    "max_depth": 2,
+    "include_wikilinks": false,
+    "include_relations": true
+  },
+  "projections": ["nodes", "edges"]
+}
