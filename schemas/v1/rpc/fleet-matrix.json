@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://bosunpkm.com/schemas/v1/rpc/fleet-matrix.json",
   "title": "Bosun Fleet JSON-RPC 2.0 Method Matrix v1",
-  "description": "Canonical catalog of the sixteen Yeoman / Trice / Logbook / Commonplace JSON-RPC 2.0 methods routed by harbormaster over stdio NDJSON (no sockets). Named params only (arrays are rejected). `$defs` holds JSON-RPC envelopes, per-method params/result schemas, and the catalog entry shape. The `methods` object is the reviewable catalog (same hybrid pattern as event-vocab-v0.1.json). Broadcast names are spec-level `info.<vessel>.*` events; harbormaster stub handlers do not emit them yet. Read methods list an empty broadcasts array.",
+  "description": "Canonical catalog of the 56 fleet JSON-RPC 2.0 methods (Realms 02 through 25) routed by harbormaster over stdio NDJSON (no sockets). Named params only (arrays are rejected). `$defs` holds JSON-RPC envelopes, per-method params/result schemas, and the catalog entry shape. The `methods` object is the reviewable catalog (same hybrid pattern as event-vocab-v0.1.json). Broadcast names are spec-level `info.<vessel>.*` events; harbormaster stub handlers do not emit them yet. Read methods list an empty broadcasts array.",
   "type": "object",
   "version": "1.0.0",
   "jsonrpc": "2.0",
@@ -22,7 +22,7 @@
     },
     "methods": {
       "type": "object",
-      "minProperties": 16,
+      "minProperties": 56,
       "additionalProperties": {
         "$ref": "#/$defs/methodEntry"
       }
@@ -139,7 +139,7 @@
         "name": {
           "type": "string",
           "minLength": 1,
-          "pattern": "^info\\.(yeoman|trice|logbook|commonplace)\\.[a-z_]+$"
+          "pattern": "^info\\.[a-z0-9_]+\\.[a-z0-9_]+$"
         },
         "when": {
           "type": "string"
@@ -169,12 +169,32 @@
             "yeoman",
             "trice",
             "logbook",
-            "commonplace"
+            "commonplace",
+            "quartermaster",
+            "harbor",
+            "press",
+            "embers",
+            "careen",
+            "primer",
+            "passage",
+            "galley",
+            "pratique",
+            "tactician",
+            "drydock",
+            "squadron",
+            "supercargo",
+            "chantey",
+            "marquee",
+            "scrimshaw",
+            "traverse",
+            "docent",
+            "proctor",
+            "ropewalk"
           ]
         },
         "method": {
           "type": "string",
-          "pattern": "^(yeoman|trice|logbook|commonplace)\\.[a-z_]+$"
+          "pattern": "^[a-z0-9_]+\\.[a-z0-9_]+$"
         },
         "description": {
           "type": "string",
@@ -251,7 +271,7 @@
                 },
                 "schemaRef": {
                   "type": "string",
-                  "pattern": "^#/\\$defs/params_[a-z_]+$"
+                  "pattern": "^#/\\$defs/params_[a-z0-9_]+$"
                 }
               }
             }
@@ -271,7 +291,7 @@
             },
             "schemaRef": {
               "type": "string",
-              "pattern": "^#/\\$defs/result_[a-z_]+$"
+              "pattern": "^#/\\$defs/result_[a-z0-9_]+$"
             },
             "keys": {
               "type": "array",
@@ -952,6 +972,1414 @@
         },
         "appended": {
           "type": "boolean"
+        }
+      }
+    },
+    "params_quartermaster_record_tx": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account",
+        "amount",
+        "currency",
+        "narration"
+      ],
+      "properties": {
+        "account": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Beancount account name"
+        },
+        "amount": {
+          "type": "number",
+          "description": "Transaction amount"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 currency code"
+        },
+        "narration": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Transaction narration/payee"
+        },
+        "date": {
+          "$ref": "#/$defs/isoDate",
+          "description": "Transaction date YYYY-MM-DD"
+        }
+      }
+    },
+    "result_quartermaster_record_tx": {
+      "type": "object",
+      "required": [
+        "tx_hash",
+        "account",
+        "recorded"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "tx_hash": {
+          "type": "string"
+        },
+        "account": {
+          "type": "string"
+        },
+        "recorded": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_quartermaster_query_balance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account"
+      ],
+      "properties": {
+        "account": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Beancount account name"
+        }
+      }
+    },
+    "result_quartermaster_query_balance": {
+      "type": "object",
+      "required": [
+        "account",
+        "balance",
+        "currency"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "account": {
+          "type": "string"
+        },
+        "balance": {
+          "type": "number"
+        },
+        "currency": {
+          "type": "string"
+        }
+      }
+    },
+    "params_harbor_build_site": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "vault_root"
+      ],
+      "properties": {
+        "vault_root": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Vault root directory"
+        },
+        "clean": {
+          "type": "boolean",
+          "description": "Purge build cache before compilation"
+        }
+      }
+    },
+    "result_harbor_build_site": {
+      "type": "object",
+      "required": [
+        "output_dir",
+        "page_count",
+        "duration_ms"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "output_dir": {
+          "type": "string"
+        },
+        "page_count": {
+          "type": "integer"
+        },
+        "duration_ms": {
+          "type": "number"
+        }
+      }
+    },
+    "params_harbor_purge_edge_cache": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "routes"
+      ],
+      "properties": {
+        "routes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "result_harbor_purge_edge_cache": {
+      "type": "object",
+      "required": [
+        "purged",
+        "success"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "purged": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "success": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_press_generate_cut_sheet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sku",
+        "width_mm",
+        "height_mm"
+      ],
+      "properties": {
+        "sku": {
+          "type": "string",
+          "minLength": 1
+        },
+        "width_mm": {
+          "type": "number",
+          "minimum": 1
+        },
+        "height_mm": {
+          "type": "number",
+          "minimum": 1
+        },
+        "margins_mm": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "result_press_generate_cut_sheet": {
+      "type": "object",
+      "required": [
+        "path",
+        "sku",
+        "cut_sheet_cas"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "sku": {
+          "type": "string"
+        },
+        "cut_sheet_cas": {
+          "type": "string"
+        }
+      }
+    },
+    "params_press_lookup_sku": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sku"
+      ],
+      "properties": {
+        "sku": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "result_press_lookup_sku": {
+      "type": "object",
+      "required": [
+        "sku",
+        "item"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "sku": {
+          "type": "string"
+        },
+        "item": {
+          "type": "object"
+        }
+      }
+    },
+    "params_embers_index_exif": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Media file path"
+        }
+      }
+    },
+    "result_embers_index_exif": {
+      "type": "object",
+      "required": [
+        "media_hash",
+        "exif"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "media_hash": {
+          "type": "string"
+        },
+        "exif": {
+          "type": "object"
+        }
+      }
+    },
+    "params_embers_query_media": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "media_hash"
+      ],
+      "properties": {
+        "media_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$"
+        }
+      }
+    },
+    "result_embers_query_media": {
+      "type": "object",
+      "required": [
+        "path",
+        "metadata"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object"
+        }
+      }
+    },
+    "params_careen_move_stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_id",
+        "stage"
+      ],
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stage": {
+          "type": "string",
+          "enum": [
+            "backlog",
+            "in_progress",
+            "review",
+            "done"
+          ]
+        }
+      }
+    },
+    "result_careen_move_stage": {
+      "type": "object",
+      "required": [
+        "task_id",
+        "stage",
+        "updated"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "task_id": {
+          "type": "string"
+        },
+        "stage": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_careen_list_sprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sprint_ref"
+      ],
+      "properties": {
+        "sprint_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "result_careen_list_sprint": {
+      "type": "object",
+      "required": [
+        "sprint_ref",
+        "tasks"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "sprint_ref": {
+          "type": "string"
+        },
+        "tasks": {
+          "type": "array"
+        }
+      }
+    },
+    "params_primer_review_card": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "card_id",
+        "rating"
+      ],
+      "properties": {
+        "card_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rating": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        }
+      }
+    },
+    "result_primer_review_card": {
+      "type": "object",
+      "required": [
+        "card_id",
+        "next_interval_days",
+        "ease_factor"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "card_id": {
+          "type": "string"
+        },
+        "next_interval_days": {
+          "type": "number"
+        },
+        "ease_factor": {
+          "type": "number"
+        }
+      }
+    },
+    "params_primer_query_due_cards": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "as_of"
+      ],
+      "properties": {
+        "as_of": {
+          "$ref": "#/$defs/isoDate"
+        }
+      }
+    },
+    "result_primer_query_due_cards": {
+      "type": "object",
+      "required": [
+        "as_of",
+        "due_cards"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "as_of": {
+          "$ref": "#/$defs/isoDate"
+        },
+        "due_cards": {
+          "type": "array"
+        }
+      }
+    },
+    "params_passage_add_waypoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itinerary_id",
+        "name",
+        "coordinates"
+      ],
+      "properties": {
+        "itinerary_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "coordinates": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "result_passage_add_waypoint": {
+      "type": "object",
+      "required": [
+        "itinerary_id",
+        "waypoint_index"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "itinerary_id": {
+          "type": "string"
+        },
+        "waypoint_index": {
+          "type": "integer"
+        }
+      }
+    },
+    "params_passage_get_itinerary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "booking_ref"
+      ],
+      "properties": {
+        "booking_ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "result_passage_get_itinerary": {
+      "type": "object",
+      "required": [
+        "booking_ref",
+        "itinerary"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "booking_ref": {
+          "type": "string"
+        },
+        "itinerary": {
+          "type": "object"
+        }
+      }
+    },
+    "params_galley_scale_recipe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recipe_id",
+        "target_servings"
+      ],
+      "properties": {
+        "recipe_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_servings": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "result_galley_scale_recipe": {
+      "type": "object",
+      "required": [
+        "recipe_id",
+        "target_servings",
+        "scaled_ingredients"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "recipe_id": {
+          "type": "string"
+        },
+        "target_servings": {
+          "type": "number"
+        },
+        "scaled_ingredients": {
+          "type": "array"
+        }
+      }
+    },
+    "params_galley_check_pantry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ingredients"
+      ],
+      "properties": {
+        "ingredients": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "result_galley_check_pantry": {
+      "type": "object",
+      "required": [
+        "available",
+        "missing"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "available": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "params_pratique_query_vitals_range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fhir_code",
+        "start",
+        "end"
+      ],
+      "properties": {
+        "fhir_code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "start": {
+          "$ref": "#/$defs/isoDateTime"
+        },
+        "end": {
+          "$ref": "#/$defs/isoDateTime"
+        }
+      }
+    },
+    "result_pratique_query_vitals_range": {
+      "type": "object",
+      "required": [
+        "fhir_code",
+        "record_count",
+        "series"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "fhir_code": {
+          "type": "string"
+        },
+        "record_count": {
+          "type": "integer"
+        },
+        "series": {
+          "type": "array"
+        }
+      }
+    },
+    "params_pratique_ingest_hl7": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "payload"
+      ],
+      "properties": {
+        "payload": {
+          "$ref": "#/$defs/nonEmptyString",
+          "description": "Raw HL7/FHIR message"
+        }
+      }
+    },
+    "result_pratique_ingest_hl7": {
+      "type": "object",
+      "required": [
+        "records_ingested",
+        "batch_id"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "records_ingested": {
+          "type": "integer"
+        },
+        "batch_id": {
+          "type": "string"
+        }
+      }
+    },
+    "params_tactician_run_simulation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "race_id",
+        "preset"
+      ],
+      "properties": {
+        "race_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "preset": {
+          "type": "string",
+          "minLength": 1
+        },
+        "iterations": {
+          "type": "integer",
+          "minimum": 100
+        }
+      }
+    },
+    "result_tactician_run_simulation": {
+      "type": "object",
+      "required": [
+        "simulation_id",
+        "optimal_heading",
+        "confidence"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "simulation_id": {
+          "type": "string"
+        },
+        "optimal_heading": {
+          "type": "number"
+        },
+        "confidence": {
+          "type": "number"
+        }
+      }
+    },
+    "params_tactician_query_splits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "session_id"
+      ],
+      "properties": {
+        "session_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "result_tactician_query_splits": {
+      "type": "object",
+      "required": [
+        "session_id",
+        "splits"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "session_id": {
+          "type": "string"
+        },
+        "splits": {
+          "type": "array"
+        }
+      }
+    },
+    "params_drydock_log_maintenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "property_urn",
+        "activity",
+        "cost_usd"
+      ],
+      "properties": {
+        "property_urn": {
+          "type": "string",
+          "pattern": "^urn:drydock:property:[0-9a-fA-F-]{36}$"
+        },
+        "activity": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "cost_usd": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "result_drydock_log_maintenance": {
+      "type": "object",
+      "required": [
+        "log_id",
+        "logged"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "log_id": {
+          "type": "string"
+        },
+        "logged": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_drydock_query_property": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "property_urn"
+      ],
+      "properties": {
+        "property_urn": {
+          "type": "string",
+          "pattern": "^urn:drydock:property:[0-9a-fA-F-]{36}$"
+        }
+      }
+    },
+    "result_drydock_query_property": {
+      "type": "object",
+      "required": [
+        "property"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "property": {
+          "type": "object"
+        }
+      }
+    },
+    "params_squadron_log_service": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "vin",
+        "service_type",
+        "engine_hours"
+      ],
+      "properties": {
+        "vin": {
+          "type": "string",
+          "minLength": 17,
+          "maxLength": 17
+        },
+        "service_type": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "engine_hours": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "result_squadron_log_service": {
+      "type": "object",
+      "required": [
+        "service_id",
+        "recorded"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "service_id": {
+          "type": "string"
+        },
+        "recorded": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_squadron_lookup_vin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "vin"
+      ],
+      "properties": {
+        "vin": {
+          "type": "string",
+          "minLength": 17,
+          "maxLength": 17
+        }
+      }
+    },
+    "result_squadron_lookup_vin": {
+      "type": "object",
+      "required": [
+        "vin",
+        "vehicle"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "vin": {
+          "type": "string"
+        },
+        "vehicle": {
+          "type": "object"
+        }
+      }
+    },
+    "params_supercargo_lookup_serial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "serial_number"
+      ],
+      "properties": {
+        "serial_number": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "result_supercargo_lookup_serial": {
+      "type": "object",
+      "required": [
+        "serial_number",
+        "asset"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "serial_number": {
+          "type": "string"
+        },
+        "asset": {
+          "type": "object"
+        }
+      }
+    },
+    "params_supercargo_transfer_bin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "from_bin",
+        "to_bin"
+      ],
+      "properties": {
+        "item_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "from_bin": {
+          "type": "string",
+          "minLength": 1
+        },
+        "to_bin": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "result_supercargo_transfer_bin": {
+      "type": "object",
+      "required": [
+        "item_id",
+        "to_bin",
+        "transferred"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "item_id": {
+          "type": "string"
+        },
+        "to_bin": {
+          "type": "string"
+        },
+        "transferred": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_chantey_append_transcript": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "episode_id",
+        "chunk_text"
+      ],
+      "properties": {
+        "episode_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chunk_text": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "timestamp_offset": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "result_chantey_append_transcript": {
+      "type": "object",
+      "required": [
+        "episode_id",
+        "transcript_cas"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "episode_id": {
+          "type": "string"
+        },
+        "transcript_cas": {
+          "type": "string"
+        }
+      }
+    },
+    "params_chantey_generate_rss": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "podcast_slug"
+      ],
+      "properties": {
+        "podcast_slug": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "result_chantey_generate_rss": {
+      "type": "object",
+      "required": [
+        "feed_url",
+        "item_count"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "feed_url": {
+          "type": "string"
+        },
+        "item_count": {
+          "type": "integer"
+        }
+      }
+    },
+    "params_marquee_log_cut": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rush_bin",
+        "timecode_in",
+        "timecode_out"
+      ],
+      "properties": {
+        "rush_bin": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timecode_in": {
+          "type": "string",
+          "pattern": "^[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{2}$"
+        },
+        "timecode_out": {
+          "type": "string",
+          "pattern": "^[0-9]{2}:[0-9]{2}:[0-9]{2}:[0-9]{2}$"
+        }
+      }
+    },
+    "result_marquee_log_cut": {
+      "type": "object",
+      "required": [
+        "cut_id",
+        "logged"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "cut_id": {
+          "type": "string"
+        },
+        "logged": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_marquee_index_rushes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reel_dir"
+      ],
+      "properties": {
+        "reel_dir": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "result_marquee_index_rushes": {
+      "type": "object",
+      "required": [
+        "indexed_count",
+        "bin_name"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "indexed_count": {
+          "type": "integer"
+        },
+        "bin_name": {
+          "type": "string"
+        }
+      }
+    },
+    "params_scrimshaw_link_cad_model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "part_slug",
+        "cad_model_cas"
+      ],
+      "properties": {
+        "part_slug": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cad_model_cas": {
+          "type": "string",
+          "pattern": "^urn:scrimshaw:cad:[0-9a-fA-F-]{36}$"
+        }
+      }
+    },
+    "result_scrimshaw_link_cad_model": {
+      "type": "object",
+      "required": [
+        "part_slug",
+        "linked"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "part_slug": {
+          "type": "string"
+        },
+        "linked": {
+          "type": "boolean"
+        }
+      }
+    },
+    "params_scrimshaw_queue_toolpath": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "part_slug",
+        "gcode_profile"
+      ],
+      "properties": {
+        "part_slug": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gcode_profile": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "result_scrimshaw_queue_toolpath": {
+      "type": "object",
+      "required": [
+        "job_id",
+        "status"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "job_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "params_traverse_ingest_geojson": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feature_collection"
+      ],
+      "properties": {
+        "feature_collection": {
+          "type": "object",
+          "required": [
+            "type",
+            "features"
+          ],
+          "properties": {
+            "type": {
+              "const": "FeatureCollection"
+            },
+            "features": {
+              "type": "array"
+            }
+          }
+        },
+        "srid": {
+          "type": "integer"
+        }
+      }
+    },
+    "result_traverse_ingest_geojson": {
+      "type": "object",
+      "required": [
+        "features_ingested",
+        "bounding_box"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "features_ingested": {
+          "type": "integer"
+        },
+        "bounding_box": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "params_traverse_query_bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bbox"
+      ],
+      "properties": {
+        "bbox": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "result_traverse_query_bounds": {
+      "type": "object",
+      "required": [
+        "features",
+        "count"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "features": {
+          "type": "array"
+        },
+        "count": {
+          "type": "integer"
+        }
+      }
+    },
+    "params_docent_resolve_doi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "doi"
+      ],
+      "properties": {
+        "doi": {
+          "type": "string",
+          "pattern": "^10\\.[0-9]{4,9}/[-._;()/:A-Za-z0-9]+$"
+        }
+      }
+    },
+    "result_docent_resolve_doi": {
+      "type": "object",
+      "required": [
+        "doi",
+        "metadata"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "doi": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object"
+        }
+      }
+    },
+    "params_docent_format_citation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bibtex_key",
+        "style"
+      ],
+      "properties": {
+        "bibtex_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "style": {
+          "type": "string",
+          "enum": [
+            "apa",
+            "ieee",
+            "chicago",
+            "mla"
+          ]
+        }
+      }
+    },
+    "result_docent_format_citation": {
+      "type": "object",
+      "required": [
+        "citation",
+        "style"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "citation": {
+          "type": "string"
+        },
+        "style": {
+          "type": "string"
+        }
+      }
+    },
+    "params_proctor_file_docket": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "docket_number",
+        "document_title",
+        "file_cas"
+      ],
+      "properties": {
+        "docket_number": {
+          "type": "string",
+          "minLength": 1
+        },
+        "document_title": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "file_cas": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "result_proctor_file_docket": {
+      "type": "object",
+      "required": [
+        "filing_id",
+        "timestamp"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "filing_id": {
+          "type": "string"
+        },
+        "timestamp": {
+          "$ref": "#/$defs/isoDateTime"
+        }
+      }
+    },
+    "params_proctor_query_case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pacer_case_id"
+      ],
+      "properties": {
+        "pacer_case_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "result_proctor_query_case": {
+      "type": "object",
+      "required": [
+        "docket_entries",
+        "case_status"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "docket_entries": {
+          "type": "array"
+        },
+        "case_status": {
+          "type": "string"
+        }
+      }
+    },
+    "params_ropewalk_sync_dotfiles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repo_slug"
+      ],
+      "properties": {
+        "repo_slug": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dry_run": {
+          "type": "boolean"
+        }
+      }
+    },
+    "result_ropewalk_sync_dotfiles": {
+      "type": "object",
+      "required": [
+        "synced_files",
+        "status"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "synced_files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "params_ropewalk_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repo_slug"
+      ],
+      "properties": {
+        "repo_slug": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "result_ropewalk_status": {
+      "type": "object",
+      "required": [
+        "repo_slug",
+        "clean",
+        "divergence"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "repo_slug": {
+          "type": "string"
+        },
+        "clean": {
+          "type": "boolean"
+        },
+        "divergence": {
+          "type": "integer"
         }
       }
     }
@@ -1782,6 +3210,2053 @@
           }
         }
       ]
+    },
+    "quartermaster.record_tx": {
+      "vessel": "quartermaster",
+      "method": "quartermaster.record_tx",
+      "description": "Record a double-entry transaction against a Quartermaster account.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "quartermaster.record_tx",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "account",
+            "amount",
+            "currency",
+            "narration"
+          ],
+          "optional": [
+            "date"
+          ],
+          "schemaRef": "#/$defs/params_quartermaster_record_tx"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_quartermaster_record_tx",
+        "keys": [
+          "tx_hash",
+          "account",
+          "recorded"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_quartermaster_record_tx schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.quartermaster.tx_recorded",
+          "when": "transaction ledger updated",
+          "payload": {
+            "tx_hash": "<tx_hash>",
+            "account": "<account>"
+          }
+        }
+      ]
+    },
+    "quartermaster.query_balance": {
+      "vessel": "quartermaster",
+      "method": "quartermaster.query_balance",
+      "description": "Query the current balance and currency for a designated account.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "quartermaster.query_balance",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "account"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_quartermaster_query_balance"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_quartermaster_query_balance",
+        "keys": [
+          "account",
+          "balance",
+          "currency"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_quartermaster_query_balance schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "harbor.build_site": {
+      "vessel": "harbor",
+      "method": "harbor.build_site",
+      "description": "Compile the digital garden static output from markdown sources.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "harbor.build_site",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "vault_root"
+          ],
+          "optional": [
+            "clean"
+          ],
+          "schemaRef": "#/$defs/params_harbor_build_site"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_harbor_build_site",
+        "keys": [
+          "output_dir",
+          "page_count",
+          "duration_ms"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_harbor_build_site schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.harbor.site_built",
+          "when": "static site output compiled",
+          "payload": {
+            "page_count": 0,
+            "duration_ms": 0.0
+          }
+        }
+      ]
+    },
+    "harbor.purge_edge_cache": {
+      "vessel": "harbor",
+      "method": "harbor.purge_edge_cache",
+      "description": "Purge edge CDN cache entries for designated routes.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "harbor.purge_edge_cache",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "routes"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_harbor_purge_edge_cache"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_harbor_purge_edge_cache",
+        "keys": [
+          "purged",
+          "success"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_harbor_purge_edge_cache schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.harbor.cache_purged",
+          "when": "edge cache invalidated",
+          "payload": {
+            "count": 0
+          }
+        }
+      ]
+    },
+    "press.generate_cut_sheet": {
+      "vessel": "press",
+      "method": "press.generate_cut_sheet",
+      "description": "Generate a physical print cut sheet specification for a publication SKU.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "press.generate_cut_sheet",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "sku",
+            "width_mm",
+            "height_mm"
+          ],
+          "optional": [
+            "margins_mm"
+          ],
+          "schemaRef": "#/$defs/params_press_generate_cut_sheet"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_press_generate_cut_sheet",
+        "keys": [
+          "path",
+          "sku",
+          "cut_sheet_cas"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_press_generate_cut_sheet schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.press.cut_sheet_generated",
+          "when": "cut sheet generated",
+          "payload": {
+            "sku": "<sku>",
+            "path": "<path>"
+          }
+        }
+      ]
+    },
+    "press.lookup_sku": {
+      "vessel": "press",
+      "method": "press.lookup_sku",
+      "description": "Look up inventory cut sheet specs and media CAS for a press SKU.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "press.lookup_sku",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "sku"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_press_lookup_sku"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_press_lookup_sku",
+        "keys": [
+          "sku",
+          "item"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_press_lookup_sku schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "embers.index_exif": {
+      "vessel": "embers",
+      "method": "embers.index_exif",
+      "description": "Extract and index EXIF metadata from raw photographic media.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "embers.index_exif",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "path"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_embers_index_exif"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_embers_index_exif",
+        "keys": [
+          "media_hash",
+          "exif"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_embers_index_exif schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.embers.exif_indexed",
+          "when": "EXIF metadata extracted and indexed",
+          "payload": {
+            "media_hash": "<hash>",
+            "path": "<path>"
+          }
+        }
+      ]
+    },
+    "embers.query_media": {
+      "vessel": "embers",
+      "method": "embers.query_media",
+      "description": "Retrieve media metadata by SHA-256 media hash.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "embers.query_media",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "media_hash"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_embers_query_media"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_embers_query_media",
+        "keys": [
+          "path",
+          "metadata"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_embers_query_media schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "careen.move_stage": {
+      "vessel": "careen",
+      "method": "careen.move_stage",
+      "description": "Transition a Careen sprint card across kanban stages.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "careen.move_stage",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "task_id",
+            "stage"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_careen_move_stage"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_careen_move_stage",
+        "keys": [
+          "task_id",
+          "stage",
+          "updated"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_careen_move_stage schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.careen.stage_moved",
+          "when": "sprint task transitioned to new stage",
+          "payload": {
+            "task_id": "<task_id>",
+            "stage": "<stage>"
+          }
+        }
+      ]
+    },
+    "careen.list_sprint": {
+      "vessel": "careen",
+      "method": "careen.list_sprint",
+      "description": "List all active stage-gate cards in a sprint backlog.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "careen.list_sprint",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "sprint_ref"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_careen_list_sprint"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_careen_list_sprint",
+        "keys": [
+          "sprint_ref",
+          "tasks"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_careen_list_sprint schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "primer.review_card": {
+      "vessel": "primer",
+      "method": "primer.review_card",
+      "description": "Submit a spaced repetition review rating for a Primer flashcard.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "primer.review_card",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "card_id",
+            "rating"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_primer_review_card"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_primer_review_card",
+        "keys": [
+          "card_id",
+          "next_interval_days",
+          "ease_factor"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_primer_review_card schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.primer.card_reviewed",
+          "when": "spaced repetition rating recorded",
+          "payload": {
+            "card_id": "<id>",
+            "rating": 0
+          }
+        }
+      ]
+    },
+    "primer.query_due_cards": {
+      "vessel": "primer",
+      "method": "primer.query_due_cards",
+      "description": "Query spaced repetition flashcards scheduled for review on or before date.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "primer.query_due_cards",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "as_of"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_primer_query_due_cards"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_primer_query_due_cards",
+        "keys": [
+          "as_of",
+          "due_cards"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_primer_query_due_cards schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "passage.add_waypoint": {
+      "vessel": "passage",
+      "method": "passage.add_waypoint",
+      "description": "Append a navigational waypoint to a travel or transit passage itinerary.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "passage.add_waypoint",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "itinerary_id",
+            "name",
+            "coordinates"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_passage_add_waypoint"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_passage_add_waypoint",
+        "keys": [
+          "itinerary_id",
+          "waypoint_index"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_passage_add_waypoint schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.passage.waypoint_added",
+          "when": "waypoint appended to itinerary",
+          "payload": {
+            "itinerary_id": "<id>",
+            "waypoint_index": 0
+          }
+        }
+      ]
+    },
+    "passage.get_itinerary": {
+      "vessel": "passage",
+      "method": "passage.get_itinerary",
+      "description": "Fetch multimodal transit itinerary details by booking reference.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "passage.get_itinerary",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "booking_ref"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_passage_get_itinerary"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_passage_get_itinerary",
+        "keys": [
+          "booking_ref",
+          "itinerary"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_passage_get_itinerary schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "galley.scale_recipe": {
+      "vessel": "galley",
+      "method": "galley.scale_recipe",
+      "description": "Calculate scaled ingredient amounts for a target serving count.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "galley.scale_recipe",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "recipe_id",
+            "target_servings"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_galley_scale_recipe"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_galley_scale_recipe",
+        "keys": [
+          "recipe_id",
+          "target_servings",
+          "scaled_ingredients"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_galley_scale_recipe schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "galley.check_pantry": {
+      "vessel": "galley",
+      "method": "galley.check_pantry",
+      "description": "Compare required recipe ingredients against current galley inventory.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "galley.check_pantry",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "ingredients"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_galley_check_pantry"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_galley_check_pantry",
+        "keys": [
+          "available",
+          "missing"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_galley_check_pantry schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "pratique.query_vitals_range": {
+      "vessel": "pratique",
+      "method": "pratique.query_vitals_range",
+      "description": "Query columnar health telemetry metrics for a FHIR observation code over a time range.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "pratique.query_vitals_range",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "fhir_code",
+            "start",
+            "end"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_pratique_query_vitals_range"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_pratique_query_vitals_range",
+        "keys": [
+          "fhir_code",
+          "record_count",
+          "series"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_pratique_query_vitals_range schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "pratique.ingest_hl7": {
+      "vessel": "pratique",
+      "method": "pratique.ingest_hl7",
+      "description": "Ingest HL7 or FHIR clinical observation records into local telemetry parquet.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "pratique.ingest_hl7",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "payload"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_pratique_ingest_hl7"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_pratique_ingest_hl7",
+        "keys": [
+          "records_ingested",
+          "batch_id"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_pratique_ingest_hl7 schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.pratique.hl7_ingested",
+          "when": "HL7 batch appended to telemetry",
+          "payload": {
+            "batch_id": "<batch_id>",
+            "records_ingested": 0
+          }
+        }
+      ]
+    },
+    "tactician.run_simulation": {
+      "vessel": "tactician",
+      "method": "tactician.run_simulation",
+      "description": "Execute Monte Carlo tactical sailing race simulation across wind shift envelopes.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "tactician.run_simulation",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "race_id",
+            "preset"
+          ],
+          "optional": [
+            "iterations"
+          ],
+          "schemaRef": "#/$defs/params_tactician_run_simulation"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_tactician_run_simulation",
+        "keys": [
+          "simulation_id",
+          "optimal_heading",
+          "confidence"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_tactician_run_simulation schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.tactician.simulation_completed",
+          "when": "Monte Carlo simulation run completes",
+          "payload": {
+            "simulation_id": "<id>",
+            "confidence": 0.0
+          }
+        }
+      ]
+    },
+    "tactician.query_splits": {
+      "vessel": "tactician",
+      "method": "tactician.query_splits",
+      "description": "Query performance metrics and VMG splits for a navigation session.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "tactician.query_splits",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "session_id"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_tactician_query_splits"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_tactician_query_splits",
+        "keys": [
+          "session_id",
+          "splits"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_tactician_query_splits schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "drydock.log_maintenance": {
+      "vessel": "drydock",
+      "method": "drydock.log_maintenance",
+      "description": "Record facility or vessel maintenance event with expense accounting.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "drydock.log_maintenance",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "property_urn",
+            "activity",
+            "cost_usd"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_drydock_log_maintenance"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_drydock_log_maintenance",
+        "keys": [
+          "log_id",
+          "logged"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_drydock_log_maintenance schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.drydock.maintenance_logged",
+          "when": "maintenance activity written",
+          "payload": {
+            "property_urn": "<urn>",
+            "log_id": "<id>"
+          }
+        }
+      ]
+    },
+    "drydock.query_property": {
+      "vessel": "drydock",
+      "method": "drydock.query_property",
+      "description": "Fetch real estate, slipway, and physical plant utility records.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "drydock.query_property",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "property_urn"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_drydock_query_property"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_drydock_query_property",
+        "keys": [
+          "property"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_drydock_query_property schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "squadron.log_service": {
+      "vessel": "squadron",
+      "method": "squadron.log_service",
+      "description": "Log machinery service and current operating hours against a vehicle VIN.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "squadron.log_service",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "vin",
+            "service_type",
+            "engine_hours"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_squadron_log_service"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_squadron_log_service",
+        "keys": [
+          "service_id",
+          "recorded"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_squadron_log_service schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.squadron.service_logged",
+          "when": "machinery service logged",
+          "payload": {
+            "vin": "<vin>",
+            "service_id": "<id>"
+          }
+        }
+      ]
+    },
+    "squadron.lookup_vin": {
+      "vessel": "squadron",
+      "method": "squadron.lookup_vin",
+      "description": "Look up vehicle dossier, telematics, and maintenance records by VIN.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "squadron.lookup_vin",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "vin"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_squadron_lookup_vin"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_squadron_lookup_vin",
+        "keys": [
+          "vin",
+          "vehicle"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_squadron_lookup_vin schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "supercargo.lookup_serial": {
+      "vessel": "supercargo",
+      "method": "supercargo.lookup_serial",
+      "description": "Find hardware asset specifications and warranty information by serial number.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "supercargo.lookup_serial",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "serial_number"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_supercargo_lookup_serial"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_supercargo_lookup_serial",
+        "keys": [
+          "serial_number",
+          "asset"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_supercargo_lookup_serial schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "supercargo.transfer_bin": {
+      "vessel": "supercargo",
+      "method": "supercargo.transfer_bin",
+      "description": "Relocate physical hardware asset between storage bins or lockers.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "supercargo.transfer_bin",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "item_id",
+            "from_bin",
+            "to_bin"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_supercargo_transfer_bin"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_supercargo_transfer_bin",
+        "keys": [
+          "item_id",
+          "to_bin",
+          "transferred"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_supercargo_transfer_bin schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.supercargo.bin_transferred",
+          "when": "inventory item moved between bins",
+          "payload": {
+            "item_id": "<item_id>",
+            "to_bin": "<to_bin>"
+          }
+        }
+      ]
+    },
+    "chantey.append_transcript": {
+      "vessel": "chantey",
+      "method": "chantey.append_transcript",
+      "description": "Append speech-to-text transcript segments to podcast episode dossier.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "chantey.append_transcript",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "episode_id",
+            "chunk_text"
+          ],
+          "optional": [
+            "timestamp_offset"
+          ],
+          "schemaRef": "#/$defs/params_chantey_append_transcript"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_chantey_append_transcript",
+        "keys": [
+          "episode_id",
+          "transcript_cas"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_chantey_append_transcript schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.chantey.transcript_appended",
+          "when": "audio transcript chunk committed",
+          "payload": {
+            "episode_id": "<id>",
+            "transcript_cas": "<cas>"
+          }
+        }
+      ]
+    },
+    "chantey.generate_rss": {
+      "vessel": "chantey",
+      "method": "chantey.generate_rss",
+      "description": "Compile RSS XML feed with podcast enclosures for audio syndication.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "chantey.generate_rss",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "podcast_slug"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_chantey_generate_rss"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_chantey_generate_rss",
+        "keys": [
+          "feed_url",
+          "item_count"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_chantey_generate_rss schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.chantey.rss_generated",
+          "when": "podcast RSS XML compiled",
+          "payload": {
+            "podcast_slug": "<slug>",
+            "item_count": 0
+          }
+        }
+      ]
+    },
+    "marquee.log_cut": {
+      "vessel": "marquee",
+      "method": "marquee.log_cut",
+      "description": "Record an edit point cut with timecode in/out on video rush reel.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "marquee.log_cut",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "rush_bin",
+            "timecode_in",
+            "timecode_out"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_marquee_log_cut"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_marquee_log_cut",
+        "keys": [
+          "cut_id",
+          "logged"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_marquee_log_cut schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.marquee.cut_logged",
+          "when": "edit decision cut recorded",
+          "payload": {
+            "rush_bin": "<bin>",
+            "cut_id": "<id>"
+          }
+        }
+      ]
+    },
+    "marquee.index_rushes": {
+      "vessel": "marquee",
+      "method": "marquee.index_rushes",
+      "description": "Index video files in directory into a Marquee rush bin.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "marquee.index_rushes",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "reel_dir"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_marquee_index_rushes"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_marquee_index_rushes",
+        "keys": [
+          "indexed_count",
+          "bin_name"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_marquee_index_rushes schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.marquee.rushes_indexed",
+          "when": "rushes batch indexed",
+          "payload": {
+            "bin_name": "<bin>",
+            "indexed_count": 0
+          }
+        }
+      ]
+    },
+    "scrimshaw.link_cad_model": {
+      "vessel": "scrimshaw",
+      "method": "scrimshaw.link_cad_model",
+      "description": "Link content-addressed CAD model geometry to part specification.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "scrimshaw.link_cad_model",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "part_slug",
+            "cad_model_cas"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_scrimshaw_link_cad_model"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_scrimshaw_link_cad_model",
+        "keys": [
+          "part_slug",
+          "linked"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_scrimshaw_link_cad_model schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.scrimshaw.cad_model_linked",
+          "when": "CAD geometry linked to part",
+          "payload": {
+            "part_slug": "<slug>",
+            "cad_model_cas": "<cas>"
+          }
+        }
+      ]
+    },
+    "scrimshaw.queue_toolpath": {
+      "vessel": "scrimshaw",
+      "method": "scrimshaw.queue_toolpath",
+      "description": "Queue G-code toolpath generation for CNC or 3D fabrication profile.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "scrimshaw.queue_toolpath",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "part_slug",
+            "gcode_profile"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_scrimshaw_queue_toolpath"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_scrimshaw_queue_toolpath",
+        "keys": [
+          "job_id",
+          "status"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_scrimshaw_queue_toolpath schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.scrimshaw.toolpath_queued",
+          "when": "G-code slicing job dispatched",
+          "payload": {
+            "part_slug": "<slug>",
+            "job_id": "<id>"
+          }
+        }
+      ]
+    },
+    "traverse.ingest_geojson": {
+      "vessel": "traverse",
+      "method": "traverse.ingest_geojson",
+      "description": "Ingest GeoJSON feature collection into spatial survey database.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "traverse.ingest_geojson",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "feature_collection"
+          ],
+          "optional": [
+            "srid"
+          ],
+          "schemaRef": "#/$defs/params_traverse_ingest_geojson"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_traverse_ingest_geojson",
+        "keys": [
+          "features_ingested",
+          "bounding_box"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_traverse_ingest_geojson schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.traverse.geojson_ingested",
+          "when": "spatial features stored",
+          "payload": {
+            "features_ingested": 0
+          }
+        }
+      ]
+    },
+    "traverse.query_bounds": {
+      "vessel": "traverse",
+      "method": "traverse.query_bounds",
+      "description": "Query geodetic landmarks intersecting a bounding box envelope.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "traverse.query_bounds",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "bbox"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_traverse_query_bounds"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_traverse_query_bounds",
+        "keys": [
+          "features",
+          "count"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_traverse_query_bounds schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "docent.resolve_doi": {
+      "vessel": "docent",
+      "method": "docent.resolve_doi",
+      "description": "Resolve research DOI to bibliographic metadata record.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "docent.resolve_doi",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "doi"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_docent_resolve_doi"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_docent_resolve_doi",
+        "keys": [
+          "doi",
+          "metadata"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_docent_resolve_doi schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "docent.format_citation": {
+      "vessel": "docent",
+      "method": "docent.format_citation",
+      "description": "Format bibliographic citation for bibtex key per designated style.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "docent.format_citation",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "bibtex_key",
+            "style"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_docent_format_citation"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_docent_format_citation",
+        "keys": [
+          "citation",
+          "style"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_docent_format_citation schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "proctor.file_docket": {
+      "vessel": "proctor",
+      "method": "proctor.file_docket",
+      "description": "File a legal brief or exhibit CAS reference to a court case docket.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "proctor.file_docket",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "docket_number",
+            "document_title",
+            "file_cas"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_proctor_file_docket"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_proctor_file_docket",
+        "keys": [
+          "filing_id",
+          "timestamp"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_proctor_file_docket schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.proctor.docket_filed",
+          "when": "legal filing committed to case docket",
+          "payload": {
+            "docket_number": "<docket>",
+            "filing_id": "<id>"
+          }
+        }
+      ]
+    },
+    "proctor.query_case": {
+      "vessel": "proctor",
+      "method": "proctor.query_case",
+      "description": "Query PACER docket entries and case status for a federal case id.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "proctor.query_case",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "pacer_case_id"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_proctor_query_case"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_proctor_query_case",
+        "keys": [
+          "docket_entries",
+          "case_status"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_proctor_query_case schema"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "ropewalk.sync_dotfiles": {
+      "vessel": "ropewalk",
+      "method": "ropewalk.sync_dotfiles",
+      "description": "Deploy configuration dotfiles and symlinks from repository to target paths.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "ropewalk.sync_dotfiles",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "repo_slug"
+          ],
+          "optional": [
+            "dry_run"
+          ],
+          "schemaRef": "#/$defs/params_ropewalk_sync_dotfiles"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_ropewalk_sync_dotfiles",
+        "keys": [
+          "synced_files",
+          "status"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_ropewalk_sync_dotfiles schema"
+          }
+        ]
+      },
+      "broadcasts": [
+        {
+          "name": "info.ropewalk.dotfiles_synced",
+          "when": "dotfile symlinks deployed",
+          "payload": {
+            "repo_slug": "<slug>",
+            "count": 0
+          }
+        }
+      ]
+    },
+    "ropewalk.status": {
+      "vessel": "ropewalk",
+      "method": "ropewalk.status",
+      "description": "Check dotfile repository clean status and upstream divergence count.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "ropewalk.status",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "repo_slug"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_ropewalk_status"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_ropewalk_status",
+        "keys": [
+          "repo_slug",
+          "clean",
+          "divergence"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "parameters do not satisfy params_ropewalk_status schema"
+          }
+        ]
+      },
+      "broadcasts": []
     }
   }
 }
