@@ -1,0 +1,25 @@
+{
+  "query_id": "valid-multihop-stage-gate",
+  "linked_from": [
+    "urn:careen:project:018f3a00-0000-7000-8000-000000000009",
+    "urn:trice:task:018f3a00-0000-7000-8000-000000000003"
+  ],
+  "direction": "outbound",
+  "edge_types": ["relations", "stage_gates"],
+  "max_depth": 3,
+  "match_realm": ["careen", "trice"],
+  "has_relation": ["blocked_by", "depends_on", "actionItemDerivedFrom"],
+  "predicate_pattern": "^(blocked_by|depends_on|actionItemDerivedFrom)$",
+  "filters": {
+    "linked_from": "urn:careen:project:018f3a00-0000-7000-8000-000000000009",
+    "has_relation": {
+      "predicate": "actionItemDerivedFrom",
+      "target": "urn:trice:task:018f3a00-0000-7000-8000-000000000003",
+      "target_realm": "trice"
+    },
+    "max_depth": 3,
+    "include_wikilinks": false,
+    "include_relations": true
+  },
+  "projections": ["nodes", "edges", "subgraph_adjacency_matrix"]
+}

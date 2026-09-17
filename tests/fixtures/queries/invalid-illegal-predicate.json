@@ -1,0 +1,13 @@
+{
+  "query_id": "invalid-illegal-predicate",
+  "linked_from": "urn:trice:task:018f3a00-0000-7000-8000-000000000003",
+  "direction": "outbound",
+  "edge_types": ["relations"],
+  "max_depth": 1,
+  "has_relation": {
+    "predicate": "appraisedBy",
+    "target": "urn:qtm:tx:018f3a00-0000-7000-8000-000000000005",
+    "target_realm": "qtm"
+  },
+  "projections": ["nodes", "edges"]
+}

@@ -1,0 +1,25 @@
+{
+  "query_id": "valid-single-hop-contact",
+  "linked_from": "urn:trice:task:018f3a00-0000-7000-8000-000000000003",
+  "direction": "outbound",
+  "edge_types": ["relations"],
+  "max_depth": 1,
+  "match_realm": "yeoman",
+  "has_relation": {
+    "predicate": "assignedToContact",
+    "target": "urn:yeoman:contact:018f3a00-0000-7000-8000-000000000002",
+    "target_realm": "yeoman"
+  },
+  "predicate_pattern": "(assignedToContact|waitingOnContact|consultedProvider)",
+  "filters": {
+    "has_relation": [
+      "assignedToContact",
+      "waitingOnContact",
+      "consultedProvider"
+    ],
+    "max_depth": 1,
+    "include_wikilinks": false,
+    "include_relations": true
+  },
+  "projections": ["nodes", "edges"]
+}

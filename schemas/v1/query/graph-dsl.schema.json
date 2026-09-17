@@ -22,6 +22,54 @@
       "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
       "description": "Canonical RFC 8141 URN (e.g. urn:yeoman:contact:<uuid>, urn:uuid:<uuid>, urn:careen:project:<uuid>)."
     },
+    "canonicalPredicate": {
+      "type": "string",
+      "enum": [
+        "purchasedViaTx",
+        "attendedEvent",
+        "assignedToContact",
+        "waitingOnContact",
+        "actionItemDerivedFrom",
+        "consultedProvider",
+        "campaign_lore_node",
+        "blocked_by",
+        "depends_on",
+        "depends-on",
+        "blocks",
+        "waitingOn"
+      ],
+      "description": "Typed $pkm.relations verb from relations.schema.json, or a Careen/Trice stage-gate hop (blocked_by / depends_on / blocks / waitingOn)."
+    },
+    "yeomanContactUrn": {
+      "type": "string",
+      "pattern": "^urn:yeoman:contact:[0-9a-fA-F-]{36}$",
+      "description": "Canonical Yeoman contact URN required by assignedToContact, waitingOnContact, and consultedProvider."
+    },
+    "qtmTxUrn": {
+      "type": "string",
+      "pattern": "^urn:qtm:tx:[0-9a-fA-F-]{36}$",
+      "description": "Canonical Quartermaster transaction URN required by purchasedViaTx."
+    },
+    "logbookEventUrn": {
+      "type": "string",
+      "pattern": "^urn:logbook:event:[0-9a-fA-F-]{36}$",
+      "description": "Canonical Logbook event URN required by attendedEvent."
+    },
+    "triceTaskUrn": {
+      "type": "string",
+      "pattern": "^urn:trice:task:[0-9a-fA-F-]{36}$",
+      "description": "Canonical Trice task URN required by actionItemDerivedFrom."
+    },
+    "charthouseLoreUrn": {
+      "type": "string",
+      "pattern": "^urn:charthouse:lore:[0-9a-fA-F-]{36}$",
+      "description": "Canonical Charthouse lore URN required by campaign_lore_node."
+    },
+    "stageGateTargetUrn": {
+      "type": "string",
+      "pattern": "^urn:(trice:task|careen:(project|card|milestone)):[0-9a-fA-F-]{36}$",
+      "description": "Careen/Trice stage-gate hop target for blocked_by, depends_on, blocks, and waitingOn."
+    },
     "direction": {
       "type": "string",
       "enum": [
@@ -60,19 +108,150 @@
       "additionalProperties": false,
       "properties": {
         "predicate": {
-          "type": "string",
-          "minLength": 1,
+          "$ref": "#/$defs/canonicalPredicate",
           "description": "Typed relation predicate name (e.g. assignedToContact, purchasedViaTx)."
         },
         "target": {
           "$ref": "#/$defs/urn",
-          "description": "Optional specific target entity URN."
+          "description": "Optional specific target entity URN. When present, the URN realm must match relations.schema.json for typed verbs."
         },
         "target_realm": {
           "type": "string",
           "description": "Optional target realm filter (e.g. yeoman, qtm, charthouse)."
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "predicate",
+              "target"
+            ],
+            "properties": {
+              "predicate": {
+                "enum": [
+                  "assignedToContact",
+                  "waitingOnContact",
+                  "consultedProvider"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/yeomanContactUrn"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "predicate",
+              "target"
+            ],
+            "properties": {
+              "predicate": {
+                "const": "purchasedViaTx"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/qtmTxUrn"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "predicate",
+              "target"
+            ],
+            "properties": {
+              "predicate": {
+                "const": "attendedEvent"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/logbookEventUrn"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "predicate",
+              "target"
+            ],
+            "properties": {
+              "predicate": {
+                "const": "actionItemDerivedFrom"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/triceTaskUrn"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "predicate",
+              "target"
+            ],
+            "properties": {
+              "predicate": {
+                "const": "campaign_lore_node"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/charthouseLoreUrn"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "predicate",
+              "target"
+            ],
+            "properties": {
+              "predicate": {
+                "enum": [
+                  "blocked_by",
+                  "depends_on",
+                  "depends-on",
+                  "blocks",
+                  "waitingOn"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/stageGateTargetUrn"
+              }
+            }
+          }
+        }
+      ]
     },
     "queryFilters": {
       "type": "object",
@@ -102,8 +281,7 @@
         "has_relation": {
           "oneOf": [
             {
-              "type": "string",
-              "minLength": 1,
+              "$ref": "#/$defs/canonicalPredicate",
               "description": "Predicate name that must be present (e.g. 'assignedToContact')."
             },
             {
@@ -111,8 +289,7 @@
               "minItems": 1,
               "uniqueItems": true,
               "items": {
-                "type": "string",
-                "minLength": 1
+                "$ref": "#/$defs/canonicalPredicate"
               },
               "description": "List of relation predicate names, where at least one must be present."
             },
@@ -233,16 +410,14 @@
         "has_relation": {
           "oneOf": [
             {
-              "type": "string",
-              "minLength": 1
+              "$ref": "#/$defs/canonicalPredicate"
             },
             {
               "type": "array",
               "minItems": 1,
               "uniqueItems": true,
               "items": {
-                "type": "string",
-                "minLength": 1
+                "$ref": "#/$defs/canonicalPredicate"
               }
             },
             {
