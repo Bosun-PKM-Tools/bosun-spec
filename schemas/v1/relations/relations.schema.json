@@ -30,6 +30,10 @@
     "consultedProvider": {
       "$ref": "#/$defs/yeomanContactTarget",
       "description": "A Yeoman contact was consulted as a provider on this note."
+    },
+    "campaign_lore_node": {
+      "$ref": "#/$defs/charthouseLoreTarget",
+      "description": "This Careen project or note links to a canonical Charthouse lore node."
     }
   },
   "$defs": {
@@ -109,6 +113,26 @@
           "uniqueItems": true,
           "items": {
             "$ref": "#/$defs/triceTaskUrn"
+          }
+        }
+      ]
+    },
+    "charthouseLoreUrn": {
+      "type": "string",
+      "pattern": "^urn:charthouse:lore:[0-9a-fA-F-]{36}$",
+      "description": "Canonical Charthouse lore node URN."
+    },
+    "charthouseLoreTarget": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/charthouseLoreUrn"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/charthouseLoreUrn"
           }
         }
       ]
