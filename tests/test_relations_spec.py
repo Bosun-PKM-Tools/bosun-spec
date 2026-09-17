@@ -1,13 +1,15 @@
 """
 tests/test_relations_spec.py
 ────────────────────────────
-Validates the typed `$pkm.relations` contract and the JSON-RPC 2.0 fleet
-method matrix:
+Validates the typed `$pkm.relations` contract, Postel coercion defs, and
+the JSON-RPC 2.0 fleet method matrix:
 
   1. ``schemas/v1/relations/relations.schema.json`` is Draft 2020-12 valid.
   2. Markdown fixtures under ``fixtures/relations/`` expose a
      ``$pkm.relations`` object that validates against that schema.
-  3. ``schemas/v1/rpc/fleet-matrix.json`` is Draft 2020-12 valid and its
+  3. ``schemas/v1/meta/coercion.schema.json`` is Draft 2020-12 valid and
+     accepts scalar-or-array URNs plus date-only or UTC date-times.
+  4. ``schemas/v1/rpc/fleet-matrix.json`` is Draft 2020-12 valid and its
      ``methods`` catalog matches ``$defs.methodEntry`` plus per-method
      params/result schemas.
 
@@ -38,8 +40,10 @@ except ImportError:
 _REPO_ROOT = pathlib.Path(__file__).parent.parent
 _SCHEMAS = _REPO_ROOT / "schemas"
 _RELATIONS_SCHEMA = _SCHEMAS / "v1" / "relations" / "relations.schema.json"
+_COERCION_SCHEMA = _SCHEMAS / "v1" / "meta" / "coercion.schema.json"
 _FLEET_MATRIX = _SCHEMAS / "v1" / "rpc" / "fleet-matrix.json"
 _FIXTURES = _REPO_ROOT / "fixtures" / "relations"
+_COERCION_DATES_FIXTURE = _REPO_ROOT / "fixtures" / "meta" / "coercion-dates.json"
 
 _DRAFT_2020_12 = "https://json-schema.org/draft/2020-12/schema"
 _ID_PREFIX = "https://bosunpkm.com/schemas/"
@@ -103,10 +107,24 @@ _VALID_RPC_PARAMS = {
 _REQUIRED_FIXTURES = (
     "task-delegated.md",
     "event-attended.md",
+    "scalar-coerced.md",
+    "cross-realm-predicates.md",
 )
 
+_CONTACT_URN = f"urn:yeoman:contact:{_CONTACT_ID}"
+_MAINTENANCE_URN = "urn:drydock:maintenance:0d1e2f3a-4b5c-4d6e-8f70-890123456789"
+_SERVICE_URN = "urn:squadron:service:1a2b3c4d-5e6f-4789-8abc-def012345678"
+_PAPER_URN = "urn:docent:paper:9f8e7d6c-5b4a-4321-a098-76543210fedc"
+
 _CANONICAL_URN = re.compile(
-    r"^urn:(qtm|logbook|yeoman|trice):(tx|event|contact|task):[0-9a-fA-F-]{36}$"
+    r"^urn:(qtm|logbook|yeoman|trice|drydock|squadron|docent):"
+    r"(tx|event|contact|task|maintenance|service|paper):[0-9a-fA-F-]{36}$"
+)
+_CROSS_REALM_PREDICATES = (
+    "maintainedUnderLog",
+    "servicedInFleet",
+    "citedInStudy",
+    "appraisedBy",
 )
 _CLOSING_FENCE = re.compile(r"\n---[ \t]*(?:\n|$)")
 
@@ -255,11 +273,14 @@ class TestRelationsSpec(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.relations_schema = _load_json(_RELATIONS_SCHEMA)
+        cls.coercion_schema = _load_json(_COERCION_SCHEMA)
         cls.fleet_matrix = _load_json(_FLEET_MATRIX)
 
     def test_required_files_exist(self):
         self.assertTrue(_RELATIONS_SCHEMA.is_file(), _RELATIONS_SCHEMA)
+        self.assertTrue(_COERCION_SCHEMA.is_file(), _COERCION_SCHEMA)
         self.assertTrue(_FLEET_MATRIX.is_file(), _FLEET_MATRIX)
+        self.assertTrue(_COERCION_DATES_FIXTURE.is_file(), _COERCION_DATES_FIXTURE)
         for name in _REQUIRED_FIXTURES:
             path = _FIXTURES / name
             self.assertTrue(path.is_file(), path)
@@ -276,6 +297,21 @@ class TestRelationsSpec(unittest.TestCase):
             Draft202012Validator.check_schema(self.relations_schema)
         except jsonschema.SchemaError as exc:
             self.fail(f"relations.schema.json failed Draft 2020-12 check: {exc.message}")
+
+    def test_coercion_schema_pins_draft_and_canonical_id(self):
+        self.assertEqual(self.coercion_schema.get("$schema"), _DRAFT_2020_12)
+        expected_id = _ID_PREFIX + "v1/meta/coercion.schema.json"
+        self.assertEqual(self.coercion_schema.get("$id"), expected_id)
+        self.assertEqual(self.coercion_schema.get("additionalProperties"), False)
+        for name in ("urnOrUrnArray", "dateOrDateTime", "canonicalUrn", "dateOnly", "utcDateTime"):
+            self.assertIn(name, self.coercion_schema["$defs"])
+
+    @unittest.skipUnless(_HAS_JSONSCHEMA, "jsonschema package not installed")
+    def test_coercion_schema_passes_meta_schema(self):
+        try:
+            Draft202012Validator.check_schema(self.coercion_schema)
+        except jsonschema.SchemaError as exc:
+            self.fail(f"coercion.schema.json failed Draft 2020-12 check: {exc.message}")
 
     @unittest.skipUnless(_HAS_JSONSCHEMA, "jsonschema package not installed")
     def test_fixtures_validate_pkm_relations(self):
@@ -300,6 +336,95 @@ class TestRelationsSpec(unittest.TestCase):
                 self.assertRegex(target, _CANONICAL_URN)
                 validator.validate(relations)
 
+    def _assert_urn_value(self, value) -> None:
+        if isinstance(value, str):
+            self.assertRegex(value, _CANONICAL_URN)
+            return
+        self.assertIsInstance(value, list)
+        self.assertGreaterEqual(len(value), 1)
+        self.assertEqual(len(value), len(set(value)))
+        for item in value:
+            self.assertRegex(item, _CANONICAL_URN)
+
+    @unittest.skipUnless(_HAS_JSONSCHEMA, "jsonschema package not installed")
+    def test_all_relation_markdown_fixtures_validate(self):
+        validator = Draft202012Validator(self.relations_schema)
+        fixtures = sorted(_FIXTURES.glob("*.md"))
+        self.assertGreaterEqual(len(fixtures), len(_REQUIRED_FIXTURES))
+        for path in fixtures:
+            with self.subTest(fixture=path.name):
+                relations = extract_pkm_relations(path.read_text(encoding="utf-8"))
+                self.assertIsInstance(relations, dict)
+                self.assertTrue(relations)
+                for value in relations.values():
+                    self._assert_urn_value(value)
+                validator.validate(relations)
+
+    @unittest.skipUnless(_HAS_JSONSCHEMA, "jsonschema package not installed")
+    def test_scalar_coercion_fixture_uses_strings(self):
+        validator = Draft202012Validator(self.relations_schema)
+        markdown = (_FIXTURES / "scalar-coerced.md").read_text(encoding="utf-8")
+        relations = extract_pkm_relations(markdown)
+        self.assertEqual(relations["assignedToContact"], _CONTACT_URN)
+        self.assertEqual(relations["maintainedUnderLog"], _MAINTENANCE_URN)
+        self.assertIsInstance(relations["assignedToContact"], str)
+        self.assertIsInstance(relations["maintainedUnderLog"], str)
+        validator.validate(relations)
+
+    @unittest.skipUnless(_HAS_JSONSCHEMA, "jsonschema package not installed")
+    def test_cross_realm_predicates_fixture(self):
+        validator = Draft202012Validator(self.relations_schema)
+        markdown = (_FIXTURES / "cross-realm-predicates.md").read_text(encoding="utf-8")
+        relations = extract_pkm_relations(markdown)
+        expected = {
+            "maintainedUnderLog": [_MAINTENANCE_URN],
+            "servicedInFleet": [_SERVICE_URN],
+            "citedInStudy": [_PAPER_URN],
+            "appraisedBy": [_CONTACT_URN],
+        }
+        self.assertEqual(set(relations), set(_CROSS_REALM_PREDICATES))
+        self.assertEqual(relations, expected)
+        validator.validate(relations)
+
+    @unittest.skipUnless(_HAS_JSONSCHEMA, "jsonschema package not installed")
+    def test_scalar_string_and_array_both_validate(self):
+        validator = Draft202012Validator(self.relations_schema)
+        for predicate, urn in (
+            ("assignedToContact", _CONTACT_URN),
+            ("maintainedUnderLog", _MAINTENANCE_URN),
+        ):
+            with self.subTest(predicate=predicate, shape="string"):
+                validator.validate({predicate: urn})
+            with self.subTest(predicate=predicate, shape="array"):
+                validator.validate({predicate: [urn]})
+
+    @unittest.skipUnless(_HAS_JSONSCHEMA, "jsonschema package not installed")
+    def test_date_only_and_datetime_both_validate(self):
+        date_schema = _subschema(self.coercion_schema, "#/$defs/dateOrDateTime")
+        validator = Draft202012Validator(date_schema)
+        validator.validate("2026-09-16")
+        validator.validate("2026-09-16T14:00:00Z")
+        validator.validate("2026-09-16T14:00:00.123Z")
+        with self.assertRaises(jsonschema.ValidationError):
+            validator.validate("2026-09-16T14:00:00")
+        with self.assertRaises(jsonschema.ValidationError):
+            validator.validate("09/16/2026")
+
+    @unittest.skipUnless(_HAS_JSONSCHEMA, "jsonschema package not installed")
+    def test_coercion_dates_fixture_validates(self):
+        fixture = _load_json(_COERCION_DATES_FIXTURE)
+        Draft202012Validator(self.coercion_schema).validate(fixture)
+        urn_validator = Draft202012Validator(
+            _subschema(self.coercion_schema, "#/$defs/urnOrUrnArray")
+        )
+        urn_validator.validate(fixture["scalar_urn"])
+        urn_validator.validate(fixture["urn_array"])
+        date_validator = Draft202012Validator(
+            _subschema(self.coercion_schema, "#/$defs/dateOrDateTime")
+        )
+        date_validator.validate(fixture["date_only"])
+        date_validator.validate(fixture["datetime_utc"])
+
     @unittest.skipUnless(_HAS_JSONSCHEMA, "jsonschema package not installed")
     def test_unknown_predicate_is_rejected(self):
         validator = Draft202012Validator(self.relations_schema)
@@ -323,6 +448,10 @@ class TestRelationsSpec(unittest.TestCase):
                     )
                 }
             )
+        with self.assertRaises(jsonschema.ValidationError):
+            validator.validate({"citedInStudy": _CONTACT_URN})
+        with self.assertRaises(jsonschema.ValidationError):
+            validator.validate({"maintainedUnderLog": _SERVICE_URN})
 
     @unittest.skipUnless(_HAS_JSONSCHEMA, "jsonschema package not installed")
     def test_one_or_more_urn_array_is_accepted(self):

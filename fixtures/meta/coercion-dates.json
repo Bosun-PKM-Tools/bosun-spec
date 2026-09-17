@@ -1,0 +1,9 @@
+{
+  "date_only": "2026-09-16",
+  "datetime_utc": "2026-09-16T14:00:00Z",
+  "scalar_urn": "urn:yeoman:contact:123e4567-e89b-42d3-a456-426614174000",
+  "urn_array": [
+    "urn:yeoman:contact:123e4567-e89b-42d3-a456-426614174000",
+    "urn:drydock:maintenance:0d1e2f3a-4b5c-4d6e-8f70-890123456789"
+  ]
+}

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://bosunpkm.com/schemas/v1/relations/relations.schema.json",
   "title": "Bosun PKM Typed Relations Contract v1",
-  "description": "Validates a `$pkm.relations` block inside note YAML frontmatter — not an entire markdown file. Canonical nesting matches existing yeoman/commonplace fixtures: `$pkm: { relations: { <verb>: <urn> | [<urn>, ...] } }`. This object form uses typed predicate verbs with canonical URN targets `urn:<realm>:<entity_type>:<uuid>` (UUID portion `[0-9a-fA-F-]{36}`). It is distinct from the older array-of-`{target,type}` edges used by `$yeoman:interaction/v1` and `canonical-note-contract-v0.1.json`. Unknown verbs are rejected. Each verb accepts a single matching URN string or a non-empty array of matching URNs (one-or-more; harbormaster docs are explicit that interactions may link one or more contacts, and the verb-keyed contract was otherwise ambiguous).",
+  "description": "Validates a `$pkm.relations` block inside note YAML frontmatter — not an entire markdown file. Canonical nesting matches existing yeoman/commonplace fixtures: `$pkm: { relations: { <verb>: <urn> | [<urn>, ...] } }`. This object form uses typed predicate verbs with canonical URN targets `urn:<realm>:<entity_type>:<uuid>` (UUID portion `[0-9a-fA-F-]{36}`). It is distinct from the older array-of-`{target,type}` edges used by `$yeoman:interaction/v1` and `canonical-note-contract-v0.1.json`. Unknown verbs are rejected. Each verb specializes `https://bosunpkm.com/schemas/v1/meta/coercion.schema.json#/$defs/urnOrUrnArray` with a realm-specific pattern: a single matching URN string or a non-empty unique array of matching URNs. JSON Schema cannot coerce; acceptors MUST wrap a scalar as a one-element array, and emitters MUST write arrays. Patterns stay local because Draft 2020-12 `$ref` cannot parameterize per-verb URN patterns.",
   "type": "object",
   "version": "1.0.0",
   "additionalProperties": false,
@@ -30,6 +30,22 @@
     "consultedProvider": {
       "$ref": "#/$defs/yeomanContactTarget",
       "description": "A Yeoman contact was consulted as a provider on this note."
+    },
+    "maintainedUnderLog": {
+      "$ref": "#/$defs/drydockMaintenanceTarget",
+      "description": "This note is maintained under a Drydock maintenance log."
+    },
+    "servicedInFleet": {
+      "$ref": "#/$defs/squadronServiceTarget",
+      "description": "This asset or note was serviced in a Squadron service record."
+    },
+    "citedInStudy": {
+      "$ref": "#/$defs/docentPaperTarget",
+      "description": "This note is cited in a Docent paper."
+    },
+    "appraisedBy": {
+      "$ref": "#/$defs/yeomanContactTarget",
+      "description": "A Yeoman contact appraised the subject of this note."
     }
   },
   "$defs": {
@@ -39,6 +55,7 @@
       "description": "Canonical QTM transaction URN."
     },
     "purchasedViaTxTarget": {
+      "$comment": "Specializes coercion.schema.json#/$defs/urnOrUrnArray with a QTM transaction URN pattern.",
       "oneOf": [
         {
           "$ref": "#/$defs/purchasedViaTxUrn"
@@ -59,6 +76,7 @@
       "description": "Canonical Logbook event URN."
     },
     "attendedEventTarget": {
+      "$comment": "Specializes coercion.schema.json#/$defs/urnOrUrnArray with a Logbook event URN pattern.",
       "oneOf": [
         {
           "$ref": "#/$defs/attendedEventUrn"
@@ -79,6 +97,7 @@
       "description": "Canonical Yeoman contact URN."
     },
     "yeomanContactTarget": {
+      "$comment": "Specializes coercion.schema.json#/$defs/urnOrUrnArray with a Yeoman contact URN pattern.",
       "oneOf": [
         {
           "$ref": "#/$defs/yeomanContactUrn"
@@ -99,6 +118,7 @@
       "description": "Canonical Trice task URN."
     },
     "actionItemDerivedFromTarget": {
+      "$comment": "Specializes coercion.schema.json#/$defs/urnOrUrnArray with a Trice task URN pattern.",
       "oneOf": [
         {
           "$ref": "#/$defs/triceTaskUrn"
@@ -109,6 +129,69 @@
           "uniqueItems": true,
           "items": {
             "$ref": "#/$defs/triceTaskUrn"
+          }
+        }
+      ]
+    },
+    "drydockMaintenanceUrn": {
+      "type": "string",
+      "pattern": "^urn:drydock:maintenance:[0-9a-fA-F-]{36}$",
+      "description": "Canonical Drydock maintenance URN."
+    },
+    "drydockMaintenanceTarget": {
+      "$comment": "Specializes coercion.schema.json#/$defs/urnOrUrnArray with a Drydock maintenance URN pattern.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/drydockMaintenanceUrn"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/drydockMaintenanceUrn"
+          }
+        }
+      ]
+    },
+    "squadronServiceUrn": {
+      "type": "string",
+      "pattern": "^urn:squadron:service:[0-9a-fA-F-]{36}$",
+      "description": "Canonical Squadron service URN."
+    },
+    "squadronServiceTarget": {
+      "$comment": "Specializes coercion.schema.json#/$defs/urnOrUrnArray with a Squadron service URN pattern.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/squadronServiceUrn"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/squadronServiceUrn"
+          }
+        }
+      ]
+    },
+    "docentPaperUrn": {
+      "type": "string",
+      "pattern": "^urn:docent:paper:[0-9a-fA-F-]{36}$",
+      "description": "Canonical Docent paper URN."
+    },
+    "docentPaperTarget": {
+      "$comment": "Specializes coercion.schema.json#/$defs/urnOrUrnArray with a Docent paper URN pattern.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/docentPaperUrn"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/docentPaperUrn"
           }
         }
       ]

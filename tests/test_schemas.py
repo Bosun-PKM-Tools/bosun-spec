@@ -56,6 +56,7 @@ _REQUIRED_V1_SCHEMAS = (
     "v1/yeoman/interaction.schema.json",
     "v1/commonplace/work.schema.json",
     "v1/relations/relations.schema.json",
+    "v1/meta/coercion.schema.json",
 )
 
 

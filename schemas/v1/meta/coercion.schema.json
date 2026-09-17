@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/meta/coercion.schema.json",
+  "title": "Bosun PKM Postel Coercion Contract v1",
+  "description": "Reusable Draft 2020-12 $defs for Postel's Principle: be liberal in what you accept, conservative in what you emit. JSON Schema cannot perform coercion — it only validates accepted (liberal) input shapes. Runtime ingest MUST coerce a scalar canonical URN to a one-element array and a date-only string to midnight UTC (`T00:00:00Z`). Emitters MUST write arrays of URNs and full UTC date-times ending in Z. The root object is an acid-test envelope over those $defs, not a note contract.",
+  "type": "object",
+  "version": "1.0.0",
+  "additionalProperties": false,
+  "properties": {
+    "date_only": {
+      "$ref": "#/$defs/dateOrDateTime",
+      "description": "Date-only example (`YYYY-MM-DD`); acceptors default this to 00:00:00Z."
+    },
+    "datetime_utc": {
+      "$ref": "#/$defs/dateOrDateTime",
+      "description": "Conservative emit example: full ISO-8601 UTC date-time ending in Z."
+    },
+    "scalar_urn": {
+      "$ref": "#/$defs/urnOrUrnArray",
+      "description": "Scalar URN example; acceptors coerce this to a one-element array."
+    },
+    "urn_array": {
+      "$ref": "#/$defs/urnOrUrnArray",
+      "description": "Conservative emit example: non-empty unique array of canonical URNs."
+    }
+  },
+  "$defs": {
+    "canonicalUrn": {
+      "type": "string",
+      "pattern": "^urn:[a-z][a-z0-9]*:[a-z][a-z0-9]*:[0-9a-fA-F-]{36}$",
+      "description": "Canonical URN `urn:<realm>:<entity_type>:<uuid>`. Realm-specific predicates in relations.schema.json tighten the realm and entity_type."
+    },
+    "urnOrUrnArray": {
+      "description": "Liberal accept shape for one-or-more canonical URNs. A single matching string or a non-empty unique array of matching strings both validate. JSON Schema does not coerce; emitters MUST write an array even for one target.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/canonicalUrn"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/canonicalUrn"
+          }
+        }
+      ]
+    },
+    "dateOnly": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "description": "Date-only input (`YYYY-MM-DD`). Acceptors MUST default the time to 00:00:00Z."
+    },
+    "utcDateTime": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z$",
+      "description": "Full ISO-8601 UTC date-time ending in Z. `format: date-time` is the RFC 3339 annotation for format-aware validators; the Z pattern is the portable constraint. Emitters MUST write this shape."
+    },
+    "dateOrDateTime": {
+      "description": "Liberal accept shape for timestamps. Date-only strings and full UTC date-times both validate. JSON Schema does not coerce; emitters MUST write full UTC date-times.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/dateOnly"
+        },
+        {
+          "$ref": "#/$defs/utcDateTime"
+        }
+      ]
+    }
+  }
+}
