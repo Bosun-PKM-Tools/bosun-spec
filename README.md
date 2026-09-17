@@ -33,6 +33,7 @@ This repository contains **only schemas, RFCs, and documentation**. No storage i
 | [`v1/rpc/fleet-matrix.json`](schemas/v1/rpc/fleet-matrix.json) | JSON-RPC 2.0 fleet method matrix (16 Yeoman/Trice/Logbook/Commonplace methods) plus Draft 2020-12 envelope/`$defs` schemas. |
 | [`v1/rpc/error-envelope.schema.json`](schemas/v1/rpc/error-envelope.schema.json) | JSON-RPC 2.0 error envelope with Bosun server-error codes `-32000` schema failure, `-32001` vault lock/contention, `-32002` orphan URN. |
 | [`v1/rpc/event-payloads.schema.json`](schemas/v1/rpc/event-payloads.schema.json) | JSON-RPC 2.0 notifications and Harbormaster event envelopes, plus per-realm `*Payload` `$defs` for all 50 realms. |
+| [`v1/telemetry/parquet-contracts.schema.json`](schemas/v1/telemetry/parquet-contracts.schema.json) | Dual-Track Telemetry Parquet table contracts, column types/nullability, and unit conversions for Pratique, Squadron, and The Glass. |
 
 Canonical `$id` URIs are `https://bosunpkm.com/schemas/<path-from-schemas/>`.
 
@@ -169,6 +170,7 @@ python tests/test_schemas.py
 python tests/test_codec_fixtures.py
 python tests/test_relations_spec.py
 python tests/test_rpc_schemas.py
+python tests/test_synthetic_vault_telemetry.py
 ```
 
 ---
@@ -205,6 +207,12 @@ python tests/test_relations_spec.py
 
 ```bash
 python tests/test_rpc_schemas.py
+```
+
+[`tests/test_synthetic_vault_telemetry.py`](tests/test_synthetic_vault_telemetry.py) discovers `telemetry_parquet_ref` values on synthetic vault notes, asserts those Parquet partitions exist under `fixtures/synthetic_vault/`, and checks footer field names, types, and nullability against [`schemas/v1/telemetry/parquet-contracts.schema.json`](schemas/v1/telemetry/parquet-contracts.schema.json).
+
+```bash
+python tests/test_synthetic_vault_telemetry.py
 ```
 
 ---

@@ -877,8 +877,134 @@ class SyntheticVaultBuilder:
             target_file = self.target_dir / realm_key / f"{n['slug']}.md"
             target_file.write_text(file_content, encoding="utf-8")
 
+        parquet_paths = write_telemetry_partitions(self.target_dir)
         print(f"Successfully generated and validated {validated_count} synthetic notes in {self.target_dir}")
+        print(f"Wrote {len(parquet_paths)} telemetry Parquet partitions referenced by notes")
         return self.notes
+
+
+def _extract_frontmatter(content: str) -> str:
+    """Return the YAML frontmatter block from a markdown note."""
+    lines = content.splitlines(keepends=True)
+    if not lines or lines[0].strip() != "---":
+        raise ValueError("Note does not begin with frontmatter marker '---'")
+    for idx in range(1, len(lines)):
+        if lines[idx].strip() == "---":
+            return "".join(lines[1:idx])
+    raise ValueError("Note is missing closing frontmatter marker '---'")
+
+
+def collect_telemetry_parquet_refs(vault_dir: pathlib.Path) -> Dict[str, Dict[str, Any]]:
+    """Discover parquet partitions referenced by synthetic vault notes.
+
+    Returns a mapping of relative parquet path -> {realm, note, attrs} for the
+    first note that referenced each file. Paths are relative to ``vault_dir``.
+    """
+    jobs: Dict[str, Dict[str, Any]] = {}
+    for md_path in sorted(vault_dir.rglob("*.md")):
+        try:
+            fm_text = _extract_frontmatter(md_path.read_text(encoding="utf-8"))
+            data = yaml.safe_load(fm_text) or {}
+        except (ValueError, yaml.YAMLError):
+            continue
+        if not isinstance(data, dict):
+            continue
+        ref = data.get("telemetry_parquet_ref")
+        if not ref:
+            telemetry = data.get("telemetry")
+            if isinstance(telemetry, dict):
+                ref = telemetry.get("parquet_ref")
+        if not ref or not isinstance(ref, str):
+            continue
+        if ref in jobs:
+            continue
+        pkm = data.get("$pkm") or {}
+        jobs[ref] = {
+            "realm": pkm.get("realm", ""),
+            "note": str(md_path.relative_to(vault_dir)),
+            "attrs": data,
+        }
+    return jobs
+
+
+def _sample_rows_for_partition(rel_path: str, realm: str, attrs: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Build a small PLAIN-encoded sample batch matching the realm contract."""
+    stem = pathlib.PurePosixPath(rel_path.replace("\\", "/")).stem
+    base_ts = 1726588800000000
+    normalized = (realm or "").replace("-", "_")
+
+    if normalized == "pratique":
+        metric_by_stem = {
+            "cardiac_hrv": ("heart_rate", "bpm"),
+            "pulmonary": ("fev1", "L"),
+            "sleep_stages": ("sleep_stage", "stage"),
+            "abpm": ("systolic_bp", "mmHg"),
+        }
+        metric_type, unit = metric_by_stem.get(stem, ("heart_rate", "bpm"))
+        sensor_id = str(attrs.get("sensor_source") or "synthetic-sensor")
+        return [
+            {
+                "timestamp_utc": base_ts + (i * 1_000_000),
+                "metric_type": metric_type,
+                "value": 70.0 + (i * 1.5),
+                "unit": unit,
+                "sensor_id": sensor_id,
+            }
+            for i in range(5)
+        ]
+
+    if normalized == "squadron":
+        vin = str(attrs.get("vin") or f"SYNTHETIC-{stem}")
+        engine_hours = float(attrs.get("engine_hours") or 100.0)
+        return [
+            {
+                "timestamp_utc": base_ts + (i * 1_000_000),
+                "vin": vin,
+                "engine_hours": engine_hours + i,
+                "pid_code": "010C",
+                "raw_value": 2000.0 + (i * 100.0),
+            }
+            for i in range(5)
+        ]
+
+    if normalized in ("the_glass",):
+        station_id = str(attrs.get("station_id") or "STATION-NW-04")
+        barometric = float(attrs.get("barometric_hpa") or 1013.25)
+        return [
+            {
+                "timestamp_utc": base_ts + (i * 1_000_000),
+                "station_id": station_id,
+                "barometric_hpa": barometric + (i * 0.2),
+                "tidal_height_m": 1.2 + (i * 0.1),
+            }
+            for i in range(5)
+        ]
+
+    raise ValueError(f"No telemetry Parquet contract for realm {realm!r} (ref {rel_path})")
+
+
+def write_telemetry_partitions(vault_dir: pathlib.Path) -> List[pathlib.Path]:
+    """Write sample Parquet partitions for every note-referenced telemetry path."""
+    from scripts.parquet_codec import fields_from_record_contract, write_parquet_table
+
+    contract_path = _REPO_ROOT / "schemas" / "v1" / "telemetry" / "parquet-contracts.schema.json"
+    contract = json.loads(contract_path.read_text(encoding="utf-8"))
+    jobs = collect_telemetry_parquet_refs(vault_dir)
+    written: List[pathlib.Path] = []
+    for rel_path, job in jobs.items():
+        realm = job["realm"]
+        try:
+            columns = fields_from_record_contract(contract, realm)
+        except ValueError as exc:
+            raise ValueError(
+                f"Note {job['note']} references {rel_path} but realm {realm!r} "
+                "has no Parquet column contract"
+            ) from exc
+        dest = vault_dir / pathlib.PurePosixPath(rel_path)
+        rows = _sample_rows_for_partition(rel_path, realm, job["attrs"])
+        write_parquet_table(dest, columns, rows)
+        written.append(dest)
+    return written
 
 
 if __name__ == "__main__":
