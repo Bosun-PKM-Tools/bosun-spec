@@ -1,4 +1,4 @@
-﻿# Bosun PKM — Open Specification
+# Bosun PKM — Open Specification
 
 **Repository**: `Bosun-PKM-Tools/bosun-spec`  
 **Status**: Active Draft  
@@ -58,6 +58,16 @@ Canonical ingestion codec samples (upstream export bytes, not locker notes). RFC
 | [`codecs/tasks/things-export.json`](fixtures/codecs/tasks/things-export.json) | Things 3 dump: areas/projects/headings, deadlines, and checklist items. |
 | [`codecs/media/goodreads-sample.csv`](fixtures/codecs/media/goodreads-sample.csv) | Goodreads export CSV with mixed ISBN-10/13, read dates, star ratings, and custom shelves. |
 | [`codecs/media/kindle-clippings.txt`](fixtures/codecs/media/kindle-clippings.txt) | Kindle `My Clippings.txt` with UTF-8 BOM, page/location offsets, and multi-session highlights. |
+
+### Starter Templates (`templates/realms/`)
+
+Canonical Obsidian and Markdown starter templates for all 50 Bosun PKM realms (`templates/realms/<realm>.template.md`). Each template provides standard frontmatter conforming to its realm delta schema and base archetype, using standard mustache/jinja substitution variables:
+
+- `{{ uuidv7 }}` — UUIDv7 URN (`urn:uuid:{{ uuidv7 }}`)
+- `{{ date_utc }}` — ISO-8601 UTC timestamp (`{{ date_utc }}`)
+- `{{ title }}` — Document title in frontmatter and `# {{ title }}` heading
+
+Each template includes realm-specific archetype delta properties with schema-valid defaults and standard starter headings in the markdown body.
 
 ### Reference Documentation (`docs/`)
 
