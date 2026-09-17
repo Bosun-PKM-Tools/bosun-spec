@@ -186,6 +186,8 @@ python tests/test_relations_spec.py
 python tests/test_rpc_schemas.py
 python tests/test_graph_dsl_schema.py
 python tests/test_graph_dsl_fixtures.py
+python tests/test_advanced_graph_queries.py
+python tests/test_synthetic_vault_graph_execution.py
 python tests/test_synthetic_vault_telemetry.py
 ```
 
@@ -225,12 +227,13 @@ python tests/test_relations_spec.py
 python tests/test_rpc_schemas.py
 ```
 
-[`tests/test_graph_dsl_schema.py`](tests/test_graph_dsl_schema.py) checks that `schemas/v1/query/graph-dsl.schema.json` is Draft 2020-12 valid. [`tests/test_graph_dsl_fixtures.py`](tests/test_graph_dsl_fixtures.py) loads query fixtures from `tests/fixtures/queries/` and asserts valid documents pass while invalid documents raise `ValidationError`. [`tests/test_advanced_graph_queries.py`](tests/test_advanced_graph_queries.py) validates the Careen→Trice→Yeoman `path` AND fixture and checks its Cypher/SPARQL siblings.
+[`tests/test_graph_dsl_schema.py`](tests/test_graph_dsl_schema.py) checks that `schemas/v1/query/graph-dsl.schema.json` is Draft 2020-12 valid. [`tests/test_graph_dsl_fixtures.py`](tests/test_graph_dsl_fixtures.py) loads query fixtures from `tests/fixtures/queries/` and asserts valid documents pass while invalid documents raise `ValidationError`. [`tests/test_advanced_graph_queries.py`](tests/test_advanced_graph_queries.py) validates the Careen→Trice→Yeoman `path` AND fixture and checks its Cypher/SPARQL siblings. [`tests/test_synthetic_vault_graph_execution.py`](tests/test_synthetic_vault_graph_execution.py) executes Graph DSL queries against `fixtures/synthetic_vault/` and asserts pinned Careen→Trice→Yeoman result URN sets.
 
 ```bash
 python tests/test_graph_dsl_schema.py
 python tests/test_graph_dsl_fixtures.py
 python tests/test_advanced_graph_queries.py
+python tests/test_synthetic_vault_graph_execution.py
 ```
 
 [`tests/test_synthetic_vault_telemetry.py`](tests/test_synthetic_vault_telemetry.py) discovers `telemetry_parquet_ref` values on synthetic vault notes, asserts those Parquet partitions exist under `fixtures/synthetic_vault/`, and checks footer field names, types, and nullability against [`schemas/v1/telemetry/parquet-contracts.schema.json`](schemas/v1/telemetry/parquet-contracts.schema.json).
