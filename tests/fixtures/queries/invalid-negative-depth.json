@@ -1,0 +1,10 @@
+{
+  "query_id": "invalid-negative-depth",
+  "linked_from": "urn:careen:project:018f3a00-0000-7000-8000-000000000009",
+  "direction": "outbound",
+  "edge_types": ["relations", "stage_gates"],
+  "max_depth": -1,
+  "match_realm": ["careen", "trice"],
+  "has_relation": "blocked_by",
+  "projections": ["nodes", "edges"]
+}

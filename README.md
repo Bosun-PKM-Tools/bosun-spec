@@ -30,6 +30,7 @@ This repository contains **only schemas, RFCs, and documentation**. No storage i
 | [`v1/yeoman/interaction.schema.json`](schemas/v1/yeoman/interaction.schema.json) | Yeoman interaction note; `$pkm.relations` must include at least one `type: contact` UUID. |
 | [`v1/commonplace/work.schema.json`](schemas/v1/commonplace/work.schema.json) | Commonplace (Realm 18) media work at `locker_commonplace/works/<slug>.md` with multi-service `external_ids`. |
 | [`v1/relations/relations.schema.json`](schemas/v1/relations/relations.schema.json) | Typed `$pkm.relations` object: canonical predicate verbs with `urn:<realm>:<entity_type>:<uuid>` targets. |
+| [`v1/query/graph-dsl.schema.json`](schemas/v1/query/graph-dsl.schema.json) | Vault Graph Query DSL: directional traversal, relation/stage-gate filters, and node/edge/adjacency projections. |
 | [`v1/rpc/fleet-matrix.json`](schemas/v1/rpc/fleet-matrix.json) | JSON-RPC 2.0 fleet method matrix (16 Yeoman/Trice/Logbook/Commonplace methods) plus Draft 2020-12 envelope/`$defs` schemas. |
 | [`v1/rpc/error-envelope.schema.json`](schemas/v1/rpc/error-envelope.schema.json) | JSON-RPC 2.0 error envelope with Bosun server-error codes `-32000` schema failure, `-32001` vault lock/contention, `-32002` orphan URN. |
 | [`v1/rpc/event-payloads.schema.json`](schemas/v1/rpc/event-payloads.schema.json) | JSON-RPC 2.0 notifications and Harbormaster event envelopes, plus per-realm `*Payload` `$defs` for all 50 realms. |
@@ -49,6 +50,15 @@ Golden CommonMark examples with YAML frontmatter that satisfies the correspondin
 | [`commonplace/dune.md`](fixtures/commonplace/dune.md) | Media record with multi-service external IDs. |
 | [`relations/task-delegated.md`](fixtures/relations/task-delegated.md) | Trice task whose `$pkm.relations.assignedToContact` targets a Yeoman contact URN. |
 | [`relations/event-attended.md`](fixtures/relations/event-attended.md) | Meeting note whose `$pkm.relations.attendedEvent` targets a Logbook event URN. |
+
+Graph Query DSL engine fixtures (JSON documents validated against `graph-dsl.schema.json`):
+
+| File | Description |
+|---|---|
+| [`queries/valid-single-hop-contact.json`](tests/fixtures/queries/valid-single-hop-contact.json) | Single-hop Yeoman contact query (`assignedToContact` / `waitingOnContact` / `consultedProvider`). |
+| [`queries/valid-multihop-stage-gate.json`](tests/fixtures/queries/valid-multihop-stage-gate.json) | Multi-hop Careen/Trice stage-gate query (`blocked_by` / `depends_on` / `actionItemDerivedFrom`). |
+| [`queries/invalid-negative-depth.json`](tests/fixtures/queries/invalid-negative-depth.json) | Negative `max_depth` must fail Draft 2020-12 validation. |
+| [`queries/invalid-illegal-predicate.json`](tests/fixtures/queries/invalid-illegal-predicate.json) | Unknown verb (`appraisedBy`) with a wrong-realm URN must fail. |
 
 Canonical ingestion codec samples (upstream export bytes, not locker notes). RFC documents use CRLF and 75-octet folding; Kindle clippings keep a UTF-8 BOM. Integrity checks live in [`tests/test_codec_fixtures.py`](tests/test_codec_fixtures.py).
 
@@ -170,6 +180,8 @@ python tests/test_schemas.py
 python tests/test_codec_fixtures.py
 python tests/test_relations_spec.py
 python tests/test_rpc_schemas.py
+python tests/test_graph_dsl_schema.py
+python tests/test_graph_dsl_fixtures.py
 python tests/test_synthetic_vault_telemetry.py
 ```
 
@@ -207,6 +219,13 @@ python tests/test_relations_spec.py
 
 ```bash
 python tests/test_rpc_schemas.py
+```
+
+[`tests/test_graph_dsl_schema.py`](tests/test_graph_dsl_schema.py) checks that `schemas/v1/query/graph-dsl.schema.json` is Draft 2020-12 valid. [`tests/test_graph_dsl_fixtures.py`](tests/test_graph_dsl_fixtures.py) loads query fixtures from `tests/fixtures/queries/` and asserts valid documents pass while invalid documents raise `ValidationError`.
+
+```bash
+python tests/test_graph_dsl_schema.py
+python tests/test_graph_dsl_fixtures.py
 ```
 
 [`tests/test_synthetic_vault_telemetry.py`](tests/test_synthetic_vault_telemetry.py) discovers `telemetry_parquet_ref` values on synthetic vault notes, asserts those Parquet partitions exist under `fixtures/synthetic_vault/`, and checks footer field names, types, and nullability against [`schemas/v1/telemetry/parquet-contracts.schema.json`](schemas/v1/telemetry/parquet-contracts.schema.json).
