@@ -31,6 +31,7 @@ This repository contains **only schemas, RFCs, and documentation**. No storage i
 | [`v1/commonplace/work.schema.json`](schemas/v1/commonplace/work.schema.json) | Commonplace (Realm 18) media work at `locker_commonplace/works/<slug>.md` with multi-service `external_ids`. |
 | [`v1/relations/relations.schema.json`](schemas/v1/relations/relations.schema.json) | Typed `$pkm.relations` object: canonical predicate verbs with `urn:<realm>:<entity_type>:<uuid>` targets. |
 | [`v1/query/graph-dsl.schema.json`](schemas/v1/query/graph-dsl.schema.json) | Vault Graph Query DSL: directional traversal, relation/stage-gate filters, ordered multi-hop `path` AND, and node/edge/adjacency projections. |
+| [`v1/query/federated-query-plan.schema.json`](schemas/v1/query/federated-query-plan.schema.json) | Federated multi-vault query plan: vault endpoints, ordered distributed steps, and cross-vault URN join keys. |
 | [`v1/rpc/fleet-matrix.json`](schemas/v1/rpc/fleet-matrix.json) | JSON-RPC 2.0 fleet method matrix (16 Yeoman/Trice/Logbook/Commonplace methods) plus Draft 2020-12 envelope/`$defs` schemas. |
 | [`v1/rpc/error-envelope.schema.json`](schemas/v1/rpc/error-envelope.schema.json) | JSON-RPC 2.0 error envelope with Bosun server-error codes `-32000` schema failure, `-32001` vault lock/contention, `-32002` orphan URN. |
 | [`v1/rpc/event-payloads.schema.json`](schemas/v1/rpc/event-payloads.schema.json) | JSON-RPC 2.0 notifications and Harbormaster event envelopes, plus per-realm `*Payload` `$defs` for all 50 realms. |
@@ -63,6 +64,9 @@ Graph Query DSL engine fixtures (JSON documents validated against `graph-dsl.sch
 | [`queries/advanced/careen-blocks-trice-assigned-contact.cypher`](tests/fixtures/queries/advanced/careen-blocks-trice-assigned-contact.cypher) | Cypher equivalent of the Careen→Trice→Yeoman path query. |
 | [`queries/advanced/careen-blocks-trice-assigned-contact.sparql`](tests/fixtures/queries/advanced/careen-blocks-trice-assigned-contact.sparql) | SPARQL equivalent of the Careen→Trice→Yeoman path query. |
 | [`queries/advanced/invalid-illegal-predicate-in-path.graph.json`](tests/fixtures/queries/advanced/invalid-illegal-predicate-in-path.graph.json) | Illegal `appraisedBy` hop combined with a valid `blocks` hop must fail. |
+| [`queries/federated/primary-archive-join.json`](tests/fixtures/queries/federated/primary-archive-join.json) | Two-vault sovereign join: Primary Trice/Yeoman live notes to Archive Careen/Commonplace on URN. |
+| [`queries/federated/invalid-unknown-vault.json`](tests/fixtures/queries/federated/invalid-unknown-vault.json) | Join step `target_vault` of `ghost.vault` must fail Draft 2020-12 validation. |
+| [`queries/federated/invalid-missing-join-key.json`](tests/fixtures/queries/federated/invalid-missing-join-key.json) | Empty `join_keys` object must fail the federated plan oneOf contract. |
 
 Canonical ingestion codec samples (upstream export bytes, not locker notes). RFC documents use CRLF and 75-octet folding; Kindle clippings keep a UTF-8 BOM. Integrity checks live in [`tests/test_codec_fixtures.py`](tests/test_codec_fixtures.py).
 
@@ -187,6 +191,7 @@ python tests/test_rpc_schemas.py
 python tests/test_graph_dsl_schema.py
 python tests/test_graph_dsl_fixtures.py
 python tests/test_advanced_graph_queries.py
+python tests/test_federated_query_fixtures.py
 python tests/test_synthetic_vault_graph_execution.py
 python tests/test_synthetic_vault_telemetry.py
 ```
@@ -227,12 +232,13 @@ python tests/test_relations_spec.py
 python tests/test_rpc_schemas.py
 ```
 
-[`tests/test_graph_dsl_schema.py`](tests/test_graph_dsl_schema.py) checks that `schemas/v1/query/graph-dsl.schema.json` is Draft 2020-12 valid. [`tests/test_graph_dsl_fixtures.py`](tests/test_graph_dsl_fixtures.py) loads query fixtures from `tests/fixtures/queries/` and asserts valid documents pass while invalid documents raise `ValidationError`. [`tests/test_advanced_graph_queries.py`](tests/test_advanced_graph_queries.py) validates the Careen→Trice→Yeoman `path` AND fixture and checks its Cypher/SPARQL siblings. [`tests/test_synthetic_vault_graph_execution.py`](tests/test_synthetic_vault_graph_execution.py) executes Graph DSL queries against `fixtures/synthetic_vault/` and asserts pinned Careen→Trice→Yeoman result URN sets.
+[`tests/test_graph_dsl_schema.py`](tests/test_graph_dsl_schema.py) checks that `schemas/v1/query/graph-dsl.schema.json` is Draft 2020-12 valid. [`tests/test_graph_dsl_fixtures.py`](tests/test_graph_dsl_fixtures.py) loads query fixtures from `tests/fixtures/queries/` and asserts valid documents pass while invalid documents raise `ValidationError`. [`tests/test_advanced_graph_queries.py`](tests/test_advanced_graph_queries.py) validates the Careen→Trice→Yeoman `path` AND fixture and checks its Cypher/SPARQL siblings. [`tests/test_federated_query_fixtures.py`](tests/test_federated_query_fixtures.py) validates Primary↔Archive two-vault query plans against `federated-query-plan.schema.json`. [`tests/test_synthetic_vault_graph_execution.py`](tests/test_synthetic_vault_graph_execution.py) executes Graph DSL queries against `fixtures/synthetic_vault/` and asserts pinned Careen→Trice→Yeoman result URN sets.
 
 ```bash
 python tests/test_graph_dsl_schema.py
 python tests/test_graph_dsl_fixtures.py
 python tests/test_advanced_graph_queries.py
+python tests/test_federated_query_fixtures.py
 python tests/test_synthetic_vault_graph_execution.py
 ```
 
