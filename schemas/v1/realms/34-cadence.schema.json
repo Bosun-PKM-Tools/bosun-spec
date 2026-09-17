@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/34-cadence.schema.json",
+  "title": "Bosun Realm 34: Cadence Contract v1",
+  "description": "Machine-readable delta schema contract for Cadence (Realm 34), extending Archetype Stage-Gate Manifest and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/stage-gate-manifest.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "cadence",
+              "description": "Canonical realm identifier for Cadence."
+            }
+          }
+        },
+        "streak_count_current": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Current active consecutive streak count."
+        },
+        "target_frequency": {
+          "type": "string",
+          "description": "Intended recurrence frequency (e.g. 'daily', 'weekdays', '3x/week')."
+        },
+        "ritual_window": {
+          "type": "string",
+          "description": "Time-of-day execution window (e.g. 'morning', '06:00-08:00', 'evening')."
+        },
+        "best_streak": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "All-time longest consecutive streak count."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

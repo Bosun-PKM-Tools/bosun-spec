@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/33-purser.schema.json",
+  "title": "Bosun Realm 33: Purser Contract v1",
+  "description": "Machine-readable delta schema contract for Purser (Realm 33), extending Archetype Catalog Dossier and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "purser",
+              "description": "Canonical realm identifier for Purser."
+            }
+          }
+        },
+        "billing_cadence": {
+          "type": "string",
+          "enum": [
+            "monthly",
+            "annual",
+            "quarterly",
+            "usage_based",
+            "one_time"
+          ],
+          "description": "Subscription or procurement billing interval."
+        },
+        "vendor_urn": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "URN of the vendor or service provider organization."
+        },
+        "monthly_spend_usd": {
+          "type": "number",
+          "minimum": 0.0,
+          "description": "Normalized monthly expenditure in USD."
+        },
+        "cancellation_sla": {
+          "type": "string",
+          "description": "Notice period or terms required for subscription cancellation."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

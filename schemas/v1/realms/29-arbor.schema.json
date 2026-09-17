@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/29-arbor.schema.json",
+  "title": "Bosun Realm 29: Arbor Contract v1",
+  "description": "Machine-readable delta schema contract for Arbor (Realm 29), extending Archetype Catalog Dossier and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "arbor",
+              "description": "Canonical realm identifier for Arbor."
+            }
+          }
+        },
+        "taxonomic_species": {
+          "type": "string",
+          "description": "Botanical binomial nomenclature (e.g. 'Quercus alba')."
+        },
+        "seed_vintage_year": {
+          "type": "integer",
+          "minimum": 1800,
+          "description": "Harvest vintage year of seed stock or propagation."
+        },
+        "planting_zone": {
+          "type": "string",
+          "description": "USDA / RHS plant hardiness zone (e.g. '7b', 'H4')."
+        },
+        "soil_ph_optimal": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 14.0,
+          "description": "Optimal soil pH value."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

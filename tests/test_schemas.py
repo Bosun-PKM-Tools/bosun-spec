@@ -56,7 +56,7 @@ _REQUIRED_ARCHETYPE_SCHEMAS = (
     "v1/archetypes/sovereign-vault.schema.json",
 )
 
-# 25 Realm Delta Schemas
+# 50 Realm Delta Schemas (01-50)
 _REQUIRED_REALM_SCHEMAS = (
     "v1/realms/01-bosun.schema.json",
     "v1/realms/02-yeoman.schema.json",
@@ -83,6 +83,31 @@ _REQUIRED_REALM_SCHEMAS = (
     "v1/realms/23-docent.schema.json",
     "v1/realms/24-proctor.schema.json",
     "v1/realms/25-ropewalk.schema.json",
+    "v1/realms/26-gavel.schema.json",
+    "v1/realms/27-lineage.schema.json",
+    "v1/realms/28-legacy.schema.json",
+    "v1/realms/29-arbor.schema.json",
+    "v1/realms/30-the-glass.schema.json",
+    "v1/realms/31-dispatch.schema.json",
+    "v1/realms/32-registry.schema.json",
+    "v1/realms/33-purser.schema.json",
+    "v1/realms/34-cadence.schema.json",
+    "v1/realms/35-reckoning.schema.json",
+    "v1/realms/36-strongbox.schema.json",
+    "v1/realms/37-trajectory.schema.json",
+    "v1/realms/38-binnacle.schema.json",
+    "v1/realms/39-claim.schema.json",
+    "v1/realms/40-tribute.schema.json",
+    "v1/realms/41-weft.schema.json",
+    "v1/realms/42-reverie.schema.json",
+    "v1/realms/43-provenance.schema.json",
+    "v1/realms/44-menagerie.schema.json",
+    "v1/realms/45-muster.schema.json",
+    "v1/realms/46-breadboard.schema.json",
+    "v1/realms/47-pavilion.schema.json",
+    "v1/realms/48-charthouse.schema.json",
+    "v1/realms/49-commonwealth.schema.json",
+    "v1/realms/50-relay.schema.json",
 )
 
 # Realm v1 contracts that must exist as nested Draft 2020-12 schema files.
@@ -95,6 +120,7 @@ _REQUIRED_V1_SCHEMAS = (
     "v1/yeoman/interaction.schema.json",
     "v1/commonplace/work.schema.json",
     "v1/relations/relations.schema.json",
+    "v1/meta/envelope.schema.json",
     *_REQUIRED_ARCHETYPE_SCHEMAS,
     *_REQUIRED_REALM_SCHEMAS,
 )
@@ -394,9 +420,9 @@ class TestSchemaFiles(unittest.TestCase):
                     {"id", "realm", "created_at", "updated_at"}
                 )
 
-    def test_all_25_realm_schemas_exist_and_pin_canonical_id(self):
-        """All 25 realm schemas must exist, pin Draft 2020-12 and canonical $id."""
-        self.assertEqual(len(_REQUIRED_REALM_SCHEMAS), 25)
+    def test_all_50_realm_schemas_exist_and_pin_canonical_id(self):
+        """All 50 realm schemas must exist, pin Draft 2020-12 and canonical $id."""
+        self.assertEqual(len(_REQUIRED_REALM_SCHEMAS), 50)
         for rel_path in _REQUIRED_REALM_SCHEMAS:
             with self.subTest(realm=rel_path):
                 schema_path = _SCHEMAS_DIR / rel_path
@@ -406,7 +432,7 @@ class TestSchemaFiles(unittest.TestCase):
                 expected_id = _CANONICAL_ID_PREFIX + rel_path
                 self.assertEqual(obj.get("$id"), expected_id)
 
-    def test_all_25_realm_schemas_extend_archetypes_and_declare_attributes(self):
+    def test_all_50_realm_schemas_extend_archetypes_and_declare_attributes(self):
         """Each realm schema extends its archetype via allOf and defines its unique delta attributes."""
         expected_meta = {
             "01-bosun": ("stage-gate-manifest.schema.json", "bosun", ["zettel_type", "wikilinks", "ast_version"]),
@@ -434,6 +460,31 @@ class TestSchemaFiles(unittest.TestCase):
             "23-docent": ("catalog-dossier.schema.json", "docent", ["doi", "bibtex_key", "arxiv_id"]),
             "24-proctor": ("sovereign-vault.schema.json", "proctor", ["docket_number", "pacer_case_id", "statute_refs"]),
             "25-ropewalk": ("sovereign-vault.schema.json", "ropewalk", ["repo_slug", "remote_origin", "dotfile_target_path"]),
+            "26-gavel": ("interaction-ledger.schema.json", "gavel", ["committee_slug", "meeting_date", "bylaws_uri", "motion_tallies"]),
+            "27-lineage": ("interaction-ledger.schema.json", "lineage", ["individual_urn", "pedigree_branch", "vital_dates", "gedcom_id"]),
+            "28-legacy": ("sovereign-vault.schema.json", "legacy", ["trust_ref", "living_will_cas", "executor_contact_urn", "durable_poa_hash"]),
+            "29-arbor": ("catalog-dossier.schema.json", "arbor", ["taxonomic_species", "seed_vintage_year", "planting_zone", "soil_ph_optimal"]),
+            "30-the-glass": ("dual-track-telemetry.schema.json", "the-glass", ["station_id", "barometric_hpa", "tide_gauge_urn", "telemetry_parquet_ref"]),
+            "31-dispatch": ("interaction-ledger.schema.json", "dispatch", ["sender_urn", "recipient_urn", "postmark_date", "courier_tracking"]),
+            "32-registry": ("sovereign-vault.schema.json", "registry", ["document_type", "issuing_jurisdiction", "expiry_date", "encrypted_credential_cas"]),
+            "33-purser": ("catalog-dossier.schema.json", "purser", ["billing_cadence", "vendor_urn", "monthly_spend_usd", "cancellation_sla"]),
+            "34-cadence": ("stage-gate-manifest.schema.json", "cadence", ["streak_count_current", "target_frequency", "ritual_window", "best_streak"]),
+            "35-reckoning": ("catalog-dossier.schema.json", "reckoning", ["decision_framework", "pre_mortem_risk_tags", "bias_audit_flags"]),
+            "36-strongbox": ("sovereign-vault.schema.json", "strongbox", ["key_algorithm", "public_key_fingerprint", "hardware_token_serial", "derivation_path"]),
+            "37-trajectory": ("catalog-dossier.schema.json", "trajectory", ["role_title", "organization_urn", "tenure_start", "case_study_slugs"]),
+            "38-binnacle": ("catalog-dossier.schema.json", "binnacle", ["theological_tradition", "credo_axiom_key", "canonical_scripture_refs"]),
+            "39-claim": ("catalog-dossier.schema.json", "claim", ["patent_number", "jurisdiction_office", "filing_date", "prior_art_urns"]),
+            "40-tribute": ("interaction-ledger.schema.json", "tribute", ["recipient_contact_urn", "sizing_chart_profile", "reciprocity_balance"]),
+            "41-weft": ("catalog-dossier.schema.json", "weft", ["garment_category", "textile_composition", "care_wash_spec", "tailoring_measurements"]),
+            "42-reverie": ("interaction-ledger.schema.json", "reverie", ["dream_motif_tags", "lucidity_level", "sleep_stage_anchor"]),
+            "43-provenance": ("catalog-dossier.schema.json", "provenance", ["appraisal_usd", "chain_of_custody_urns", "edition_number", "authenticity_cert_cas"]),
+            "44-menagerie": ("interaction-ledger.schema.json", "menagerie", ["species_breed", "microchip_hex_id", "vet_clinic_urn", "vaccination_schedule"]),
+            "45-muster": ("catalog-dossier.schema.json", "muster", ["rally_point_coordinates", "bug_out_tier", "ration_expiry_date", "comms_frequency_mhz"]),
+            "46-breadboard": ("catalog-dossier.schema.json", "breadboard", ["schematic_cas", "pcb_revision", "gpio_pinout_map", "operating_voltage_vdc"]),
+            "47-pavilion": ("stage-gate-manifest.schema.json", "pavilion", ["run_of_show_steps", "venue_reservation_urn", "headcount_target"]),
+            "48-charthouse": ("stage-gate-manifest.schema.json", "charthouse", ["campaign_lore_node", "timeline_epoch", "scene_binder_ref"]),
+            "49-commonwealth": ("interaction-ledger.schema.json", "commonwealth", ["initiative_name", "hours_logged", "volunteer_urn", "mutual_aid_batch_id"]),
+            "50-relay": ("sovereign-vault.schema.json", "relay", ["dead_man_interval_days", "heartbeat_received_at", "master_recovery_key_cas"]),
         }
 
         for prefix, (arch_file, realm_name, delta_attrs) in expected_meta.items():
@@ -448,8 +499,15 @@ class TestSchemaFiles(unittest.TestCase):
                 expected_ref = f"{_CANONICAL_ID_PREFIX}v1/archetypes/{arch_file}"
                 self.assertEqual(all_of[0].get("$ref"), expected_ref)
 
+                # Verify envelope composition
+                expected_envelope_ref = f"{_CANONICAL_ID_PREFIX}v1/meta/envelope.schema.json"
+                self.assertTrue(
+                    any(clause.get("$ref") == expected_envelope_ref for clause in all_of),
+                    f"{prefix}: missing composition with envelope.schema.json"
+                )
+
                 # Verify delta properties
-                delta = all_of[1]
+                delta = all_of[-1]
                 props = delta.get("properties", {})
                 for attr in delta_attrs:
                     self.assertIn(attr, props, f"{prefix}: missing delta attribute '{attr}'")
@@ -536,13 +594,15 @@ class TestSchemaFiles(unittest.TestCase):
                     validator.validate(bad_sample)
 
     @unittest.skipUnless(_HAS_JSONSCHEMA, "jsonschema package not installed")
-    def test_all_25_realms_validate_sample_instances(self):
+    def test_all_50_realms_validate_sample_instances(self):
         """Validate sample payloads for all 25 realms against their delta schemas with archetype resolution."""
         # Build registry from all archetype schemas
         registry = Registry()
         for arch_rel in _REQUIRED_ARCHETYPE_SCHEMAS:
             arch_obj = self._load_json(_SCHEMAS_DIR / arch_rel)
             registry = registry.with_resource(arch_obj["$id"], Resource.from_contents(arch_obj))
+        envelope_obj = self._load_json(_SCHEMAS_DIR / "v1/meta/envelope.schema.json")
+        registry = registry.with_resource(envelope_obj["$id"], Resource.from_contents(envelope_obj))
 
         samples = {
             "01-bosun": {
@@ -828,7 +888,300 @@ class TestSchemaFiles(unittest.TestCase):
                 "repo_slug": "dotfiles/workstation",
                 "remote_origin": "git@github.com:user/dotfiles.git",
                 "dotfile_target_path": "~/.config/nvim"
-            }
+            },
+            "26-gavel": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "gavel",
+                    "created_at": "2026-09-16",
+                    "updated_at": "2026-09-16T18:00:00Z"
+                },
+                "committee_slug": "finance-committee",
+                "meeting_date": "2026-09-16",
+                "bylaws_uri": "https://example.org/bylaws",
+                "motion_tallies": [{"title": "Adopt Budget", "ayes": 5, "nays": 0, "abstentions": 1, "passed": True}]
+            },
+            "27-lineage": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "lineage",
+                    "created_at": "2026-09-16",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "individual_urn": "urn:lineage:person:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                "pedigree_branch": "maternal",
+                "vital_dates": {"birth": "1920-04-15"},
+                "gedcom_id": "@I0001@"
+            },
+            "28-legacy": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "legacy",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "trust_ref": "TRUST-2024-REVOCABLE",
+                "living_will_cas": "urn:legacy:cas:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                "executor_contact_urn": "urn:yeoman:contact:018f62f8-9a3b-7d23-bf72-5b9c03bfba44",
+                "durable_poa_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "29-arbor": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "arbor",
+                    "created_at": "2026-09-16",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "taxonomic_species": "Quercus alba",
+                "seed_vintage_year": 2023,
+                "planting_zone": "7b",
+                "soil_ph_optimal": 6.5
+            },
+            "30-the-glass": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "the-glass",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "station_id": "NOAA-SF-BAYSIDE",
+                "barometric_hpa": 1013.25,
+                "tide_gauge_urn": "urn:glass:tide:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                "telemetry_parquet_ref": "telemetry/glass/baro_20260916.parquet"
+            },
+            "31-dispatch": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "dispatch",
+                    "created_at": "2026-09-16",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "sender_urn": "urn:dispatch:station:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                "recipient_urn": "urn:dispatch:station:018f62f8-9a3b-7d23-bf72-5b9c03bfba44",
+                "postmark_date": "2026-09-16",
+                "courier_tracking": "TRACK-1Z999999999"
+            },
+            "32-registry": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "registry",
+                    "created_at": "2026-09-16",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "document_type": "passport",
+                "issuing_jurisdiction": "US",
+                "expiry_date": "2034-05-20",
+                "encrypted_credential_cas": "urn:registry:cas:018f62f8-9a3b-7d23-bf72-5b9c03bfba43"
+            },
+            "33-purser": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "purser",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "billing_cadence": "monthly",
+                "vendor_urn": "urn:purser:vendor:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                "monthly_spend_usd": 120.0,
+                "cancellation_sla": "30 days"
+            },
+            "34-cadence": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "cadence",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "streak_count_current": 42,
+                "target_frequency": "daily",
+                "ritual_window": "morning",
+                "best_streak": 100
+            },
+            "35-reckoning": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "reckoning",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "decision_framework": "SPADE",
+                "pre_mortem_risk_tags": ["vendor_lock_in", "latency_spike"],
+                "bias_audit_flags": ["sunk_cost_fallacy"]
+            },
+            "36-strongbox": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "strongbox",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "key_algorithm": "Ed25519",
+                "public_key_fingerprint": "SHA256:7f8a9b1c2d3e4f5a6b7c8d9e0f1a2b3c",
+                "hardware_token_serial": "YUBI-12345678",
+                "derivation_path": "m/44'/60'/0'/0/0"
+            },
+            "37-trajectory": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "trajectory",
+                    "created_at": "2026-09-16",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "role_title": "Principal Architect",
+                "organization_urn": "urn:trajectory:org:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                "tenure_start": "2022-01-10",
+                "case_study_slugs": ["global-sync-engine"]
+            },
+            "38-binnacle": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "binnacle",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "theological_tradition": "Stoicism",
+                "credo_axiom_key": "amor_fati",
+                "canonical_scripture_refs": ["Meditations IV.3"]
+            },
+            "39-claim": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "claim",
+                    "created_at": "2026-09-16",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "patent_number": "US11842099B2",
+                "jurisdiction_office": "USPTO",
+                "filing_date": "2023-03-15",
+                "prior_art_urns": ["urn:claim:patent:US10452390B1"]
+            },
+            "40-tribute": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "tribute",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "recipient_contact_urn": "urn:yeoman:contact:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                "sizing_chart_profile": {"shoe_eu": 43, "shirt": "L"},
+                "reciprocity_balance": 1.5
+            },
+            "41-weft": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "weft",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "garment_category": "outerwear",
+                "textile_composition": {"wool": 80, "cashmere": 20},
+                "care_wash_spec": "Dry clean only",
+                "tailoring_measurements": {"chest_cm": 104, "sleeve_cm": 65}
+            },
+            "42-reverie": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "reverie",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "dream_motif_tags": ["labyrinth", "ocean_voyage"],
+                "lucidity_level": 3,
+                "sleep_stage_anchor": "REM"
+            },
+            "43-provenance": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "provenance",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "appraisal_usd": 25000.0,
+                "chain_of_custody_urns": ["urn:provenance:custodian:018f62f8-9a3b-7d23-bf72-5b9c03bfba43"],
+                "edition_number": "2/25",
+                "authenticity_cert_cas": "urn:provenance:cas:018f62f8-9a3b-7d23-bf72-5b9c03bfba44"
+            },
+            "44-menagerie": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "menagerie",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "species_breed": "Canis lupus familiaris / Border Collie",
+                "microchip_hex_id": "985141001234567",
+                "vet_clinic_urn": "urn:menagerie:clinic:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                "vaccination_schedule": [{"vaccine": "Rabies", "due_date": "2027-05-12"}]
+            },
+            "45-muster": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "muster",
+                    "created_at": "2026-09-16",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "rally_point_coordinates": [-122.4194, 37.7749],
+                "bug_out_tier": "72h",
+                "ration_expiry_date": "2028-09-01",
+                "comms_frequency_mhz": 146.520
+            },
+            "46-breadboard": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "breadboard",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "schematic_cas": "urn:breadboard:cas:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                "pcb_revision": "Rev C",
+                "gpio_pinout_map": {"GPIO21": "SDA", "GPIO22": "SCL"},
+                "operating_voltage_vdc": 3.3
+            },
+            "47-pavilion": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "pavilion",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "run_of_show_steps": [{"cue_time": "18:00", "activity": "Welcome Reception"}],
+                "venue_reservation_urn": "urn:pavilion:venue:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                "headcount_target": 150
+            },
+            "48-charthouse": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "charthouse",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "campaign_lore_node": "lore.third_age.fall_of_gondolin",
+                "timeline_epoch": "Third Age",
+                "scene_binder_ref": "act_1_scene_3"
+            },
+            "49-commonwealth": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "commonwealth",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "initiative_name": "Community Food Pantry",
+                "hours_logged": 24.5,
+                "volunteer_urn": "urn:yeoman:contact:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                "mutual_aid_batch_id": "batch_2026_09_A"
+            },
+            "50-relay": {
+                "$pkm": {
+                    "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                    "realm": "relay",
+                    "created_at": "2026-09-16T12:00:00Z",
+                    "updated_at": "2026-09-16T12:00:00Z"
+                },
+                "dead_man_interval_days": 30,
+                "heartbeat_received_at": "2026-09-16T12:00:00Z",
+                "master_recovery_key_cas": "urn:relay:cas:018f62f8-9a3b-7d23-bf72-5b9c03bfba43"
+            },
         }
 
         for prefix, sample in samples.items():

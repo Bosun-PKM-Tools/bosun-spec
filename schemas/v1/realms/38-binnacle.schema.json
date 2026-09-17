@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/38-binnacle.schema.json",
+  "title": "Bosun Realm 38: Binnacle Contract v1",
+  "description": "Machine-readable delta schema contract for Binnacle (Realm 38), extending Archetype Catalog Dossier and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "binnacle",
+              "description": "Canonical realm identifier for Binnacle."
+            }
+          }
+        },
+        "theological_tradition": {
+          "type": "string",
+          "description": "Philosophical, theological, or ethical tradition."
+        },
+        "credo_axiom_key": {
+          "type": "string",
+          "description": "Foundational doctrinal or ethical axiom key identifier."
+        },
+        "canonical_scripture_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Canonical book/chapter/verse or treaty references."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

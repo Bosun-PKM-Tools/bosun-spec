@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/43-provenance.schema.json",
+  "title": "Bosun Realm 43: Provenance Contract v1",
+  "description": "Machine-readable delta schema contract for Provenance (Realm 43), extending Archetype Catalog Dossier and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "provenance",
+              "description": "Canonical realm identifier for Provenance."
+            }
+          }
+        },
+        "appraisal_usd": {
+          "type": "number",
+          "minimum": 0.0,
+          "description": "Certified fair-market appraisal value in USD."
+        },
+        "chain_of_custody_urns": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^urn:[a-zA-Z0-9_.:-]+$"
+          },
+          "description": "Ordered URN lineage of historical owners and custodians."
+        },
+        "edition_number": {
+          "type": "string",
+          "description": "Print or casting edition notation (e.g. '3/50', 'AP', 'Unique')."
+        },
+        "authenticity_cert_cas": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "CAS hash of certificate of authenticity or expert opinion."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

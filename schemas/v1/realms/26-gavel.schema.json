@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/26-gavel.schema.json",
+  "title": "Bosun Realm 26: Gavel Contract v1",
+  "description": "Machine-readable delta schema contract for Gavel (Realm 26), extending Archetype Interaction Ledger and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/interaction-ledger.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "gavel",
+              "description": "Canonical realm identifier for Gavel."
+            }
+          }
+        },
+        "committee_slug": {
+          "type": "string",
+          "description": "Identifier or URL slug for the deliberative body or committee."
+        },
+        "meeting_date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "description": "Calendar day on which the session was convened (YYYY-MM-DD)."
+        },
+        "bylaws_uri": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI reference to governing procedural rules or bylaws."
+        },
+        "motion_tallies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "title",
+              "ayes",
+              "nays"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Title or text of the motion."
+              },
+              "ayes": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Votes in favor."
+              },
+              "nays": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Votes opposed."
+              },
+              "abstentions": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Abstentions count."
+              },
+              "passed": {
+                "type": "boolean",
+                "description": "Whether the motion was adopted."
+              }
+            },
+            "additionalProperties": true
+          },
+          "description": "Formal recorded motion ballots and voting counts."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

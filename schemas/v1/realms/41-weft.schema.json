@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/41-weft.schema.json",
+  "title": "Bosun Realm 41: Weft Contract v1",
+  "description": "Machine-readable delta schema contract for Weft (Realm 41), extending Archetype Catalog Dossier and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "weft",
+              "description": "Canonical realm identifier for Weft."
+            }
+          }
+        },
+        "garment_category": {
+          "type": "string",
+          "description": "Sartorial category (e.g. 'outerwear', 'tailoring', 'knitwear', 'footwear')."
+        },
+        "textile_composition": {
+          "type": "object",
+          "description": "Fiber percentages mapping (e.g. {'wool': 90, 'cashmere': 10}).",
+          "additionalProperties": true
+        },
+        "care_wash_spec": {
+          "type": "string",
+          "description": "Garment care and laundering protocol instructions."
+        },
+        "tailoring_measurements": {
+          "type": "object",
+          "description": "Detailed physical garment measurements (chest, sleeve, waist, inseam).",
+          "additionalProperties": true
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/48-charthouse.schema.json",
+  "title": "Bosun Realm 48: Charthouse Contract v1",
+  "description": "Machine-readable delta schema contract for Charthouse (Realm 48), extending Archetype Stage-Gate Manifest and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/stage-gate-manifest.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "charthouse",
+              "description": "Canonical realm identifier for Charthouse."
+            }
+          }
+        },
+        "campaign_lore_node": {
+          "type": "string",
+          "description": "World-building lore or narrative canon branch node."
+        },
+        "timeline_epoch": {
+          "type": "string",
+          "description": "Fictional world or campaign historical era."
+        },
+        "scene_binder_ref": {
+          "type": "string",
+          "description": "Reference identifier to narrative scene dossier / manuscript binder."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

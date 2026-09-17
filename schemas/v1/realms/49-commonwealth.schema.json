@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/49-commonwealth.schema.json",
+  "title": "Bosun Realm 49: Commonwealth Contract v1",
+  "description": "Machine-readable delta schema contract for Commonwealth (Realm 49), extending Archetype Interaction Ledger and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/interaction-ledger.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "commonwealth",
+              "description": "Canonical realm identifier for Commonwealth."
+            }
+          }
+        },
+        "initiative_name": {
+          "type": "string",
+          "description": "Civic collective or mutual aid initiative name."
+        },
+        "hours_logged": {
+          "type": "number",
+          "minimum": 0.0,
+          "description": "Accumulated volunteer service labor hours."
+        },
+        "volunteer_urn": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "URN of the volunteer participant."
+        },
+        "mutual_aid_batch_id": {
+          "type": "string",
+          "description": "Batch allotment or resource distribution round ID."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

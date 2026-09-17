@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/30-the-glass.schema.json",
+  "title": "Bosun Realm 30: The Glass Contract v1",
+  "description": "Machine-readable delta schema contract for The Glass (Realm 30), extending Archetype Dual-Track Telemetry and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/dual-track-telemetry.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "the-glass",
+              "description": "Canonical realm identifier for The Glass."
+            }
+          }
+        },
+        "station_id": {
+          "type": "string",
+          "description": "Meteorological weather station or barometer sensor identifier."
+        },
+        "barometric_hpa": {
+          "type": "number",
+          "description": "Atmospheric pressure measurement in hectopascals (hPa)."
+        },
+        "tide_gauge_urn": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "URN of the coastal tide gauge or hydrologic sensor."
+        },
+        "telemetry_parquet_ref": {
+          "type": "string",
+          "description": "Path or CAS reference to columnar weather telemetry dataset."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

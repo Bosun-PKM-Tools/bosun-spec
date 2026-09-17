@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/40-tribute.schema.json",
+  "title": "Bosun Realm 40: Tribute Contract v1",
+  "description": "Machine-readable delta schema contract for Tribute (Realm 40), extending Archetype Interaction Ledger and Universal Meta-Envelope with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/interaction-ledger.schema.json"
+    },
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/meta/envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "tribute",
+              "description": "Canonical realm identifier for Tribute."
+            }
+          }
+        },
+        "recipient_contact_urn": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "URN of recipient contact receiving gift or tribute."
+        },
+        "sizing_chart_profile": {
+          "type": "object",
+          "description": "Sizing preferences, measurements, and stylistic attributes.",
+          "additionalProperties": true
+        },
+        "reciprocity_balance": {
+          "type": "number",
+          "description": "Net gift reciprocity exchange balance metric."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}
