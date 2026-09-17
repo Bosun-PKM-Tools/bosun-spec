@@ -1,0 +1,539 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/telemetry/parquet-contracts.schema.json",
+  "title": "Bosun Fleet Telemetry Parquet Contracts and Unit Conversions v1",
+  "description": "Strict JSON Schema Draft 2020-12 specification defining Apache Parquet table contracts, column definitions, row records, and physical unit conversions for Archetype 3 (Dual-Track Telemetry) realms: 13-Pratique, 16-Squadron, and 30-The Glass.",
+  "type": "object",
+  "version": "1.0.0",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/telemetryCatalog"
+    },
+    {
+      "$ref": "#/$defs/pratiqueTableContract"
+    },
+    {
+      "$ref": "#/$defs/squadronTableContract"
+    },
+    {
+      "$ref": "#/$defs/theGlassTableContract"
+    },
+    {
+      "$ref": "#/$defs/pratiqueRecord"
+    },
+    {
+      "$ref": "#/$defs/squadronRecord"
+    },
+    {
+      "$ref": "#/$defs/theGlassRecord"
+    },
+    {
+      "$ref": "#/$defs/recordBatch"
+    },
+    {
+      "$ref": "#/$defs/parquetSchemaDefinition"
+    }
+  ],
+  "$defs": {
+    "int64": {
+      "type": "integer",
+      "minimum": -9223372036854775808,
+      "maximum": 9223372036854775807,
+      "description": "Signed 64-bit integer matching Apache Parquet INT64 physical type."
+    },
+    "float64": {
+      "type": "number",
+      "description": "IEEE 754 double precision floating point matching Apache Parquet DOUBLE physical type."
+    },
+    "columnDefinition": {
+      "type": "object",
+      "description": "Column specification for an Apache Parquet columnar table layout.",
+      "required": [
+        "name",
+        "type"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$",
+          "description": "Snake_case column identifier matching the telemetry contract."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "INT64",
+            "INT32",
+            "FLOAT",
+            "DOUBLE",
+            "BYTE_ARRAY",
+            "STRING",
+            "BOOLEAN",
+            "int64",
+            "int32",
+            "float32",
+            "float64",
+            "double",
+            "string",
+            "utf8"
+          ],
+          "description": "Apache Parquet physical or Arrow columnar data type."
+        },
+        "logical_type": {
+          "type": "string",
+          "enum": [
+            "TIMESTAMP_MICROS",
+            "TIMESTAMP_MILLIS",
+            "TIMESTAMP_NANOS",
+            "UTF8",
+            "STRING",
+            "DECIMAL",
+            "DATE",
+            "TIME_MICROS",
+            "NONE"
+          ],
+          "description": "Optional Apache Parquet logical annotation type."
+        },
+        "nullable": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether column values may be null (Parquet repetition: OPTIONAL vs REQUIRED)."
+        },
+        "unit": {
+          "type": "string",
+          "description": "Physical measurement unit associated with this metric."
+        },
+        "description": {
+          "type": "string",
+          "description": "Semantic documentation string for this column."
+        }
+      }
+    },
+    "unitConversion": {
+      "type": "object",
+      "description": "Physical telemetry unit conversion rule specification.",
+      "required": [
+        "source_unit",
+        "target_unit",
+        "factor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source_unit": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Original source measurement unit."
+        },
+        "target_unit": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Canonical target unit stored in the columnar Parquet dataset."
+        },
+        "factor": {
+          "type": "number",
+          "description": "Multiplicative conversion factor (target = (source + offset) * factor or target = source * factor + offset)."
+        },
+        "offset": {
+          "type": "number",
+          "default": 0.0,
+          "description": "Additive offset applied during conversion (e.g. -32.0 for Fahrenheit to Celsius)."
+        },
+        "formula": {
+          "type": "string",
+          "description": "Human-readable mathematical expression describing the conversion."
+        },
+        "dimension": {
+          "type": "string",
+          "enum": [
+            "pressure",
+            "temperature",
+            "speed",
+            "length",
+            "volume",
+            "mass",
+            "time",
+            "frequency",
+            "concentration",
+            "ratio"
+          ],
+          "description": "Physical quantity dimension."
+        },
+        "realm": {
+          "type": "string",
+          "enum": [
+            "pratique",
+            "squadron",
+            "the_glass",
+            "the-glass",
+            "global"
+          ],
+          "description": "Associated Archetype 3 realm or global fleet rule."
+        }
+      }
+    },
+    "pratiqueRecord": {
+      "type": "object",
+      "description": "Clinical biometric telemetry observation record for Realm 13 (Pratique).",
+      "required": [
+        "timestamp_utc",
+        "metric_type",
+        "value",
+        "unit",
+        "sensor_id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "timestamp_utc": {
+          "$ref": "#/$defs/int64",
+          "description": "Unix timestamp in microseconds (or milliseconds) UTC."
+        },
+        "metric_type": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Biometric metric identifier (e.g. 'heart_rate', 'spo2', 'systolic_bp', 'glucose')."
+        },
+        "value": {
+          "$ref": "#/$defs/float64",
+          "description": "Observed clinical measurement value as float64 / DOUBLE."
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Measurement unit string (e.g. 'bpm', '%', 'mmHg', 'mg/dL', 'degC')."
+        },
+        "sensor_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Identifier of the medical device or clinical sensor source."
+        }
+      }
+    },
+    "squadronRecord": {
+      "type": "object",
+      "description": "Vehicular CAN-bus/OBD telemetry row record for Realm 16 (Squadron).",
+      "required": [
+        "timestamp_utc",
+        "vin",
+        "engine_hours",
+        "pid_code",
+        "raw_value"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "timestamp_utc": {
+          "$ref": "#/$defs/int64",
+          "description": "Unix timestamp in microseconds (or milliseconds) UTC."
+        },
+        "vin": {
+          "type": "string",
+          "minLength": 1,
+          "description": "17-character ISO 3779 Vehicle Identification Number or fleet vessel ID."
+        },
+        "engine_hours": {
+          "$ref": "#/$defs/float64",
+          "minimum": 0,
+          "description": "Accumulated vehicle/engine operational hours."
+        },
+        "pid_code": {
+          "type": "string",
+          "minLength": 1,
+          "description": "OBD-II Parameter ID (e.g. '010C' for RPM, '010D' for Speed) or CAN-bus message code."
+        },
+        "raw_value": {
+          "$ref": "#/$defs/float64",
+          "description": "Raw scalar telemetry reading as float64 / DOUBLE."
+        }
+      }
+    },
+    "theGlassRecord": {
+      "type": "object",
+      "description": "Meteorological and oceanographic weather telemetry row record for Realm 30 (The Glass).",
+      "required": [
+        "timestamp_utc",
+        "station_id",
+        "barometric_hpa",
+        "tidal_height_m"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "timestamp_utc": {
+          "$ref": "#/$defs/int64",
+          "description": "Unix timestamp in microseconds (or milliseconds) UTC."
+        },
+        "station_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Meteorological weather station, buoy, or barometer identifier."
+        },
+        "barometric_hpa": {
+          "$ref": "#/$defs/float64",
+          "description": "Atmospheric barometric pressure in hectopascals (hPa)."
+        },
+        "tidal_height_m": {
+          "$ref": "#/$defs/float64",
+          "description": "Observed tidal water level or sea surface height in meters."
+        }
+      }
+    },
+    "pratiqueTableContract": {
+      "type": "object",
+      "description": "Apache Parquet table schema contract for Realm 13 (Pratique).",
+      "required": [
+        "realm",
+        "table_name",
+        "primary_key",
+        "columns"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "realm": {
+          "enum": [
+            "pratique",
+            "13-pratique"
+          ]
+        },
+        "table_name": {
+          "type": "string",
+          "pattern": "^pratique(_[a-z0-9_]+)?$"
+        },
+        "primary_key": {
+          "type": "string",
+          "const": "timestamp_utc"
+        },
+        "columns": {
+          "type": "array",
+          "minItems": 5,
+          "items": {
+            "$ref": "#/$defs/columnDefinition"
+          }
+        },
+        "unit_conversions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/unitConversion"
+          }
+        },
+        "schema_version": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "squadronTableContract": {
+      "type": "object",
+      "description": "Apache Parquet table schema contract for Realm 16 (Squadron).",
+      "required": [
+        "realm",
+        "table_name",
+        "primary_key",
+        "columns"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "realm": {
+          "enum": [
+            "squadron",
+            "16-squadron"
+          ]
+        },
+        "table_name": {
+          "type": "string",
+          "pattern": "^squadron(_[a-z0-9_]+)?$"
+        },
+        "primary_key": {
+          "type": "string",
+          "const": "timestamp_utc"
+        },
+        "columns": {
+          "type": "array",
+          "minItems": 5,
+          "items": {
+            "$ref": "#/$defs/columnDefinition"
+          }
+        },
+        "unit_conversions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/unitConversion"
+          }
+        },
+        "schema_version": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "theGlassTableContract": {
+      "type": "object",
+      "description": "Apache Parquet table schema contract for Realm 30 (The Glass).",
+      "required": [
+        "realm",
+        "table_name",
+        "primary_key",
+        "columns"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "realm": {
+          "enum": [
+            "the_glass",
+            "the-glass",
+            "30-the-glass"
+          ]
+        },
+        "table_name": {
+          "type": "string",
+          "pattern": "^the_glass(_[a-z0-9_]+)?$"
+        },
+        "primary_key": {
+          "type": "string",
+          "const": "timestamp_utc"
+        },
+        "columns": {
+          "type": "array",
+          "minItems": 4,
+          "items": {
+            "$ref": "#/$defs/columnDefinition"
+          }
+        },
+        "unit_conversions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/unitConversion"
+          }
+        },
+        "schema_version": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "telemetryCatalog": {
+      "type": "object",
+      "description": "Fleet-wide telemetry schema catalog mapping Archetype 3 realms to their Parquet contracts and unit conversion registries.",
+      "required": [
+        "version",
+        "archetype",
+        "contracts"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "archetype": {
+          "const": "dual-track-telemetry"
+        },
+        "contracts": {
+          "type": "object",
+          "required": [
+            "pratique",
+            "squadron",
+            "the_glass"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "pratique": {
+              "$ref": "#/$defs/pratiqueTableContract"
+            },
+            "squadron": {
+              "$ref": "#/$defs/squadronTableContract"
+            },
+            "the_glass": {
+              "$ref": "#/$defs/theGlassTableContract"
+            }
+          }
+        },
+        "unit_conversions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/unitConversion"
+          }
+        }
+      }
+    },
+    "recordBatch": {
+      "type": "object",
+      "description": "Ingestion batch envelope containing an array of typed telemetry records.",
+      "required": [
+        "realm",
+        "records"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "realm": {
+          "enum": [
+            "pratique",
+            "13-pratique",
+            "squadron",
+            "16-squadron",
+            "the_glass",
+            "the-glass",
+            "30-the-glass"
+          ]
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/pratiqueRecord"
+              },
+              {
+                "$ref": "#/$defs/squadronRecord"
+              },
+              {
+                "$ref": "#/$defs/theGlassRecord"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "parquetSchemaDefinition": {
+      "type": "object",
+      "description": "Apache Parquet / PyArrow schema definition object with typed columnar field specifications.",
+      "required": [
+        "fields"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "realm": {
+          "type": "string",
+          "enum": [
+            "pratique",
+            "13-pratique",
+            "squadron",
+            "16-squadron",
+            "the_glass",
+            "the-glass",
+            "30-the-glass"
+          ]
+        },
+        "table_name": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/columnDefinition"
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
