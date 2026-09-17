@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/query/graph-result.schema.json",
+  "title": "Bosun Graph Query Execution Result Contract v1",
+  "description": "Strict JSON Schema Draft 2020-12 contract formalizing the canonical execution output shape for Vault Graph DSL queries, including matched nodes, resolved edges, reached traversal depth, execution duration, and optional subgraph adjacency matrices.",
+  "type": "object",
+  "version": "1.0.0",
+  "required": [
+    "query_id",
+    "matched_nodes",
+    "resolved_edges",
+    "depth_reached",
+    "execution_duration_ms"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "query_id": {
+      "$ref": "#/$defs/uuidv7",
+      "description": "UUIDv7 execution tracking identifier."
+    },
+    "matched_nodes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/matchedNode"
+      },
+      "description": "Collection of graph node vertices matched or traversed during query execution."
+    },
+    "resolved_edges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/resolvedEdge"
+      },
+      "description": "Collection of directed graph links resolved during query traversal."
+    },
+    "depth_reached": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Maximum traversal depth / hop distance reached during execution."
+    },
+    "execution_duration_ms": {
+      "type": "number",
+      "minimum": 0.0,
+      "description": "Total query execution duration in milliseconds (wall-clock time)."
+    },
+    "subgraph_adjacency_matrix": {
+      "$ref": "#/$defs/subgraphAdjacencyMatrix",
+      "description": "Optional square adjacency matrix projection of the matched subgraph."
+    },
+    "shortest_path": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/urn"
+      },
+      "description": "Optional ordered sequence of node URNs forming the point-to-point shortest path."
+    },
+    "projections": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of projection identifiers requested and populated in this result payload."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "success",
+        "partial",
+        "timeout",
+        "error"
+      ],
+      "default": "success",
+      "description": "Execution status flag."
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Optional detailed performance telemetry or execution statistics.",
+      "additionalProperties": false,
+      "properties": {
+        "node_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "edge_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "traversal_depth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "execution_time_ms": {
+          "type": "number",
+          "minimum": 0.0
+        }
+      }
+    }
+  },
+  "$defs": {
+    "uuidv7": {
+      "type": "string",
+      "pattern": "^(urn:uuid:)?[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      "description": "Canonical UUIDv7 identifier, formatted as standard 36-char hex UUID string or urn:uuid:... URN."
+    },
+    "urn": {
+      "type": "string",
+      "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+      "description": "Canonical RFC 8141 URN (e.g. urn:yeoman:contact:<uuid>, urn:uuid:<uuid>, urn:careen:project:<uuid>)."
+    },
+    "matchedNode": {
+      "type": "object",
+      "description": "Projected graph vertex attributes matched by the query.",
+      "required": [
+        "id",
+        "realm"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/urn",
+          "description": "Canonical entity URN uniquely identifying this note."
+        },
+        "realm": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Canonical realm identifier for this entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "Human-readable note title or entity label."
+        },
+        "path": {
+          "type": "string",
+          "description": "Vault-relative Markdown file path."
+        },
+        "depth": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Traversal distance in hops from query origin."
+        },
+        "attributes": {
+          "type": "object",
+          "description": "Optional payload or frontmatter attributes."
+        }
+      }
+    },
+    "resolvedEdge": {
+      "type": "object",
+      "description": "Projected directed link connecting two vertices in the graph.",
+      "required": [
+        "source",
+        "target",
+        "predicate",
+        "direction",
+        "edge_type"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/urn",
+          "description": "Origin node URN."
+        },
+        "target": {
+          "$ref": "#/$defs/urn",
+          "description": "Destination node URN."
+        },
+        "predicate": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Edge predicate verb (e.g. 'assignedToContact', 'purchasedViaTx', 'wikilink', 'depends_on')."
+        },
+        "direction": {
+          "type": "string",
+          "enum": [
+            "outbound",
+            "inbound",
+            "bidirectional",
+            "undirected"
+          ],
+          "description": "Traversal direction relative to query origin."
+        },
+        "edge_type": {
+          "type": "string",
+          "enum": [
+            "relation",
+            "relations",
+            "wikilink",
+            "wikilinks",
+            "stage_gate",
+            "stage_gates"
+          ],
+          "description": "Classification category of the connection."
+        },
+        "weight": {
+          "type": "number",
+          "default": 1.0,
+          "description": "Optional edge traversal weight or affinity score."
+        },
+        "properties": {
+          "type": "object",
+          "description": "Optional edge annotation metadata."
+        }
+      }
+    },
+    "subgraphAdjacencyMatrix": {
+      "type": "object",
+      "description": "Adjacency matrix representation of the resolved subgraph.",
+      "required": [
+        "nodes",
+        "matrix"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/urn"
+          },
+          "description": "Ordered array of node URN identifiers indexing rows and columns."
+        },
+        "matrix": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "description": "Square N x N adjacency matrix where matrix[i][j] represents edge connectivity from nodes[i] to nodes[j]."
+        },
+        "dimension": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Dimension N of the square adjacency matrix."
+        },
+        "directed": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether the matrix represents a directed graph."
+        }
+      }
+    }
+  }
+}

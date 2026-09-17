@@ -462,6 +462,49 @@ class GraphQueryEngine:
                     queue.append((nxt, d + 1))
         return None
 
+    def execute_result_contract(
+        self,
+        query: Dict[str, Any],
+        query_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Execute query and format output strictly conforming to graph-result.schema.json."""
+        if not query_id:
+            query_id = query.get("query_id")
+        if not query_id:
+            # Generate deterministic/UUID string for execution ID
+            query_id = f"018f3a00-0000-7000-8000-{int(time.time() * 1000) % 1000000000000:012d}"
+
+        # Ensure nodes and edges are projected
+        projections = list(query.get("projections", ["nodes", "edges"]))
+        if "nodes" not in projections:
+            projections.append("nodes")
+        if "edges" not in projections:
+            projections.append("edges")
+
+        query_copy = dict(query)
+        query_copy["projections"] = projections
+        query_copy["query_id"] = query_id
+
+        raw_result = self.execute(query_copy)
+        metrics = raw_result.get("metrics", {})
+
+        payload: Dict[str, Any] = {
+            "query_id": query_id,
+            "matched_nodes": raw_result.get("nodes", []),
+            "resolved_edges": raw_result.get("edges", []),
+            "depth_reached": metrics.get("traversal_depth", 0),
+            "execution_duration_ms": metrics.get("execution_time_ms", 0.0),
+        }
+
+        if "subgraph_adjacency_matrix" in query.get("projections", []):
+            if "subgraph_adjacency_matrix" in raw_result:
+                payload["subgraph_adjacency_matrix"] = raw_result["subgraph_adjacency_matrix"]
+
+        if "shortest_path" in raw_result and raw_result["shortest_path"]:
+            payload["shortest_path"] = raw_result["shortest_path"]
+
+        return payload
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Vault Graph Query Engine")
