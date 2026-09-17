@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/18-commonplace.schema.json",
+  "title": "Bosun Realm 18: Commonplace Contract v1",
+  "description": "Machine-readable delta schema contract for Commonplace (Realm 18), extending Archetype Catalog Dossier with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "commonplace",
+              "description": "Canonical realm identifier for Commonplace."
+            }
+          }
+        },
+        "isbn13": {
+          "type": "string",
+          "pattern": "^[0-9]{13}$",
+          "description": "13-digit ISBN book identifier."
+        },
+        "creator": {
+          "type": "string",
+          "description": "Primary author, artist, or creator of the work."
+        },
+        "shelf_state": {
+          "type": "string",
+          "enum": [
+            "to_read",
+            "reading",
+            "read",
+            "abandoned",
+            "reference"
+          ],
+          "description": "Reading or curation shelf state."
+        },
+        "rating": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5,
+          "description": "Five-star or numeric quality evaluation rating."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

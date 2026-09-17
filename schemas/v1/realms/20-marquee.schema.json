@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/20-marquee.schema.json",
+  "title": "Bosun Realm 20: Marquee Contract v1",
+  "description": "Machine-readable delta schema contract for Marquee (Realm 20), extending Archetype Catalog Dossier with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "marquee",
+              "description": "Canonical realm identifier for Marquee."
+            }
+          }
+        },
+        "timecode_in": {
+          "type": "string",
+          "description": "Starting SMPTE timecode (HH:MM:SS:FF) or timestamp."
+        },
+        "timecode_out": {
+          "type": "string",
+          "description": "Ending SMPTE timecode (HH:MM:SS:FF) or timestamp."
+        },
+        "rush_bin": {
+          "type": "string",
+          "description": "Editorial footage bin or take categorization."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

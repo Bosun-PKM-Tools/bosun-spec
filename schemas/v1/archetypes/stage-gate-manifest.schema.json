@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/archetypes/stage-gate-manifest.schema.json",
+  "title": "Bosun Archetype 4: Stage-Gate Manifest Contract v1",
+  "description": "Base archetype contract for ordered virtual compilation manifests, phases, and task AST nodes. Embeds the universal $pkm meta-envelope.",
+  "type": "object",
+  "version": "1.0.0",
+  "required": [
+    "$pkm"
+  ],
+  "properties": {
+    "$pkm": {
+      "$ref": "#/$defs/pkmEnvelope"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title of the stage-gate manifest or compilation plan."
+    },
+    "phases": {
+      "type": "array",
+      "description": "Ordered sequence of stage-gate phases.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "order",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique phase identifier."
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable phase name."
+          },
+          "order": {
+            "type": "integer",
+            "description": "Sequential gate order."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "in_progress",
+              "completed",
+              "blocked",
+              "skipped"
+            ],
+            "description": "Execution status of the phase."
+          },
+          "gate_criteria": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Validation criteria required to pass through this stage gate."
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "task_ast": {
+      "type": "array",
+      "description": "Ordered list or tree of task abstract syntax tree (AST) nodes.",
+      "items": {
+        "type": "object",
+        "required": [
+          "node_id",
+          "node_type"
+        ],
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "description": "Unique identifier of the AST node."
+          },
+          "node_type": {
+            "type": "string",
+            "description": "Type of AST node (e.g., task, section, checkbox, wikilink)."
+          },
+          "state": {
+            "type": "string",
+            "description": "State of the task node."
+          },
+          "content": {
+            "type": "string",
+            "description": "Textual content of the AST node."
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "compilation": {
+      "type": "object",
+      "description": "Virtual compilation manifest parameters.",
+      "properties": {
+        "pipeline": {
+          "type": "string",
+          "description": "Pipeline or compiler identifier."
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Target outputs or build artifacts."
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "pkmEnvelope": {
+      "type": "object",
+      "description": "Universal Meta-Envelope ($pkm namespace) identifying the entity, canonical realm, timestamps, and typed relations.",
+      "required": [
+        "id",
+        "realm",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^urn:uuid:[0-9a-fA-F-]{36}$",
+          "description": "UUIDv7 URN uniquely identifying this entity."
+        },
+        "realm": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$",
+          "description": "Lowercase canonical realm identifier."
+        },
+        "created_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]+)?)?(Z|[+-][0-9]{2}:?[0-9]{2})?)?$",
+          "description": "ISO-8601 UTC date-time string (Postel coercion: permissive ingestion of date strings missing seconds)."
+        },
+        "updated_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]+)?)?(Z|[+-][0-9]{2}:?[0-9]{2})?)?$",
+          "description": "ISO-8601 UTC date-time string (Postel coercion: permissive ingestion of date strings missing seconds)."
+        },
+        "relations": {
+          "type": "object",
+          "description": "Map of typed predicate verbs to URN arrays.",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^urn:[a-zA-Z0-9_.:-]+$"
+                }
+              },
+              {
+                "type": "string",
+                "pattern": "^urn:[a-zA-Z0-9_.:-]+$"
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

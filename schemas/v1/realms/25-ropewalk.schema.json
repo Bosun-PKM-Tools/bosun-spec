@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/25-ropewalk.schema.json",
+  "title": "Bosun Realm 25: Ropewalk Contract v1",
+  "description": "Machine-readable delta schema contract for Ropewalk (Realm 25), extending Archetype Sovereign Vault with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/sovereign-vault.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "ropewalk",
+              "description": "Canonical realm identifier for Ropewalk."
+            }
+          }
+        },
+        "repo_slug": {
+          "type": "string",
+          "description": "Owner/repository slug identifier (e.g., 'org/repo')."
+        },
+        "remote_origin": {
+          "type": "string",
+          "description": "Git remote upstream URI or SSH destination."
+        },
+        "dotfile_target_path": {
+          "type": "string",
+          "description": "Symlink target path in user home directory for managed configuration."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/07-press.schema.json",
+  "title": "Bosun Realm 07: Press Contract v1",
+  "description": "Machine-readable delta schema contract for Press (Realm 07), extending Archetype Catalog Dossier with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "press",
+              "description": "Canonical realm identifier for Press."
+            }
+          }
+        },
+        "sku": {
+          "type": "string",
+          "description": "Stock Keeping Unit or physical production identifier."
+        },
+        "vector_asset_cas": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "Content-addressed storage URN for the master vector artwork asset."
+        },
+        "cut_sheet_spec": {
+          "type": "object",
+          "description": "Physical cut sheet dimensions, bleed margins, and stock specifications.",
+          "additionalProperties": true
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

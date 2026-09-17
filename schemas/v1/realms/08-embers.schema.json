@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/08-embers.schema.json",
+  "title": "Bosun Realm 08: Embers Contract v1",
+  "description": "Machine-readable delta schema contract for Embers (Realm 08), extending Archetype Catalog Dossier with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "embers",
+              "description": "Canonical realm identifier for Embers."
+            }
+          }
+        },
+        "exif_payload": {
+          "type": "object",
+          "description": "Raw or normalized EXIF metadata payload from the media asset.",
+          "additionalProperties": true
+        },
+        "media_hash_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$",
+          "description": "SHA-256 content digest of the original media binary."
+        },
+        "codec": {
+          "type": "string",
+          "description": "Media codec or MIME container format (e.g., image/jpeg, video/mp4, h265)."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

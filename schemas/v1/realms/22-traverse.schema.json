@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/22-traverse.schema.json",
+  "title": "Bosun Realm 22: Traverse Contract v1",
+  "description": "Machine-readable delta schema contract for Traverse (Realm 22), extending Archetype Catalog Dossier with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "traverse",
+              "description": "Canonical realm identifier for Traverse."
+            }
+          }
+        },
+        "geojson_feature": {
+          "type": "object",
+          "required": [
+            "type",
+            "geometry"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "Feature"
+            },
+            "geometry": {
+              "type": "object",
+              "required": [
+                "type",
+                "coordinates"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "coordinates": {
+                  "type": "array"
+                }
+              },
+              "additionalProperties": true
+            },
+            "properties": {
+              "type": "object"
+            }
+          },
+          "additionalProperties": true,
+          "description": "RFC 7946 GeoJSON Feature representation."
+        },
+        "epsg_srid": {
+          "type": "integer",
+          "description": "Spatial Reference System Identifier (e.g. 4326 for WGS84)."
+        },
+        "survey_datum": {
+          "type": "string",
+          "description": "Geodetic survey datum reference (e.g. WGS84, NAD83)."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

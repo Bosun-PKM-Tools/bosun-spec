@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/archetypes/sovereign-vault.schema.json",
+  "title": "Bosun Archetype 5: Sovereign Vault Contract v1",
+  "description": "Base archetype contract for metadata wrapper paired with encrypted binary payloads, key verification hashes, and delegation parameters. Embeds the universal $pkm meta-envelope.",
+  "type": "object",
+  "version": "1.0.0",
+  "required": [
+    "$pkm"
+  ],
+  "properties": {
+    "$pkm": {
+      "$ref": "#/$defs/pkmEnvelope"
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable label for the vault secret or record."
+    },
+    "vault_metadata": {
+      "type": "object",
+      "description": "Classification and environment metadata for the sovereign vault entry.",
+      "additionalProperties": true
+    },
+    "encrypted_payload": {
+      "type": "object",
+      "description": "Encrypted binary payload and cipher parameters.",
+      "required": [
+        "ciphertext_cas",
+        "algorithm"
+      ],
+      "properties": {
+        "ciphertext_cas": {
+          "type": "string",
+          "description": "Content-addressed storage URI/hash of the encrypted binary payload."
+        },
+        "algorithm": {
+          "type": "string",
+          "description": "Cryptographic cipher algorithm (e.g., 'XChaCha20-Poly1305', 'AES-256-GCM')."
+        },
+        "nonce": {
+          "type": "string",
+          "description": "Cryptographic nonce or initialization vector."
+        },
+        "tag": {
+          "type": "string",
+          "description": "Authentication tag for authenticated encryption modes."
+        }
+      },
+      "additionalProperties": true
+    },
+    "key_verification": {
+      "type": "object",
+      "description": "Key verification hashes and cryptographic identity bindings.",
+      "properties": {
+        "key_hash_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$",
+          "description": "SHA-256 hash of the public key or recipient key material."
+        },
+        "fingerprint": {
+          "type": "string",
+          "description": "Human-readable key fingerprint."
+        },
+        "key_id": {
+          "type": "string",
+          "description": "Identifier for the decryption key or HSM token."
+        }
+      },
+      "additionalProperties": true
+    },
+    "delegation": {
+      "type": "object",
+      "description": "Delegation parameters governing access delegation and capability tokens.",
+      "properties": {
+        "delegated_to": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Identities or public key fingerprints granted delegated access."
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Permitted capability scope verbs."
+        },
+        "expiry": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]+)?)?(Z|[+-][0-9]{2}:?[0-9]{2})?$",
+          "description": "ISO-8601 expiration timestamp of the delegation grant."
+        },
+        "delegation_signature": {
+          "type": "string",
+          "description": "Cryptographic signature certifying the delegation parameters."
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "pkmEnvelope": {
+      "type": "object",
+      "description": "Universal Meta-Envelope ($pkm namespace) identifying the entity, canonical realm, timestamps, and typed relations.",
+      "required": [
+        "id",
+        "realm",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^urn:uuid:[0-9a-fA-F-]{36}$",
+          "description": "UUIDv7 URN uniquely identifying this entity."
+        },
+        "realm": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$",
+          "description": "Lowercase canonical realm identifier."
+        },
+        "created_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]+)?)?(Z|[+-][0-9]{2}:?[0-9]{2})?)?$",
+          "description": "ISO-8601 UTC date-time string (Postel coercion: permissive ingestion of date strings missing seconds)."
+        },
+        "updated_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]+)?)?(Z|[+-][0-9]{2}:?[0-9]{2})?)?$",
+          "description": "ISO-8601 UTC date-time string (Postel coercion: permissive ingestion of date strings missing seconds)."
+        },
+        "relations": {
+          "type": "object",
+          "description": "Map of typed predicate verbs to URN arrays.",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^urn:[a-zA-Z0-9_.:-]+$"
+                }
+              },
+              {
+                "type": "string",
+                "pattern": "^urn:[a-zA-Z0-9_.:-]+$"
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

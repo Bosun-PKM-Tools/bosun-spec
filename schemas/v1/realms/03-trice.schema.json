@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/03-trice.schema.json",
+  "title": "Bosun Realm 03: Trice Contract v1",
+  "description": "Machine-readable delta schema contract for Trice (Realm 03), extending Archetype Stage-Gate Manifest with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/stage-gate-manifest.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "trice",
+              "description": "Canonical realm identifier for Trice."
+            }
+          }
+        },
+        "task_state": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "active",
+            "done",
+            "dropped",
+            "blocked"
+          ],
+          "description": "GTD task lifecycle state."
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "p1",
+            "p2",
+            "p3",
+            "p4"
+          ],
+          "description": "Task priority level (p1: urgent/critical to p4: low/someday)."
+        },
+        "recurrence_rule": {
+          "type": "string",
+          "description": "iCalendar RFC 5545 RRULE string or recurrence specification."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

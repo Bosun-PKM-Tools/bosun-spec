@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/14-tactician.schema.json",
+  "title": "Bosun Realm 14: Tactician Contract v1",
+  "description": "Machine-readable delta schema contract for Tactician (Realm 14), extending Archetype Dual-Track Telemetry with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/dual-track-telemetry.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "tactician",
+              "description": "Canonical realm identifier for Tactician."
+            }
+          }
+        },
+        "sport_type": {
+          "type": "string",
+          "description": "Athletic discipline or game tactical category (e.g., sailing, cycling, running, chess)."
+        },
+        "split_metrics": {
+          "type": "object",
+          "description": "Structured segment split times, power numbers, and pace statistics.",
+          "additionalProperties": true
+        },
+        "monte_carlo_preset": {
+          "type": "string",
+          "description": "Tactical route or performance Monte Carlo simulation scenario preset."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/21-scrimshaw.schema.json",
+  "title": "Bosun Realm 21: Scrimshaw Contract v1",
+  "description": "Machine-readable delta schema contract for Scrimshaw (Realm 21), extending Archetype Catalog Dossier with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "scrimshaw",
+              "description": "Canonical realm identifier for Scrimshaw."
+            }
+          }
+        },
+        "cad_model_cas": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "Content-addressed storage URN for CAD STEP/STL source geometry."
+        },
+        "gcode_profile": {
+          "type": "string",
+          "description": "CNC/3D printer slicing and tooling profile identifier."
+        },
+        "toolpath_version": {
+          "type": "string",
+          "description": "Generated toolpath or CAM operation revision version."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

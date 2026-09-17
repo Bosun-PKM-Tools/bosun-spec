@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json",
+  "title": "Bosun Archetype 1: Catalog Dossier Contract v1",
+  "description": "Base archetype contract for item records (tags, summary, specs mapping, manufacturer/creator). Embeds the universal $pkm meta-envelope.",
+  "type": "object",
+  "version": "1.0.0",
+  "required": [
+    "$pkm"
+  ],
+  "properties": {
+    "$pkm": {
+      "$ref": "#/$defs/pkmEnvelope"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable title or name of the catalog item."
+    },
+    "summary": {
+      "type": "string",
+      "description": "High-level summary or description of the cataloged item."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Categorization and classification tags."
+    },
+    "specs": {
+      "type": "object",
+      "description": "Structured specifications mapping for the item.",
+      "additionalProperties": true
+    },
+    "manufacturer": {
+      "type": "string",
+      "description": "Entity or company that manufactured the item."
+    },
+    "creator": {
+      "type": "string",
+      "description": "Author, designer, or creator of the item."
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "pkmEnvelope": {
+      "type": "object",
+      "description": "Universal Meta-Envelope ($pkm namespace) identifying the entity, canonical realm, timestamps, and typed relations.",
+      "required": [
+        "id",
+        "realm",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^urn:uuid:[0-9a-fA-F-]{36}$",
+          "description": "UUIDv7 URN uniquely identifying this entity."
+        },
+        "realm": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$",
+          "description": "Lowercase canonical realm identifier."
+        },
+        "created_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]+)?)?(Z|[+-][0-9]{2}:?[0-9]{2})?)?$",
+          "description": "ISO-8601 UTC date-time string (Postel coercion: permissive ingestion of date strings missing seconds)."
+        },
+        "updated_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]+)?)?(Z|[+-][0-9]{2}:?[0-9]{2})?)?$",
+          "description": "ISO-8601 UTC date-time string (Postel coercion: permissive ingestion of date strings missing seconds)."
+        },
+        "relations": {
+          "type": "object",
+          "description": "Map of typed predicate verbs to URN arrays.",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^urn:[a-zA-Z0-9_.:-]+$"
+                }
+              },
+              {
+                "type": "string",
+                "pattern": "^urn:[a-zA-Z0-9_.:-]+$"
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

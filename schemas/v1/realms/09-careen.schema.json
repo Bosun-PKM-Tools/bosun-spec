@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/09-careen.schema.json",
+  "title": "Bosun Realm 09: Careen Contract v1",
+  "description": "Machine-readable delta schema contract for Careen (Realm 09), extending Archetype Stage-Gate Manifest with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/stage-gate-manifest.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "careen",
+              "description": "Canonical realm identifier for Careen."
+            }
+          }
+        },
+        "kanban_stage": {
+          "type": "string",
+          "description": "Current board column or stage (e.g., backlog, ready, in_progress, in_review, done)."
+        },
+        "sprint_ref": {
+          "type": "string",
+          "description": "Sprint or iteration identifier."
+        },
+        "milestone_urn": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "URN of the milestone or release gate this item targets."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

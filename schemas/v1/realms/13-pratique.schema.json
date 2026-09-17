@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/13-pratique.schema.json",
+  "title": "Bosun Realm 13: Pratique Contract v1",
+  "description": "Machine-readable delta schema contract for Pratique (Realm 13), extending Archetype Dual-Track Telemetry with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/dual-track-telemetry.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "pratique",
+              "description": "Canonical realm identifier for Pratique."
+            }
+          }
+        },
+        "fhir_code": {
+          "type": "string",
+          "description": "HL7 FHIR LOINC or SNOMED-CT clinical coding for the observation."
+        },
+        "sensor_source": {
+          "type": "string",
+          "description": "Medical sensor, monitor, or health service source identifier."
+        },
+        "telemetry_parquet_ref": {
+          "type": "string",
+          "description": "Local filesystem path or content hash referencing the clinical biometric parquet dataset."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

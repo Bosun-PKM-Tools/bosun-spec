@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/16-squadron.schema.json",
+  "title": "Bosun Realm 16: Squadron Contract v1",
+  "description": "Machine-readable delta schema contract for Squadron (Realm 16), extending Archetype Dual-Track Telemetry with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/dual-track-telemetry.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "squadron",
+              "description": "Canonical realm identifier for Squadron."
+            }
+          }
+        },
+        "vin": {
+          "type": "string",
+          "pattern": "^[A-HJ-NPR-Z0-9]{17}$",
+          "description": "17-character ISO 3779 Vehicle Identification Number."
+        },
+        "engine_hours": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Accumulated vehicle or vessel engine operational hours."
+        },
+        "telemetry_parquet_ref": {
+          "type": "string",
+          "description": "Local filesystem path or content hash referencing the vehicular CAN-bus/OBD telemetry dataset."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}
