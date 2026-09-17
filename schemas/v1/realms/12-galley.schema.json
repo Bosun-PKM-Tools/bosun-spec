@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/12-galley.schema.json",
+  "title": "Bosun Realm 12: Galley Contract v1",
+  "description": "Machine-readable delta schema contract for Galley (Realm 12), extending Archetype Catalog Dossier with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "galley",
+              "description": "Canonical realm identifier for Galley."
+            }
+          }
+        },
+        "servings": {
+          "type": "number",
+          "minimum": 0.1,
+          "description": "Standard batch yield or number of servings."
+        },
+        "prep_time_minutes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Preparation and cooking duration in minutes."
+        },
+        "ingredients_schema": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "item"
+            ],
+            "properties": {
+              "item": {
+                "type": "string",
+                "description": "Ingredient name."
+              },
+              "amount": {
+                "type": "number",
+                "description": "Quantity amount."
+              },
+              "unit": {
+                "type": "string",
+                "description": "Measurement unit (e.g. grams, ml, tbsp)."
+              },
+              "notes": {
+                "type": "string",
+                "description": "Preparation instructions or substitution notes."
+              }
+            },
+            "additionalProperties": true
+          },
+          "description": "Structured ingredients list with quantities and units."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/11-passage.schema.json",
+  "title": "Bosun Realm 11: Passage Contract v1",
+  "description": "Machine-readable delta schema contract for Passage (Realm 11), extending Archetype Stage-Gate Manifest with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/stage-gate-manifest.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "passage",
+              "description": "Canonical realm identifier for Passage."
+            }
+          }
+        },
+        "transit_mode": {
+          "type": "string",
+          "enum": [
+            "air",
+            "rail",
+            "sea",
+            "road",
+            "transit",
+            "foot",
+            "other"
+          ],
+          "description": "Primary transit mode for the voyage or passage."
+        },
+        "booking_ref": {
+          "type": "string",
+          "description": "Carrier reservation or ticket booking reference."
+        },
+        "waypoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Waypoint name or station/airport code."
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "maxItems": 3,
+                "description": "[longitude, latitude, elevation]."
+              },
+              "arrival": {
+                "type": "string",
+                "description": "Scheduled or actual arrival time."
+              },
+              "departure": {
+                "type": "string",
+                "description": "Scheduled or actual departure time."
+              }
+            },
+            "additionalProperties": true
+          },
+          "description": "Ordered itinerary waypoints or stops."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/10-primer.schema.json",
+  "title": "Bosun Realm 10: Primer Contract v1",
+  "description": "Machine-readable delta schema contract for Primer (Realm 10), extending Archetype Stage-Gate Manifest with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/stage-gate-manifest.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "primer",
+              "description": "Canonical realm identifier for Primer."
+            }
+          }
+        },
+        "spaced_interval_days": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Current spaced-repetition scheduling interval in days."
+        },
+        "ease_factor": {
+          "type": "number",
+          "minimum": 1.0,
+          "description": "SuperMemo/SM-2 ease factor multiplier."
+        },
+        "skill_node": {
+          "type": "string",
+          "description": "Target competency or skill graph ontology node."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

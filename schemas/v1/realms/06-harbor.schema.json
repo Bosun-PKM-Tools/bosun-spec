@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/06-harbor.schema.json",
+  "title": "Bosun Realm 06: Harbor Contract v1",
+  "description": "Machine-readable delta schema contract for Harbor (Realm 06), extending Archetype Catalog Dossier with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "harbor",
+              "description": "Canonical realm identifier for Harbor."
+            }
+          }
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "description": "URL-safe path slug for public or edge routing."
+        },
+        "edge_route": {
+          "type": "string",
+          "description": "Edge routing pattern or ingress endpoint mapping."
+        },
+        "render_template": {
+          "type": "string",
+          "description": "Template or component name used to render the route."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/02-yeoman.schema.json",
+  "title": "Bosun Realm 02: Yeoman Contract v1",
+  "description": "Machine-readable delta schema contract for Yeoman (Realm 02), extending Archetype Interaction Ledger with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/interaction-ledger.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "yeoman",
+              "description": "Canonical realm identifier for Yeoman."
+            }
+          }
+        },
+        "cadence_days": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Reconnection cadence interval in days."
+        },
+        "channels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "kind",
+              "value"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Channel kind (email, phone, matrix, signal, etc.)."
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Address or handle."
+              },
+              "label": {
+                "type": "string",
+                "description": "Optional human-readable label (work, personal, etc.)."
+              }
+            },
+            "additionalProperties": true
+          },
+          "description": "Communication channels associated with this contact."
+        },
+        "last_contact_date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]+)?)?(Z|[+-][0-9]{2}:?[0-9]{2})?)?$",
+          "description": "ISO-8601 date or date-time of the most recent interaction."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

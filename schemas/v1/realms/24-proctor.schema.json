@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/24-proctor.schema.json",
+  "title": "Bosun Realm 24: Proctor Contract v1",
+  "description": "Machine-readable delta schema contract for Proctor (Realm 24), extending Archetype Sovereign Vault with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/sovereign-vault.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "proctor",
+              "description": "Canonical realm identifier for Proctor."
+            }
+          }
+        },
+        "docket_number": {
+          "type": "string",
+          "description": "Court case or tribunal docket number."
+        },
+        "pacer_case_id": {
+          "type": "string",
+          "description": "PACER or electronic court record case index."
+        },
+        "statute_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Statutory legal code and regulatory provision citations."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

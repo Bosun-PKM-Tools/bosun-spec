@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/archetypes/interaction-ledger.schema.json",
+  "title": "Bosun Archetype 2: Interaction Ledger Contract v1",
+  "description": "Base archetype contract for split-directory topology (entity dossier paired with append-only event logs). Embeds the universal $pkm meta-envelope.",
+  "type": "object",
+  "version": "1.0.0",
+  "required": [
+    "$pkm"
+  ],
+  "properties": {
+    "$pkm": {
+      "$ref": "#/$defs/pkmEnvelope"
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable title of the entity dossier or ledger."
+    },
+    "entity_dossier": {
+      "type": "object",
+      "description": "Primary entity dossier metadata paired with the event log in a split-directory topology.",
+      "properties": {
+        "dossier_path": {
+          "type": "string",
+          "description": "Relative path to the canonical entity dossier markdown note."
+        },
+        "status": {
+          "type": "string",
+          "description": "Lifecycle status of the primary entity."
+        }
+      },
+      "additionalProperties": true
+    },
+    "event_logs": {
+      "type": "array",
+      "description": "Append-only chronological sequence of interaction or ledger events.",
+      "items": {
+        "type": "object",
+        "required": [
+          "timestamp"
+        ],
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "description": "Unique event identifier or URN."
+          },
+          "timestamp": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]+)?)?(Z|[+-][0-9]{2}:?[0-9]{2})?$",
+            "description": "ISO-8601 UTC date-time of the event."
+          },
+          "kind": {
+            "type": "string",
+            "description": "Event classification or verb."
+          },
+          "summary": {
+            "type": "string",
+            "description": "Human-readable event summary."
+          },
+          "payload": {
+            "type": "object",
+            "description": "Structured event payload.",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "split_directory": {
+      "type": "object",
+      "description": "Split-directory topology configuration linking entity dossiers and log records.",
+      "properties": {
+        "dossier_root": {
+          "type": "string",
+          "description": "Subdirectory root holding entity dossiers."
+        },
+        "events_root": {
+          "type": "string",
+          "description": "Subdirectory root holding append-only event logs."
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "pkmEnvelope": {
+      "type": "object",
+      "description": "Universal Meta-Envelope ($pkm namespace) identifying the entity, canonical realm, timestamps, and typed relations.",
+      "required": [
+        "id",
+        "realm",
+        "created_at",
+        "updated_at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^urn:uuid:[0-9a-fA-F-]{36}$",
+          "description": "UUIDv7 URN uniquely identifying this entity."
+        },
+        "realm": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$",
+          "description": "Lowercase canonical realm identifier."
+        },
+        "created_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]+)?)?(Z|[+-][0-9]{2}:?[0-9]{2})?)?$",
+          "description": "ISO-8601 UTC date-time string (Postel coercion: permissive ingestion of date strings missing seconds)."
+        },
+        "updated_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]+)?)?(Z|[+-][0-9]{2}:?[0-9]{2})?)?$",
+          "description": "ISO-8601 UTC date-time string (Postel coercion: permissive ingestion of date strings missing seconds)."
+        },
+        "relations": {
+          "type": "object",
+          "description": "Map of typed predicate verbs to URN arrays.",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^urn:[a-zA-Z0-9_.:-]+$"
+                }
+              },
+              {
+                "type": "string",
+                "pattern": "^urn:[a-zA-Z0-9_.:-]+$"
+              }
+            ]
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

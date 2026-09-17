@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/19-chantey.schema.json",
+  "title": "Bosun Realm 19: Chantey Contract v1",
+  "description": "Machine-readable delta schema contract for Chantey (Realm 19), extending Archetype Catalog Dossier with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "chantey",
+              "description": "Canonical realm identifier for Chantey."
+            }
+          }
+        },
+        "enclosure_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Media stream or podcast audio enclosure URL."
+        },
+        "duration_seconds": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Total audio duration in seconds."
+        },
+        "transcript_cas": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "Content-addressed storage URN for the timestamped transcript."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

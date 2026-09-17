@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/23-docent.schema.json",
+  "title": "Bosun Realm 23: Docent Contract v1",
+  "description": "Machine-readable delta schema contract for Docent (Realm 23), extending Archetype Catalog Dossier with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/catalog-dossier.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "docent",
+              "description": "Canonical realm identifier for Docent."
+            }
+          }
+        },
+        "doi": {
+          "type": "string",
+          "pattern": "^10\\.[0-9]{4,9}/[-._;()/:A-Za-z0-9]+$",
+          "description": "Digital Object Identifier for the academic publication."
+        },
+        "bibtex_key": {
+          "type": "string",
+          "description": "Canonical citation key in BibTeX bibliography databases."
+        },
+        "arxiv_id": {
+          "type": "string",
+          "description": "arXiv preprint accession identifier."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

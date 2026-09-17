@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/15-drydock.schema.json",
+  "title": "Bosun Realm 15: Drydock Contract v1",
+  "description": "Machine-readable delta schema contract for Drydock (Realm 15), extending Archetype Dual-Track Telemetry with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/dual-track-telemetry.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "drydock",
+              "description": "Canonical realm identifier for Drydock."
+            }
+          }
+        },
+        "property_urn": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "Canonical URN identifying the real property or infrastructure asset."
+        },
+        "deed_ref": {
+          "type": "string",
+          "description": "Legal deed, parcel registry, or title documentation reference."
+        },
+        "utility_metric_keys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Utility and structural telemetry sensor keys logged in columnar storage."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/realms/05-quartermaster.schema.json",
+  "title": "Bosun Realm 05: Quartermaster Contract v1",
+  "description": "Machine-readable delta schema contract for Quartermaster (Realm 05), extending Archetype Sovereign Vault with realm-specific payload attributes.",
+  "type": "object",
+  "version": "1.0.0",
+  "allOf": [
+    {
+      "$ref": "https://bosunpkm.com/schemas/v1/archetypes/sovereign-vault.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "$pkm": {
+          "type": "object",
+          "properties": {
+            "realm": {
+              "const": "quartermaster",
+              "description": "Canonical realm identifier for Quartermaster."
+            }
+          }
+        },
+        "beancount_account": {
+          "type": "string",
+          "pattern": "^(Assets|Liabilities|Equity|Income|Expenses)(:[A-Z0-9][A-Za-z0-9-]*)+$",
+          "description": "Beancount double-entry canonical account name."
+        },
+        "tx_hash": {
+          "type": "string",
+          "description": "Cryptographic or ledger transaction hash identifier."
+        },
+        "currency_code": {
+          "type": "string",
+          "pattern": "^[A-Z]{3,5}$",
+          "description": "ISO 4217 currency code or commodity symbol."
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}
