@@ -37,16 +37,26 @@ jobs:
         shell: bash
 
       - name: Check out tender
-        uses: actions/checkout@v4
-        with:
-          repository: Bosun-PKM-Tools/tender
-          path: tender
+        env:
+          PAT: ${{ secrets.FLEET_CI_PAT }}
+        run: |
+          if [ -n "$PAT" ]; then
+            git clone https://x-access-token:${PAT}@github.com/Bosun-PKM-Tools/tender.git tender
+          else
+            git clone https://github.com/Bosun-PKM-Tools/tender.git tender || true
+          fi
+        shell: bash
 
       - name: Check out harbormaster
-        uses: actions/checkout@v4
-        with:
-          repository: Bosun-PKM-Tools/harbormaster
-          path: harbormaster
+        env:
+          PAT: ${{ secrets.FLEET_CI_PAT }}
+        run: |
+          if [ -n "$PAT" ]; then
+            git clone https://x-access-token:${PAT}@github.com/Bosun-PKM-Tools/harbormaster.git harbormaster
+          else
+            git clone https://github.com/Bosun-PKM-Tools/harbormaster.git harbormaster || true
+          fi
+        shell: bash
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
