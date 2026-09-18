@@ -1,0 +1,79 @@
+name: E2E Fleet Matrix
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  e2e-headless-golden-path:
+    name: "Golden Path (${{ matrix.os }}, Python ${{ matrix.python-version }})"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11"]
+
+    steps:
+      - name: Check out bosun-spec
+        uses: actions/checkout@v4
+        with:
+          path: bosun-spec
+
+      - name: Check out marlinspike
+        uses: actions/checkout@v4
+        with:
+          repository: Bosun-PKM-Tools/marlinspike
+          path: marlinspike
+
+      - name: Check out tender
+        uses: actions/checkout@v4
+        with:
+          repository: Bosun-PKM-Tools/tender
+          path: tender
+
+      - name: Check out harbormaster
+        uses: actions/checkout@v4
+        with:
+          repository: Bosun-PKM-Tools/harbormaster
+          path: harbormaster
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build marlinspike-kpp in release mode
+        run: cargo build --release -p marlinspike-kpp
+        working-directory: marlinspike
+
+      - name: Add marlinspike target to PATH (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $binDir = Resolve-Path "marlinspike/target/release"
+          echo "$binDir" >> $env:GITHUB_PATH
+          echo "MARLINSPIKE_KPP_COMMAND=$binDir/marlinspike-kpp.exe" >> $env:GITHUB_ENV
+
+      - name: Add marlinspike target to PATH (Unix)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          bin_dir="$(pwd)/marlinspike/target/release"
+          echo "$bin_dir" >> "$GITHUB_PATH"
+          echo "MARLINSPIKE_KPP_COMMAND=$bin_dir/marlinspike-kpp" >> "$GITHUB_ENV"
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install fleet python packages
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ./tender/apps/tender ./harbormaster/apps/harbormaster
+
+      - name: Run headless E2E Golden Path test
+        run: python -m unittest discover -s harbormaster/apps/harbormaster/tests -p "test_e2e_golden_path.py"
