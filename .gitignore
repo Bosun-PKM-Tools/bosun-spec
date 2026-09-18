@@ -9,3 +9,24 @@ build/
 .env
 artifacts/
 scratch/
+
+# Security & Release Hardening
+.env.*
+*.env
+*.pem
+*.key
+*.py[cod]
+*$py.class
+.coverage
+htmlcov/
+*.db
+*.sqlite
+*.sqlite3
+kikr.db
+state/registry.json
+queue/*.json
+tmp/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
