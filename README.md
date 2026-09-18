@@ -6,6 +6,12 @@ Open specification for Bosun personal knowledge management (PKM): JSON Schema co
 
 This repository holds **schemas, RFCs, fixtures, and validation tests**. Runtime engines live in sibling repos.
 
+## Quick Start (5 Minutes)
+
+New to the fleet? Install the local toolchain, index `examples/starter-vault`, and run the first `kikr` queries:
+
+**[User #1 Quick Start](docs/USER_1_QUICKSTART.md)** — `kikr index`, `kikr find tag:onboarding`, `kikr find status:active`, then ingest Inbox with Tender and the sample recipe with Galley (`stax-chef`).
+
 ## What this is
 
 Bosun PKM is a local-first knowledge system. Notes stay on disk as Markdown with YAML frontmatter. Indexes and caches are disposable. Tools interoperate by targeting the same contracts instead of a shared database or network API.
@@ -102,6 +108,7 @@ Obsidian/Markdown templates for all 50 realms (`templates/realms/<realm>.templat
 
 | File | Description |
 |---|---|
+| [`USER_1_QUICKSTART.md`](docs/USER_1_QUICKSTART.md) | 5-minute onboarding: starter vault index, `kikr find`, Tender + Galley ingest |
 | [`event-vocab-v0.md`](docs/event-vocab-v0.md) | Human-readable event catalog |
 | [`harbormaster-protocol-v1-rfc.md`](docs/harbormaster-protocol-v1-rfc.md) | Read-only loopback HTTP RFC draft (separate from stdio KPP) |
 
