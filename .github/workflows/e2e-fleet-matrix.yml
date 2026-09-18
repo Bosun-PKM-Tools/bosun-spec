@@ -29,6 +29,7 @@ jobs:
         with:
           repository: Bosun-PKM-Tools/marlinspike
           path: marlinspike
+          token: ${{ secrets.FLEET_CI_PAT || github.token }}
 
       - name: Check out tender
         uses: actions/checkout@v4
