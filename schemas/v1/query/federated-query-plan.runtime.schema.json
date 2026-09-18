@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/query/federated-query-plan.runtime.schema.json",
+  "$comment": "Canonical daemon contract implemented by harbormaster federated_query.py. Distinct from the full federated plan in federated-query-plan.schema.json. Harbormaster vendors this file as apps/harbormaster/schemas/v1/query/federated-query-plan.schema.json.",
+  "title": "Bosun federated graph query plan v1 (harbormaster runtime)",
+  "description": "Distributed Graph DSL plan: one stdio worker command per vault site, then join node sets and edge matrices. Each query object is validated against graph-neighborhood-query.schema.json.",
+  "type": "object",
+  "version": "1.0.0",
+  "required": [
+    "sites",
+    "queries"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional plan identifier echoed in the join result"
+    },
+    "sites": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "command"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "command": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": "Child-process argv for a stdio JSON-RPC graph query worker"
+          },
+          "vault": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Vault root injected into the site's Graph DSL query"
+          }
+        }
+      }
+    },
+    "queries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "site",
+          "query"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "site": {
+            "type": "string",
+            "minLength": 1
+          },
+          "query": {
+            "type": "object",
+            "description": "Neighborhood query object validated against graph-neighborhood-query.schema.json"
+          }
+        }
+      }
+    }
+  }
+}

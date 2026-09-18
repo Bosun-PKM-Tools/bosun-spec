@@ -446,7 +446,7 @@ class TestSchemaFiles(unittest.TestCase):
             "09-careen": ("stage-gate-manifest.schema.json", "careen", ["kanban_stage", "sprint_ref", "milestone_urn"]),
             "10-primer": ("stage-gate-manifest.schema.json", "primer", ["spaced_interval_days", "ease_factor", "skill_node"]),
             "11-passage": ("stage-gate-manifest.schema.json", "passage", ["transit_mode", "booking_ref", "waypoints"]),
-            "12-galley": ("catalog-dossier.schema.json", "galley", ["servings", "prep_time_minutes", "ingredients_schema"]),
+            "12-galley": ("catalog-dossier.schema.json", "galley", ["servings", "prep_time_minutes", "ingredients_schema", "provenance", "schema_org"]),
             "13-pratique": ("dual-track-telemetry.schema.json", "pratique", ["fhir_code", "sensor_source", "telemetry_parquet_ref"]),
             "14-tactician": ("dual-track-telemetry.schema.json", "tactician", ["sport_type", "split_metrics", "monte_carlo_preset"]),
             "15-drydock": ("dual-track-telemetry.schema.json", "drydock", ["property_urn", "deed_ref", "utility_metric_keys"]),
@@ -592,6 +592,27 @@ class TestSchemaFiles(unittest.TestCase):
                 bad_sample = dict(valid_sample, id=bad_id)
                 with self.assertRaises(jsonschema.ValidationError):
                     validator.validate(bad_sample)
+
+    @unittest.skipUnless(_HAS_JSONSCHEMA, "jsonschema package not installed")
+    def test_universal_envelope_accepts_locker_note_relation_array(self):
+        """Harbormaster locker notes store $pkm.relations as an edge array."""
+        envelope_obj = self._load_json(_SCHEMAS_DIR / "v1/meta/envelope.schema.json")
+        validator = Draft202012Validator(envelope_obj["$defs"]["pkmEnvelope"])
+        validator.validate(
+            {
+                "id": "urn:uuid:018f62f8-9a3b-7d23-bf72-5b9c03bfba43",
+                "realm": "yeoman",
+                "created_at": "2026-09-16T12:00:00Z",
+                "updated_at": "2026-09-16T12:00:00Z",
+                "schema": "$yeoman:interaction/v1",
+                "relations": [
+                    {
+                        "target": "urn:yeoman:contact:123e4567-e89b-42d3-a456-426614174000",
+                        "type": "contact",
+                    }
+                ],
+            }
+        )
 
     @unittest.skipUnless(_HAS_JSONSCHEMA, "jsonschema package not installed")
     def test_all_50_realms_validate_sample_instances(self):

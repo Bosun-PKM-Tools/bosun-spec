@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://bosunpkm.com/schemas/v1/query/graph-dsl.schema.json",
+  "$comment": "Full Graph DSL specification. The harbormaster daemon implements the neighborhood projection in graph-neighborhood-query.schema.json.",
   "title": "Bosun Vault Graph Query DSL Specification v1",
   "description": "Strict JSON Schema Draft 2020-12 specification defining the Vault Graph Query DSL. Supports directional graph traversal over typed $pkm.relations and Markdown wikilinks, with filtering across realms, relations, linkages, traversal depths, predicate patterns, and ordered multi-hop path AND (every hop must match), projecting node sets, edge collections, and subgraph adjacency matrices.",
   "type": "object",

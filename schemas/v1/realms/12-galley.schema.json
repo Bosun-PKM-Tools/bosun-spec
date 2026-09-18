@@ -32,7 +32,75 @@
         "prep_time_minutes": {
           "type": "integer",
           "minimum": 0,
-          "description": "Preparation and cooking duration in minutes."
+          "description": "Preparation duration in minutes."
+        },
+        "cook_time_minutes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Active cooking duration in minutes."
+        },
+        "total_time_minutes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "End-to-end duration in minutes."
+        },
+        "author": {
+          "type": "string",
+          "description": "Recipe author or family source attribution."
+        },
+        "source": {
+          "type": "string",
+          "description": "Human-readable origin label (notebook, URL host, importer)."
+        },
+        "date": {
+          "type": "string",
+          "description": "Recipe capture or publication date."
+        },
+        "cuisine": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "recipe_yield": {
+          "type": "string",
+          "description": "Human-readable yield string (schema.org recipeYield)."
+        },
+        "provenance": {
+          "type": "object",
+          "description": "Origin and conversion lineage for the recipe note. Aligns with canonical-note-contract-v0.1 provenance.",
+          "properties": {
+            "original_system": {
+              "type": "string",
+              "description": "Upstream system or repository of origin."
+            },
+            "imported_at": {
+              "type": "string",
+              "description": "Timestamp when this record was extracted or ingested."
+            },
+            "converter_version": {
+              "type": "string",
+              "description": "Version string of the conversion pipeline or adapter."
+            },
+            "source_metadata": {
+              "type": "object",
+              "description": "Preserved upstream properties from the source system."
+            }
+          },
+          "additionalProperties": true
+        },
+        "schema_org": {
+          "type": "object",
+          "description": "schema.org Recipe overlay used by Galley and the starter-vault recipe fixture.",
+          "properties": {
+            "@context": {
+              "const": "https://schema.org"
+            },
+            "@type": {
+              "const": "Recipe"
+            }
+          },
+          "additionalProperties": true
         },
         "ingredients_schema": {
           "type": "array",

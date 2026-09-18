@@ -2,9 +2,9 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://bosunpkm.com/schemas/v1/rpc/fleet-matrix.json",
   "title": "Bosun Fleet JSON-RPC 2.0 Method Matrix v1",
-  "description": "Canonical catalog of the 56 fleet JSON-RPC 2.0 methods (Realms 02 through 25) routed by harbormaster over stdio NDJSON (no sockets). Named params only (arrays are rejected). `$defs` holds JSON-RPC envelopes, per-method params/result schemas, and the catalog entry shape. The `methods` object is the reviewable catalog (same hybrid pattern as event-vocab-v0.1.json). Broadcast names are spec-level `info.<vessel>.*` events; harbormaster stub handlers do not emit them yet. Read methods list an empty broadcasts array.",
+  "description": "Canonical catalog of fleet JSON-RPC 2.0 methods routed by harbormaster over stdio NDJSON (no sockets). Includes Realm 02-50 domain methods plus the Marlinspike CST surgery engine (marlinspike.*) as implemented by marlinspike-kpp. Named params only (arrays are rejected). `$defs` holds JSON-RPC envelopes, per-method params/result schemas, and the catalog entry shape. The `methods` object is the reviewable catalog (same hybrid pattern as event-vocab-v0.1.json). Broadcast names are spec-level `info.<vessel>.*` events; harbormaster stub handlers do not emit them yet. Read methods list an empty broadcasts array.",
   "type": "object",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "jsonrpc": "2.0",
   "transport": "stdio-ndjson",
   "errorCodes": {
@@ -22,7 +22,7 @@
     },
     "methods": {
       "type": "object",
-      "minProperties": 106,
+      "minProperties": 115,
       "additionalProperties": {
         "$ref": "#/$defs/methodEntry"
       }
@@ -214,7 +214,8 @@
             "pavilion",
             "charthouse",
             "commonwealth",
-            "relay"
+            "relay",
+            "marlinspike"
           ]
         },
         "method": {
@@ -4346,6 +4347,291 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "params_marlinspike_ping": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {}
+    },
+    "result_marlinspike_ping": {
+      "type": "object",
+      "required": [
+        "pong",
+        "adapter",
+        "version"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "pong": {
+          "type": "boolean"
+        },
+        "adapter": {
+          "const": "marlinspike-kpp"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "params_marlinspike_parse_ast": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Filesystem path of the Markdown note"
+        }
+      }
+    },
+    "result_marlinspike_parse_ast": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "errors": {
+          "type": "array"
+        },
+        "children": {
+          "type": "array"
+        }
+      }
+    },
+    "params_marlinspike_patch_frontmatter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "patch"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Filesystem path of the Markdown note"
+        },
+        "patch": {
+          "type": "object",
+          "description": "Nested YAML mapping. Dual-scope keys such as $pkm, $realm, $recipe, $nutrition are objects; list entries use numeric path segments."
+        }
+      }
+    },
+    "result_marlinspike_patch_frontmatter": {
+      "type": "object",
+      "required": [
+        "ok",
+        "patched",
+        "path"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "patched": {
+          "type": "boolean"
+        },
+        "path": {
+          "type": "string"
+        }
+      }
+    },
+    "params_marlinspike_scale_recipe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "factor"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Filesystem path of the Markdown note"
+        },
+        "factor": {
+          "type": "number"
+        }
+      }
+    },
+    "result_marlinspike_scale_recipe": {
+      "type": "object",
+      "required": [
+        "ok",
+        "scaled",
+        "factor",
+        "path"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "scaled": {
+          "type": "boolean"
+        },
+        "factor": {
+          "type": "number"
+        },
+        "path": {
+          "type": "string"
+        }
+      }
+    },
+    "params_marlinspike_convert_units": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "target_system"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Filesystem path of the Markdown note"
+        },
+        "target_system": {
+          "type": "string",
+          "enum": [
+            "metric",
+            "imperial"
+          ]
+        }
+      }
+    },
+    "result_marlinspike_convert_units": {
+      "type": "object",
+      "required": [
+        "ok",
+        "converted",
+        "target_system",
+        "path"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "converted": {
+          "type": "boolean"
+        },
+        "target_system": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        }
+      }
+    },
+    "params_marlinspike_reorder_steps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "order"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Filesystem path of the Markdown note"
+        },
+        "order": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "result_marlinspike_reorder_steps": {
+      "type": "object",
+      "required": [
+        "ok",
+        "reordered",
+        "order",
+        "path"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "reordered": {
+          "type": "boolean"
+        },
+        "order": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "path": {
+          "type": "string"
+        }
+      }
+    },
+    "params_marlinspike_insert_step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "index",
+        "content"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Filesystem path of the Markdown note"
+        },
+        "index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "result_marlinspike_insert_step": {
+      "type": "object",
+      "required": [
+        "ok",
+        "inserted",
+        "index",
+        "path"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "inserted": {
+          "type": "boolean"
+        },
+        "index": {
+          "type": "integer"
+        },
+        "path": {
+          "type": "string"
         }
       }
     }
@@ -9778,6 +10064,466 @@
           }
         }
       ]
+    },
+    "marlinspike.ping": {
+      "vessel": "marlinspike",
+      "method": "marlinspike.ping",
+      "description": "Liveness probe for marlinspike-kpp. Returns adapter identity and semver.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "marlinspike.ping",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [],
+          "optional": [],
+          "schemaRef": "#/$defs/params_marlinspike_ping"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_marlinspike_ping",
+        "keys": [
+          "pong",
+          "adapter",
+          "version"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "named params missing or wrong type"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "marlinspike.parse_ast": {
+      "vessel": "marlinspike",
+      "method": "marlinspike.parse_ast",
+      "description": "Parse a Markdown note into a lossless Rowan syntax tree JSON object.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "marlinspike.parse_ast",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "path"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_marlinspike_parse_ast"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_marlinspike_parse_ast",
+        "keys": [
+          "type"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "named params missing or wrong type"
+          },
+          {
+            "code": -32000,
+            "name": "Application error",
+            "when": "filesystem or CST surgery failure"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "marlinspike.parse_cst": {
+      "vessel": "marlinspike",
+      "method": "marlinspike.parse_cst",
+      "description": "Alias of marlinspike.parse_ast for harbormaster parse_cst callers.",
+      "mutates": false,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "marlinspike.parse_cst",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "path"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_marlinspike_parse_ast"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_marlinspike_parse_ast",
+        "keys": [
+          "type"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "named params missing or wrong type"
+          },
+          {
+            "code": -32000,
+            "name": "Application error",
+            "when": "filesystem or CST surgery failure"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "marlinspike.patch_frontmatter": {
+      "vessel": "marlinspike",
+      "method": "marlinspike.patch_frontmatter",
+      "description": "Trivia-preserving YAML frontmatter patch. Body bytes including CRLF are not rewritten.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "marlinspike.patch_frontmatter",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "path",
+            "patch"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_marlinspike_patch_frontmatter"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_marlinspike_patch_frontmatter",
+        "keys": [
+          "ok",
+          "patched",
+          "path"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "named params missing or wrong type"
+          },
+          {
+            "code": -32000,
+            "name": "Application error",
+            "when": "filesystem or CST surgery failure"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "marlinspike.scale_recipe": {
+      "vessel": "marlinspike",
+      "method": "marlinspike.scale_recipe",
+      "description": "Scale recipe yield quantities in place by a numeric factor.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "marlinspike.scale_recipe",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "path",
+            "factor"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_marlinspike_scale_recipe"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_marlinspike_scale_recipe",
+        "keys": [
+          "ok",
+          "scaled",
+          "factor",
+          "path"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "named params missing or wrong type"
+          },
+          {
+            "code": -32000,
+            "name": "Application error",
+            "when": "filesystem or CST surgery failure"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "marlinspike.scale_nutrition": {
+      "vessel": "marlinspike",
+      "method": "marlinspike.scale_nutrition",
+      "description": "Scale recipe nutrition macros in place by a numeric factor.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "marlinspike.scale_nutrition",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "path",
+            "factor"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_marlinspike_scale_recipe"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_marlinspike_scale_recipe",
+        "keys": [
+          "ok",
+          "scaled",
+          "factor",
+          "path"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "named params missing or wrong type"
+          },
+          {
+            "code": -32000,
+            "name": "Application error",
+            "when": "filesystem or CST surgery failure"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "marlinspike.convert_units": {
+      "vessel": "marlinspike",
+      "method": "marlinspike.convert_units",
+      "description": "Convert recipe units in place to metric or imperial.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "marlinspike.convert_units",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "path",
+            "target_system"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_marlinspike_convert_units"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_marlinspike_convert_units",
+        "keys": [
+          "ok",
+          "converted",
+          "target_system",
+          "path"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "named params missing or wrong type"
+          },
+          {
+            "code": -32000,
+            "name": "Application error",
+            "when": "filesystem or CST surgery failure"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "marlinspike.reorder_steps": {
+      "vessel": "marlinspike",
+      "method": "marlinspike.reorder_steps",
+      "description": "Reorder recipe step indices in place.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "marlinspike.reorder_steps",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "path",
+            "order"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_marlinspike_reorder_steps"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_marlinspike_reorder_steps",
+        "keys": [
+          "ok",
+          "reordered",
+          "order",
+          "path"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "named params missing or wrong type"
+          },
+          {
+            "code": -32000,
+            "name": "Application error",
+            "when": "filesystem or CST surgery failure"
+          }
+        ]
+      },
+      "broadcasts": []
+    },
+    "marlinspike.insert_step": {
+      "vessel": "marlinspike",
+      "method": "marlinspike.insert_step",
+      "description": "Insert a recipe step at index without rewriting unrelated body bytes.",
+      "mutates": true,
+      "request": {
+        "jsonrpc": "2.0",
+        "method": "marlinspike.insert_step",
+        "id": {
+          "required": true,
+          "types": [
+            "string",
+            "number"
+          ]
+        },
+        "params": {
+          "style": "by-name",
+          "required": [
+            "path",
+            "index",
+            "content"
+          ],
+          "optional": [],
+          "schemaRef": "#/$defs/params_marlinspike_insert_step"
+        }
+      },
+      "result": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/result_marlinspike_insert_step",
+        "keys": [
+          "ok",
+          "inserted",
+          "index",
+          "path"
+        ]
+      },
+      "error": {
+        "jsonrpc": "2.0",
+        "schemaRef": "#/$defs/jsonrpcErrorResponse",
+        "codes": [
+          {
+            "code": -32602,
+            "name": "Invalid params",
+            "when": "named params missing or wrong type"
+          },
+          {
+            "code": -32000,
+            "name": "Application error",
+            "when": "filesystem or CST surgery failure"
+          }
+        ]
+      },
+      "broadcasts": []
     }
   }
 }

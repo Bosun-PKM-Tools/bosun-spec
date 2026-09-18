@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://bosunpkm.com/schemas/v1/query/federated-query-plan.schema.json",
+  "$comment": "Full federated plan specification. The harbormaster daemon implements the sites/queries projection in federated-query-plan.runtime.schema.json.",
   "title": "Bosun Federated Graph Query Plan Specification v1",
   "description": "Strict JSON Schema Draft 2020-12 contract defining distributed multi-vault graph query execution plans, including vault endpoint declarations (local path or stdio RPC process), ordered distributed traversal steps, and cross-vault URN join specifications.",
   "type": "object",

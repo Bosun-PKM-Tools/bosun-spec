@@ -22,6 +22,7 @@ Bosun PKM is a local-first knowledge system. Notes stay on disk as Markdown with
 - Pipeline event vocabulary (`schemas/event-vocab-v0.1.json`)
 - Per-realm v1 schemas under `schemas/v1/`
 - Fleet JSON-RPC 2.0 method matrix over **stdio NDJSON** (`schemas/v1/rpc/fleet-matrix.json`) — no sockets
+- Formal contract matrix for KPP frames, `$pkm` frontmatter, and recipe provenance (`docs/SPEC_CONTRACTS.md`)
 
 Python package: `bosun-spec` (`pyproject.toml`). Requires Python 3.10+.
 
@@ -76,8 +77,10 @@ flowchart LR
 | [`v1/yeoman/interaction.schema.json`](schemas/v1/yeoman/interaction.schema.json) | Interaction note; `$pkm.relations` must include a `type: contact` UUID |
 | [`v1/commonplace/work.schema.json`](schemas/v1/commonplace/work.schema.json) | Media work with multi-service `external_ids` |
 | [`v1/relations/relations.schema.json`](schemas/v1/relations/relations.schema.json) | Typed `$pkm.relations` predicates and URN targets |
-| [`v1/query/graph-dsl.schema.json`](schemas/v1/query/graph-dsl.schema.json) | Vault graph query DSL |
-| [`v1/query/federated-query-plan.schema.json`](schemas/v1/query/federated-query-plan.schema.json) | Multi-vault federated query plan |
+| [`v1/query/graph-dsl.schema.json`](schemas/v1/query/graph-dsl.schema.json) | Full vault graph query DSL |
+| [`v1/query/graph-neighborhood-query.schema.json`](schemas/v1/query/graph-neighborhood-query.schema.json) | Harbormaster bounded neighborhood query (`from` / `depth` / `direction`) |
+| [`v1/query/federated-query-plan.schema.json`](schemas/v1/query/federated-query-plan.schema.json) | Full multi-vault federated query plan |
+| [`v1/query/federated-query-plan.runtime.schema.json`](schemas/v1/query/federated-query-plan.runtime.schema.json) | Harbormaster `sites` + `queries` federated plan |
 | [`v1/rpc/fleet-matrix.json`](schemas/v1/rpc/fleet-matrix.json) | JSON-RPC 2.0 fleet method matrix over stdio NDJSON |
 | [`v1/rpc/error-envelope.schema.json`](schemas/v1/rpc/error-envelope.schema.json) | JSON-RPC error envelope (`-32000` schema, `-32001` lock, `-32002` orphan URN) |
 | [`v1/rpc/event-payloads.schema.json`](schemas/v1/rpc/event-payloads.schema.json) | Notifications and per-realm event payload `$defs` |
@@ -109,6 +112,7 @@ Obsidian/Markdown templates for all 50 realms (`templates/realms/<realm>.templat
 | File | Description |
 |---|---|
 | [`USER_1_QUICKSTART.md`](docs/USER_1_QUICKSTART.md) | 5-minute onboarding: starter vault index, `kikr find`, Tender + Galley ingest |
+| [`SPEC_CONTRACTS.md`](docs/SPEC_CONTRACTS.md) | JSON-RPC 2.0 KPP contract matrix, `$pkm` shapes, recipe provenance |
 | [`event-vocab-v0.md`](docs/event-vocab-v0.md) | Human-readable event catalog |
 | [`harbormaster-protocol-v1-rfc.md`](docs/harbormaster-protocol-v1-rfc.md) | Read-only loopback HTTP RFC draft (separate from stdio KPP) |
 
@@ -147,6 +151,7 @@ python tests/test_relations_spec.py
 python tests/test_rpc_schemas.py
 python tests/test_graph_dsl_schema.py
 python tests/test_graph_dsl_fixtures.py
+python tests/test_daemon_query_contracts.py
 python tests/test_advanced_graph_queries.py
 python tests/test_federated_query_fixtures.py
 python tests/test_synthetic_vault_graph_execution.py

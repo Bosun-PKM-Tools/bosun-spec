@@ -151,6 +151,15 @@ _REQUIRED_METHODS = (
     "commonwealth.list_aid_roster",
     "relay.send_heartbeat",
     "relay.test_deadman_trigger",
+    "marlinspike.ping",
+    "marlinspike.parse_ast",
+    "marlinspike.parse_cst",
+    "marlinspike.patch_frontmatter",
+    "marlinspike.scale_recipe",
+    "marlinspike.scale_nutrition",
+    "marlinspike.convert_units",
+    "marlinspike.reorder_steps",
+    "marlinspike.insert_step",
 )
 
 # Mirrors harbormaster apps/harbormaster/tests/test_method_matrix.py VALID_PARAMS.
@@ -310,6 +319,28 @@ _VALID_RPC_PARAMS = {
     "commonwealth.list_aid_roster": {"initiative_name": "Community Food Pantry"},
     "relay.send_heartbeat": {"channel_id": "deadman-primary-signal", "timestamp": "2026-09-17T12:00:00Z"},
     "relay.test_deadman_trigger": {"channel_id": "deadman-primary-signal", "dry_run": True},
+    "marlinspike.ping": {},
+    "marlinspike.parse_ast": {"path": "fixtures/notes/dual_scope_crlf.md"},
+    "marlinspike.parse_cst": {"path": "fixtures/notes/dual_scope_crlf.md"},
+    "marlinspike.patch_frontmatter": {
+        "path": "fixtures/notes/dual_scope_crlf.md",
+        "patch": {"$pkm": {"title": "KPP Patched"}},
+    },
+    "marlinspike.scale_recipe": {"path": "fixtures/recipes/skillet-beans.md", "factor": 2.0},
+    "marlinspike.scale_nutrition": {"path": "fixtures/recipes/skillet-beans.md", "factor": 0.5},
+    "marlinspike.convert_units": {
+        "path": "fixtures/recipes/skillet-beans.md",
+        "target_system": "metric",
+    },
+    "marlinspike.reorder_steps": {
+        "path": "fixtures/recipes/skillet-beans.md",
+        "order": [1, 0, 2],
+    },
+    "marlinspike.insert_step": {
+        "path": "fixtures/recipes/skillet-beans.md",
+        "index": 0,
+        "content": "Preheat the skillet.",
+    },
 }
 
 _REQUIRED_FIXTURES = (

@@ -74,24 +74,73 @@
           "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2}(\\.[0-9]+)?)?(Z|[+-][0-9]{2}:?[0-9]{2})?)?$",
           "description": "ISO-8601 UTC date-time string (Postel coercion: permissive ingestion of date strings missing seconds)."
         },
+        "schema": {
+          "type": "string",
+          "pattern": "^\\$[a-z][a-z0-9-]*:[a-z][a-z0-9_]*/",
+          "description": "Harbormaster locker-note schema prefix ($<realm>:<type>/v1). Optional. Used with a top-level note id when $pkm.id is omitted."
+        },
+        "urn": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.:-]+$",
+          "description": "Optional explicit entity URN. Harbormaster graph_query prefers this over reconstructing urn:<realm>:<type>:<id>."
+        },
         "relations": {
-          "type": "object",
-          "description": "Map of typed predicate verbs to URN arrays.",
-          "additionalProperties": {
-            "anyOf": [
-              {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "pattern": "^urn:[a-zA-Z0-9_.:-]+$"
-                }
-              },
-              {
-                "type": "string",
-                "pattern": "^urn:[a-zA-Z0-9_.:-]+$"
+          "description": "Either a typed verb map (canonical relations.schema.json) or an array of {target,type} edges (harbormaster locker notes / older yeoman interaction form).",
+          "oneOf": [
+            {
+              "type": "object",
+              "description": "Map of typed predicate verbs to URN strings or URN arrays.",
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^urn:[a-zA-Z0-9_.:-]+$"
+                    }
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^urn:[a-zA-Z0-9_.:-]+$"
+                  }
+                ]
               }
-            ]
-          }
+            },
+            {
+              "type": "array",
+              "description": "Edge list used by harbormaster locker notes.",
+              "items": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "object",
+                    "required": [
+                      "target",
+                      "type"
+                    ],
+                    "properties": {
+                      "target": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "type": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "urn": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                ]
+              }
+            }
+          ]
         }
       },
       "additionalProperties": true

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bosunpkm.com/schemas/v1/query/graph-neighborhood-query.schema.json",
+  "$comment": "Canonical daemon contract implemented by harbormaster graph_query.py. Distinct from the full Graph DSL in graph-dsl.schema.json. Harbormaster vendors this file as apps/harbormaster/schemas/v1/query/graph-dsl.schema.json.",
+  "title": "Bosun graph neighborhood query v1 (harbormaster runtime)",
+  "description": "Bounded URN neighborhood query over locker $pkm.relations as executed by harbormaster. Direction uses short tokens (out/in/both). Hop depth is capped at 3.",
+  "type": "object",
+  "version": "1.0.0",
+  "required": [
+    "from"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "from": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^urn:[a-z][a-z0-9-]*:[a-z][a-z0-9_]*:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      "description": "Start node URN (urn:<realm>:<type>:<uuid>)"
+    },
+    "depth": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3,
+      "description": "Hop limit from the start URN (default 1)"
+    },
+    "edge_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Relation type filter; omit to match all edge types"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "out",
+        "in",
+        "both"
+      ],
+      "description": "Edge walk direction (default both)"
+    },
+    "vault": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Vault root directory"
+    }
+  }
+}
